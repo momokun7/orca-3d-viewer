@@ -4,6 +4,7 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { type Browser, type BrowserContext, chromium, type Page } from 'playwright-core'
+import { decodePng, pixelAt } from '../fixtures/png-decode.ts'
 
 const EDITOR = path.resolve(import.meta.dirname, '..', '..', '..', 'editor')
 export const ORIGIN = 'https://orca-plugin-frame.test'
@@ -21,13 +22,20 @@ const CONTENT_TYPES: Record<string, string> = {
   '.wasm': 'application/wasm'
 }
 
+// The viewer's own console lines (src/main.ts): a file it refused, and a failure of its own.
+export const PARSE_FAILURE_LOG = 'glTF Viewer: could not parse the model'
+export const RENDER_FAILURE_LOG = 'glTF Viewer: could not display the model'
+
+export type ConsoleLine = { type: string; text: string }
+
 export type FrameReport = {
   /** Requests for the plugin's own files. */
   served: string[]
   /** Every other request the page made: each is network egress Orca would have blocked. */
   egress: string[]
   pageErrors: string[]
-  consoleErrors: string[]
+  /** Console errors and warnings. */
+  console: ConsoleLine[]
   cspViolations: string[]
   /** Calls to `window.orca` beyond reading the document: a read-only viewer makes none. */
   hostCalls: string[]
@@ -47,14 +55,23 @@ declare global {
   }
 }
 
+type StandInOptions = { locale: string; webgl: boolean }
+
 /** Installed before the page's own scripts, as Orca's frame shell is. */
-function installOrcaStandIn(locale: string): void {
+function installOrcaStandIn({ locale, webgl }: StandInOptions): void {
   const hostCalls: string[] = []
   const cspViolations: string[] = []
   let listener: ((document: unknown) => void) | null = null
   const record = (name: string) => (...args: unknown[]) => {
     hostCalls.push(`${name}(${JSON.stringify(args).slice(0, 200)})`)
     return Promise.reject(Object.assign(new Error('not_permitted'), { code: 'not_permitted' }))
+  }
+  if (!webgl) {
+    // Stands in for a blocklisted GPU or graphics acceleration turned off.
+    const getContext = HTMLCanvasElement.prototype.getContext
+    HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, kind: string, ...rest: unknown[]) {
+      return kind.startsWith('webgl') ? null : getContext.call(this, kind as '2d', ...(rest as []))
+    } as typeof getContext
   }
   document.addEventListener('securitypolicyviolation', (event) => {
     cspViolations.push(`${event.violatedDirective} ${event.blockedURI}`)
@@ -94,9 +111,11 @@ function installOrcaStandIn(locale: string): void {
 let browser: Browser | null = null
 
 export async function launchBrowser(): Promise<Browser> {
+  // Why SwiftShader by default: CI runners have no GPU, and WebGL must still work the same everywhere.
+  // ORCA_TEST_ANGLE=native keeps the platform's own backend (D3D11 on Windows, Metal on macOS).
+  const native = process.env.ORCA_TEST_ANGLE === 'native'
   browser ??= await chromium.launch({
-    // Why SwiftShader: CI runners have no GPU, and WebGL must still work.
-    args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
+    args: [...(native ? [] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']), '--ignore-gpu-blocklist']
   })
   return browser
 }
@@ -106,22 +125,30 @@ export async function closeBrowser(): Promise<void> {
   browser = null
 }
 
+export type Content = { bytes: Uint8Array } | { text: string }
+
 export type Frame = {
   page: Page
   context: BrowserContext
   report: () => Promise<FrameReport>
-  /** Sends a document the way Orca does when the file opens or changes on disk. */
-  open: (content: { bytes: Uint8Array } | { text: string }) => Promise<ViewerState>
+  /** Sends a document the way Orca does when the file opens or changes on disk, and waits until it settles. */
+  open: (content: Content, options?: { version?: number }) => Promise<ViewerState>
+  /** Sends a document without waiting, as a burst of saves does. */
+  send: (content: Content, version: number) => Promise<void>
+  /** Waits until the document with `version` has settled on a model or an error. */
+  settled: (version: number) => Promise<ViewerState>
   state: () => Promise<ViewerState | null>
+  /** The RGB(A) of the composited page at a point in the viewport, in CSS pixels. */
+  pixel: (x: number, y: number) => Promise<number[]>
   close: () => Promise<void>
 }
 
-export async function openFrame({ locale = 'en-US' } = {}): Promise<Frame> {
+export async function openFrame({ locale = 'en-US', webgl = true } = {}): Promise<Frame> {
   const context = await (await launchBrowser()).newContext({ viewport: { width: 800, height: 600 } })
   const served: string[] = []
   const egress: string[] = []
   const pageErrors: string[] = []
-  const consoleErrors: string[] = []
+  const consoleLines: ConsoleLine[] = []
 
   await context.route('**/*', async (route) => {
     const url = route.request().url()
@@ -157,10 +184,11 @@ export async function openFrame({ locale = 'en-US' } = {}): Promise<Frame> {
   const page = await context.newPage()
   page.on('pageerror', (error) => pageErrors.push(String(error)))
   page.on('console', (message) => {
-    // Why: Windows' ANGLE backend prints shader-precision warnings that say nothing about the viewer.
-    if (message.type() === 'error') consoleErrors.push(message.text())
+    if (message.type() === 'error' || message.type() === 'warning') {
+      consoleLines.push({ type: message.type(), text: message.text() })
+    }
   })
-  await page.addInitScript(installOrcaStandIn, locale)
+  await page.addInitScript(installOrcaStandIn, { locale, webgl })
   await page.goto(ENTRY)
   await page.waitForFunction(() => document.querySelector('.toolbar') !== null)
 
@@ -175,7 +203,9 @@ export async function openFrame({ locale = 'en-US' } = {}): Promise<Frame> {
         const notice = document.querySelector<HTMLElement>('.notice')
         return {
           kind: 'model',
-          figures: [...document.querySelectorAll<HTMLElement>('.figure')].map((figure) => figure.innerText),
+          figures: [...document.querySelectorAll<HTMLElement>('.figure')]
+            .filter((figure) => !figure.hidden)
+            .map((figure) => figure.innerText),
           notice: notice && !notice.hidden ? notice.innerText : null,
           animations: [...document.querySelectorAll('option')].map((option) => option.textContent ?? '')
         }
@@ -183,53 +213,62 @@ export async function openFrame({ locale = 'en-US' } = {}): Promise<Frame> {
       return null
     })
 
+  let nextVersion = 1
+  const send = async (content: Content, version: number): Promise<void> => {
+    await page.evaluate(
+      ({ base64, text, version }) => {
+        const document =
+          base64 === null
+            ? { version, readOnly: false, content: { kind: 'text', text }, fileType: '.gltf' }
+            : {
+                version,
+                readOnly: false,
+                content: { kind: 'bytes', bytes: Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)).buffer },
+                fileType: '.glb'
+              }
+        window.__orcaTest.send(document)
+      },
+      'bytes' in content
+        ? { base64: Buffer.from(content.bytes).toString('base64'), text: null, version }
+        : { base64: null, text: content.text, version }
+    )
+  }
+  const settled = async (version: number): Promise<ViewerState> => {
+    const handle = await page.waitForFunction(
+      (expected) => document.documentElement.dataset.shownVersion === String(expected),
+      version,
+      { timeout: 30_000 }
+    )
+    await handle.dispose()
+    const result = await state()
+    if (!result) throw new Error('the viewer settled on neither a model nor an error')
+    return result
+  }
+
   return {
     page,
     context,
     state,
+    send,
+    settled,
     report: async () => ({
       served,
       egress,
       pageErrors,
-      consoleErrors,
+      console: consoleLines,
       ...(await page.evaluate(() => ({
         cspViolations: [...window.__orcaTest.cspViolations],
         hostCalls: [...window.__orcaTest.hostCalls]
       })))
     }),
-    open: async (content) => {
-      await page.evaluate(
-        ({ base64, text }) => {
-          const document =
-            base64 === null
-              ? { version: 1, readOnly: false, content: { kind: 'text', text }, fileType: '.gltf' }
-              : {
-                  version: 1,
-                  readOnly: false,
-                  content: { kind: 'bytes', bytes: Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)).buffer },
-                  fileType: '.glb'
-                }
-          // Why no stale result can satisfy the wait below: the viewer shows its loading state synchronously.
-          window.__orcaTest.send(document)
-        },
-        'bytes' in content
-          ? { base64: Buffer.from(content.bytes).toString('base64'), text: null }
-          : { base64: null, text: content.text }
-      )
-      const handle = await page.waitForFunction(
-        () => {
-          const overlay = document.querySelector<HTMLElement>('.overlay')
-          const toolbar = document.querySelector<HTMLElement>('.toolbar')
-          const loading = overlay && !overlay.hidden && !toolbar?.hidden
-          return !loading
-        },
-        undefined,
-        { timeout: 20_000 }
-      )
-      await handle.dispose()
-      const result = await state()
-      if (!result) throw new Error('the viewer settled on neither a model nor an error')
-      return result
+    open: async (content, { version } = {}) => {
+      const sent = version ?? nextVersion++
+      await send(content, sent)
+      return settled(sent)
+    },
+    pixel: async (x, y) => {
+      const shot = await page.screenshot({ clip: { x, y, width: 1, height: 1 }, animations: 'disabled' })
+      return pixelAt(decodePng(shot), 0, 0)
     },
     close: () => context.close()
   }

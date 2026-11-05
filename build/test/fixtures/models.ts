@@ -167,3 +167,71 @@ export async function meshoptGlb(): Promise<Uint8Array> {
 }
 
 export const GRID_VERTEX_COUNT = 25 * 25
+
+/** The Meshopt GLB, declaring the ratified KHR_meshopt_compression name instead of EXT_. */
+export async function khrMeshoptGlb(): Promise<Uint8Array> {
+  const bytes = await meshoptGlb()
+  const text = Buffer.from(bytes).toString('latin1').replaceAll('EXT_meshopt_compression', 'KHR_meshopt_compression')
+  return Uint8Array.from(Buffer.from(text, 'latin1'))
+}
+
+// A unit square facing +Z, so the camera's default view sees its texture at the canvas centre.
+const QUAD_POSITIONS = new Float32Array([-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0])
+const QUAD_UVS = new Float32Array([0, 1, 1, 1, 1, 0, 0, 0])
+const QUAD_INDICES = new Uint16Array([0, 1, 2, 0, 2, 3])
+
+/**
+ * An unlit square textured with `png`, embedded either in the GLB's BIN chunk (GLTFLoader turns it
+ * into a blob: URL) or as a data: URI in a .gltf text.
+ */
+export function texturedQuad(png: Uint8Array, embedding: 'bufferView' | 'dataUri'): Uint8Array | string {
+  const geometry = concatBytes([bytesOf(QUAD_POSITIONS), bytesOf(QUAD_UVS), new Uint8Array(QUAD_INDICES.buffer)])
+  const imageOffset = geometry.byteLength
+  const bin = concatBytes([geometry, padTo4(png, 0)])
+  const json: GltfJson = {
+    asset: { version: '2.0' },
+    extensionsUsed: ['KHR_materials_unlit'],
+    scene: 0,
+    scenes: [{ nodes: [0] }],
+    nodes: [{ mesh: 0 }],
+    meshes: [{ primitives: [{ attributes: { POSITION: 0, TEXCOORD_0: 1 }, indices: 2, material: 0 }] }],
+    materials: [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } }, extensions: { KHR_materials_unlit: {} } }],
+    textures: [{ source: 0 }],
+    bufferViews: [
+      { buffer: 0, byteOffset: 0, byteLength: 48 },
+      { buffer: 0, byteOffset: 48, byteLength: 32 },
+      { buffer: 0, byteOffset: 80, byteLength: 12 }
+    ],
+    accessors: [
+      { bufferView: 0, componentType: 5126, count: 4, type: 'VEC3', min: [-0.5, -0.5, 0], max: [0.5, 0.5, 0] },
+      { bufferView: 1, componentType: 5126, count: 4, type: 'VEC2' },
+      { bufferView: 2, componentType: 5123, count: 6, type: 'SCALAR' }
+    ]
+  }
+  if (embedding === 'bufferView') {
+    json.buffers = [{ byteLength: bin.byteLength }]
+    ;(json.bufferViews as unknown[]).push({ buffer: 0, byteOffset: imageOffset, byteLength: png.byteLength })
+    json.images = [{ bufferView: 3, mimeType: 'image/png' }]
+    return glb(json, bin)
+  }
+  json.buffers = [
+    { byteLength: geometry.byteLength, uri: `data:application/octet-stream;base64,${Buffer.from(geometry).toString('base64')}` }
+  ]
+  json.images = [{ uri: `data:image/png;base64,${Buffer.from(png).toString('base64')}` }]
+  return JSON.stringify(json)
+}
+
+/** The triangle's three vertices drawn as a point cloud (glTF mode 0). */
+export function pointCloudGlb(): Uint8Array {
+  const json = triangleGltf()
+  ;(json.meshes as { primitives: Record<string, unknown>[] }[])[0].primitives[0].mode = 0
+  return glb(json)
+}
+
+/** A valid glTF with nodes but no scenes, as asset libraries are saved. */
+export function scenelessGlb(): Uint8Array {
+  const json = triangleGltf()
+  delete json.scene
+  delete json.scenes
+  return glb(json)
+}

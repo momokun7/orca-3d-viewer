@@ -50,9 +50,18 @@ jobs:
       - name: Build
         working-directory: build
         run: npm run build
-      # The committed editor/ is what Orca installs: it must be exactly what these sources build.
+      # The committed editor/ is what Orca installs: it must be exactly what these sources build,
+      # with no file changed, removed, or added beside it.
       - name: Check the committed build is reproducible
-        run: git diff --exit-code -- editor THIRD_PARTY_NOTICES.txt
+        shell: bash
+        run: |
+          changes="$(git status --porcelain --untracked-files=all -- editor THIRD_PARTY_NOTICES.txt)"
+          if [ -n "$changes" ]; then
+            echo "The build differs from the committed editor/:"
+            echo "$changes"
+            git diff --stat -- editor THIRD_PARTY_NOTICES.txt
+            exit 1
+          fi
 
   browser:
     name: Browser security tests
@@ -118,6 +127,9 @@ jobs:
   security:
     name: Security audit
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the full history
+      pull-requests: read # gitleaks lists a pull request's commits to scan them
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0

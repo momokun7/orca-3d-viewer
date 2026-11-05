@@ -1,14 +1,8 @@
 import { Axis3d, Box, createElement, Grid3x3, type IconNode, Pause, Play, RotateCcw } from 'lucide'
+import { cleanName, formatCount, lengthFormat } from './display-format.ts'
 import type { Translate } from './messages.ts'
-import type { ModelStats } from './model-scene.ts'
-import type { ModelDimensions } from './scene-guides.ts'
-
-export type ModelSummary = {
-  stats: ModelStats
-  dimensions: ModelDimensions
-  gridCellSize: number
-  animationNames: string[]
-}
+import type { ModelSummary } from './model-scene.ts'
+import { ALL_CLIPS } from './scene-animation.ts'
 
 export type ViewerActions = {
   resetView: () => void
@@ -22,7 +16,8 @@ export type ViewerUi = {
   viewport: HTMLElement
   showLoading: () => void
   showError: (message: string) => void
-  showModel: (summary: ModelSummary, actions: ViewerActions, notice: string | null) => void
+  /** Shows a model's figures; `keepToggles` carries wireframe and guides over from the last model. */
+  showModel: (summary: ModelSummary, actions: ViewerActions, notices: string[], keepToggles: boolean) => void
 }
 
 function element<K extends keyof HTMLElementTagNameMap>(
@@ -35,25 +30,22 @@ function element<K extends keyof HTMLElementTagNameMap>(
   return node
 }
 
-function icon(node: IconNode): SVGElement {
-  return createElement(node, { width: 14, height: 14, 'aria-hidden': 'true' })
+function icon(node: IconNode, size = 14): SVGElement {
+  return createElement(node, { width: size, height: size, 'aria-hidden': 'true' })
 }
 
 function toolButton(iconNode: IconNode, title: string): HTMLButtonElement {
-  return element('button', { type: 'button', className: 'tool', title, ariaLabel: title }, [
-    icon(iconNode)
-  ])
+  return element('button', { type: 'button', className: 'tool', title, ariaLabel: title }, [icon(iconNode)])
 }
 
 export function createViewerUi(root: HTMLElement, t: Translate, locale: string): ViewerUi {
-  const formatLength = (value: number): string =>
-    Number(value.toPrecision(3)).toLocaleString(locale, { maximumFractionDigits: 6 })
   const animationLabel = (name: string | undefined, index: number): string =>
-    name || t('animationFallback', { index: index + 1 })
+    cleanName(name ?? '') || t('animationFallback', { index: index + 1 })
 
-  const viewport = element('div', { className: 'viewport', role: 'img' })
+  const viewport = element('div', { className: 'viewport', role: 'img', ariaLabel: t('loading') })
+  const overlayIcon = element('span', { className: 'overlay-icon' })
   const overlayText = element('p')
-  const overlay = element('div', { className: 'overlay', role: 'status' }, [overlayText])
+  const overlay = element('div', { className: 'overlay' }, [overlayIcon, overlayText])
   const notice = element('div', { className: 'notice', role: 'note', hidden: true })
 
   const reset = toolButton(RotateCcw, t('resetView'))
@@ -62,11 +54,7 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   const play = element('button', { type: 'button', className: 'tool' })
   const animationSelect = element('select', { className: 'select', ariaLabel: t('animation') })
   const animationName = element('span', { className: 'clip-name' })
-  const animationGroup = element('div', { className: 'group', hidden: true }, [
-    play,
-    animationSelect,
-    animationName
-  ])
+  const animationGroup = element('div', { className: 'group', hidden: true }, [play, animationSelect, animationName])
   const stats = element('span', { className: 'figure' })
   const dimensions = element('span', { className: 'figure', title: t('dimensionsTitle') })
   const gridCell = element('span', { className: 'figure' })
@@ -94,9 +82,7 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
     play.ariaLabel = title
   }
   const setToolsEnabled = (enabled: boolean): void => {
-    for (const button of [reset, wireframe, guides]) {
-      button.disabled = !enabled
-    }
+    for (const button of [reset, wireframe, guides]) button.disabled = !enabled
   }
 
   reset.addEventListener('click', () => actions?.resetView())
@@ -122,73 +108,81 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
     actions?.playAnimation(Number(animationSelect.value))
   })
 
-  const clearModel = (): void => {
+  const clearFigures = (): void => {
     actions = null
-    wireframeOn = false
-    guidesOn = true
-    paused = false
-    setPressed(wireframe, false)
-    setPressed(guides, true)
     setToolsEnabled(false)
     animationGroup.hidden = true
     notice.hidden = true
-    for (const figure of [stats, dimensions, gridCell]) {
-      figure.textContent = ''
-    }
+    for (const figure of [stats, dimensions, gridCell]) figure.textContent = ''
   }
 
   const showOverlay = (text: string, isError: boolean): void => {
-    clearModel()
+    clearFigures()
     overlay.hidden = false
     toolbar.hidden = isError
+    // Why alert only for errors: a screen reader should interrupt for a failure, not for "Loading…".
+    overlay.setAttribute('role', isError ? 'alert' : 'status')
     overlay.classList.toggle('error', isError)
     overlayText.textContent = text
-    overlay.querySelector('svg')?.remove()
-    if (isError) {
-      overlay.prepend(createElement(Box, { width: 40, height: 40, 'aria-hidden': 'true' }))
-    }
+    overlayIcon.replaceChildren(...(isError ? [icon(Box, 40)] : []))
     viewport.hidden = isError
+    viewport.ariaLabel = text
   }
 
-  clearModel()
+  clearFigures()
   return {
     viewport,
     showLoading: () => showOverlay(t('loading'), false),
     showError: (message) => showOverlay(message, true),
-    showModel: (summary, modelActions, noticeText) => {
-      clearModel()
+    showModel: (summary, modelActions, notices, keepToggles) => {
+      clearFigures()
       actions = modelActions
+      if (!keepToggles) {
+        wireframeOn = false
+        guidesOn = true
+      }
+      paused = false
+      setPressed(wireframe, wireframeOn)
+      setPressed(guides, guidesOn)
+      modelActions.setWireframe(wireframeOn)
+      modelActions.setGuidesVisible(guidesOn)
       overlay.hidden = true
       toolbar.hidden = false
       viewport.hidden = false
       setToolsEnabled(true)
-      notice.hidden = noticeText === null
-      notice.textContent = noticeText ?? ''
+      notice.hidden = notices.length === 0
+      notice.textContent = notices.join(' ')
 
       const names = summary.animationNames
       animationGroup.hidden = names.length === 0
       renderPlay()
       // Why the position as the value: clip names may repeat or be empty, so only the order identifies a clip.
       animationSelect.replaceChildren(
-        ...names.map((name, index) =>
-          element('option', { value: String(index), textContent: animationLabel(name, index) })
-        )
+        ...names.map((name, index) => element('option', { value: String(index), textContent: animationLabel(name, index) })),
+        ...(names.length > 1 ? [element('option', { value: String(ALL_CLIPS), textContent: t('allClips') })] : [])
       )
       animationSelect.hidden = names.length < 2
       animationName.hidden = names.length !== 1
       animationName.textContent = animationLabel(names[0], 0)
 
-      stats.textContent = t('stats', {
-        vertices: summary.stats.vertices.toLocaleString(locale),
-        triangles: summary.stats.triangles.toLocaleString(locale)
-      })
+      const counts = summary.stats
+      const figures = [
+        t('stats', { vertices: formatCount(counts.vertices, locale), triangles: formatCount(counts.triangles, locale) }),
+        ...(counts.points > 0 ? [t('statsPoints', { count: formatCount(counts.points, locale) })] : []),
+        ...(counts.lineSegments > 0 ? [t('statsLines', { count: formatCount(counts.lineSegments, locale) })] : [])
+      ]
+      stats.textContent = figures.join(' · ')
+      const { width, height, depth } = summary.dimensions
+      const lengths = lengthFormat([width, height, depth], locale)
       dimensions.textContent = t('dimensions', {
-        width: formatLength(summary.dimensions.width),
-        height: formatLength(summary.dimensions.height),
-        depth: formatLength(summary.dimensions.depth)
+        width: lengths.format(width),
+        height: lengths.format(height),
+        depth: lengths.format(depth),
+        unit: lengths.unit
       })
-      gridCell.hidden = false
-      gridCell.textContent = t('gridCell', { size: formatLength(summary.gridCellSize) })
+      gridCell.hidden = !guidesOn
+      gridCell.textContent = t('gridCell', { size: `${lengths.format(summary.gridCellSize)} ${lengths.unit}` })
+      viewport.ariaLabel = t('viewportLabel', { summary: `${stats.textContent}, ${dimensions.textContent}` })
     }
   }
 }

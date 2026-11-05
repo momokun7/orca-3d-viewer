@@ -3,9 +3,10 @@
 import assert from 'node:assert/strict'
 import { after, afterEach, beforeEach, describe, it } from 'node:test'
 import fc from 'fast-check'
-import { dracoGlb, glb, TRIANGLE_BIN, triangleGltf } from '../fixtures/models.ts'
+import { pngHeader } from '../fixtures/images.ts'
+import { dracoGlb, embeddedGltfText, glb, TRIANGLE_BIN, triangleGltf } from '../fixtures/models.ts'
 import { assertContained } from './frame-assertions.ts'
-import { closeBrowser, type Frame, openFrame } from './harness.ts'
+import { closeBrowser, type Content, type Frame, openFrame } from './harness.ts'
 
 const FUZZ_RUNS = Number(process.env.FUZZ_RUNS ?? 40)
 const DRACO_GLB = await dracoGlb()
@@ -35,10 +36,15 @@ async function assertNoInjection(): Promise<void> {
 }
 
 describe('markup in model fields', () => {
-  it('shows clip names as text, never as markup', async () => {
+  it('shows clip names as text, never as markup, without direction overrides or unbounded length', async () => {
     const state = await frame.open({ bytes: glb(triangleGltf({ animationNames: MARKUP_PAYLOADS })) })
     assert.equal(state.kind, 'model')
-    assert.deepEqual(state.kind === 'model' && state.animations, MARKUP_PAYLOADS)
+    assert.deepEqual(state.kind === 'model' && state.animations, [
+      ...MARKUP_PAYLOADS.slice(0, 4),
+      'gnp.exe',
+      `${'A'.repeat(79)}…`,
+      'All clips'
+    ])
     await assertNoInjection()
     assertContained(await frame.report())
   })
@@ -51,7 +57,7 @@ describe('markup in model fields', () => {
 
   it('shows external file names as text in the notice', async () => {
     const state = await frame.open({ bytes: glb(triangleGltf({ imageUris: MARKUP_PAYLOADS.slice(0, 3) })) })
-    assert.ok(state.kind === 'model' && state.notice?.includes(MARKUP_PAYLOADS[0]))
+    assert.ok(state.kind === 'model' && state.notice?.includes(`“${MARKUP_PAYLOADS[0]}”`))
     await assertNoInjection()
     assertContained(await frame.report())
   })
@@ -87,7 +93,7 @@ describe('malformed containers', () => {
     it(`shows an error for ${name}`, async () => {
       const state = await frame.open(content)
       assert.equal(state.kind, 'error')
-      assertContained(await frame.report(), { allowParseFailure: true })
+      assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
     })
   }
 
@@ -104,6 +110,43 @@ describe('malformed containers', () => {
   }
 })
 
+describe('decompression bombs', () => {
+  const refusedQuickly = async (content: Content, pattern: RegExp): Promise<void> => {
+    const started = Date.now()
+    const state = await frame.open(content)
+    assert.match(state.kind === 'error' ? state.message : state.kind, pattern)
+    assert.ok(Date.now() - started < 3000, `took ${Date.now() - started} ms`)
+    const heap = await frame.page.evaluate(
+      () => (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize ?? 0
+    )
+    assert.ok(heap < 200 * 1024 * 1024, `the heap grew to ${heap} bytes`)
+    assertContained(await frame.report())
+  }
+
+  it('refuses a few hundred bytes that declare gigabytes of zero-filled vertices', async () => {
+    const json = triangleGltf()
+    json.accessors = [
+      { componentType: 5126, count: 100_000_000, type: 'VEC3', sparse: { count: 0 }, min: [0, 0, 0], max: [1, 1, 1] }
+    ]
+    json.meshes = [{ primitives: [{ attributes: { POSITION: 0 } }] }]
+    await refusedQuickly({ bytes: glb(json) }, /too large to display safely: it declares 1\.12 GB/)
+  })
+
+  it('refuses an image whose header claims more pixels than any GPU can hold', async () => {
+    const json = triangleGltf()
+    json.images = [{ uri: `data:image/png;base64,${Buffer.from(pngHeader(60_000, 60_000)).toString('base64')}` }]
+    json.textures = [{ source: 0 }]
+    await refusedQuickly({ bytes: glb(json) }, /an image is 60,000 × 60,000 pixels/)
+  })
+
+  it('refuses hundreds of thousands of nodes that would stall every frame', async () => {
+    const json = triangleGltf()
+    json.nodes = Array.from({ length: 200_000 }, () => ({ mesh: 0 }))
+    json.scenes = [{ nodes: Array.from({ length: 200_000 }, (_, index) => index) }]
+    await refusedQuickly({ bytes: glb(json) }, /200,000 nodes/)
+  })
+})
+
 describe('resource exhaustion', () => {
   it('refuses an accessor that claims far more data than its buffer holds', async () => {
     const json = triangleGltf()
@@ -112,14 +155,14 @@ describe('resource exhaustion', () => {
     const state = await frame.open({ bytes: glb(json) })
     assert.equal(state.kind, 'error')
     assert.ok(Date.now() - started < 10_000)
-    assertContained(await frame.report(), { allowParseFailure: true })
+    assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
   })
 
   it('survives JSON nested deeper than the parser allows', async () => {
     const deep = `{"asset":{"version":"2.0"},"extras":${'['.repeat(200_000)}${']'.repeat(200_000)}}`
     const state = await frame.open({ text: deep })
     assert.ok(state.kind === 'error' || state.kind === 'model')
-    assertContained(await frame.report(), { allowParseFailure: true })
+    assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
   })
 
   it('handles a scene graph that refers to itself', async () => {
@@ -127,23 +170,39 @@ describe('resource exhaustion', () => {
     json.nodes = [{ mesh: 0, children: [0] }]
     const state = await frame.open({ bytes: glb(json) })
     assert.ok(state.kind === 'error' || state.kind === 'model')
-    assertContained(await frame.report(), { allowParseFailure: true })
+    assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
   })
 })
 
 describe('prototype pollution', () => {
   it('does not let __proto__ or constructor keys reach shared prototypes', async () => {
-    const text = JSON.stringify(triangleGltf()).replace(
-      '{',
-      '{"__proto__":{"polluted":1},"constructor":{"prototype":{"polluted":1}},'
-    )
-    await frame.open({ text: text.replace('"nodes":[{', '"nodes":[{"__proto__":{"polluted":1},') })
+    const text = embeddedGltfText({ animationNames: ['Walk'] })
+      .replace('{', '{"__proto__":{"polluted":1},"constructor":{"prototype":{"polluted":1}},')
+      .replace('"nodes":[{', '"nodes":[{"__proto__":{"polluted":1},"extras":{"__proto__":{"polluted":1}},')
+    const state = await frame.open({ text })
+    assert.equal(state.kind, 'model')
     const polluted = await frame.page.evaluate(() => {
       const probe: Record<string, unknown> = {}
       return 'polluted' in probe || 'polluted' in Object.prototype
     })
     assert.equal(polluted, false)
-    assertContained(await frame.report(), { allowParseFailure: true })
+    assertContained(await frame.report(), { allowThreeLogs: true })
+  })
+})
+
+describe('structure three.js does not check', () => {
+  it('calls a .gltf whose buffer has no URI corrupt, instead of crashing in the loader', async () => {
+    const state = await frame.open({ text: JSON.stringify(triangleGltf()) })
+    assert.match(state.kind === 'error' ? state.message : '', /corrupt/)
+    assertContained(await frame.report())
+  })
+
+  it('calls a GLB whose second buffer has no URI corrupt', async () => {
+    const json = triangleGltf()
+    json.buffers = [{ byteLength: TRIANGLE_BIN.byteLength }, { byteLength: 4 }]
+    const state = await frame.open({ bytes: glb(json) })
+    assert.equal(state.kind, 'error')
+    assertContained(await frame.report())
   })
 })
 
@@ -166,7 +225,7 @@ describe('fuzzing', () => {
       { numRuns: FUZZ_RUNS }
     )
     await assertNoInjection()
-    assertContained(await frame.report(), { allowParseFailure: true })
+    assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
   })
 
   it('settles on a model or an error for random glTF JSON', async () => {
@@ -188,6 +247,6 @@ describe('fuzzing', () => {
       }),
       { numRuns: FUZZ_RUNS }
     )
-    assertContained(await frame.report())
+    assertContained(await frame.report(), { allowThreeLogs: true })
   })
 })

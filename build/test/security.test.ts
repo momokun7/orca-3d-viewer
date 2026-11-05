@@ -14,15 +14,16 @@ const FUZZ_RUNS = Number(process.env.FUZZ_RUNS ?? 2000)
 const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const SRC = path.join(ROOT, 'build', 'src')
 const ORIGIN = 'orca-plugin-frame://0123456789abcdef'
+const OWN_BLOB = `blob:${ORIGIN}/6f1c0c7e-0000-4000-8000-000000000000`
 
 describe('resolveResourceUrl', () => {
-  it('passes data: URIs and this page’s own blob: URLs through', () => {
-    assert.equal(resolveResourceUrl('data:image/png;base64,AAAA', ORIGIN), 'data:image/png;base64,AAAA')
-    const own = `blob:${ORIGIN}/6f1c0c7e-0000-4000-8000-000000000000`
-    assert.equal(resolveResourceUrl(own, ORIGIN), own)
+  it('passes data: URIs, whatever the scheme’s case, and the blob: URLs this viewer created', () => {
+    assert.equal(resolveResourceUrl('data:image/png;base64,AAAA'), 'data:image/png;base64,AAAA')
+    assert.equal(resolveResourceUrl('DATA:image/png;base64,AAAA'), 'DATA:image/png;base64,AAAA')
+    assert.equal(resolveResourceUrl(OWN_BLOB, new Set([OWN_BLOB])), OWN_BLOB)
   })
 
-  it('blocks every other URL a model can name', () => {
+  it('blocks every other URL a model can name, including same-origin blob: URLs it did not create', () => {
     for (const url of [
       'https://attacker.test/a.png',
       '//attacker.test/a.png',
@@ -31,29 +32,20 @@ describe('resolveResourceUrl', () => {
       'texture.png',
       '../secret.png',
       ' data:image/png;base64,AAAA',
-      'DATA:image/png;base64,AAAA',
       'blob:https://attacker.test/6f1c0c7e',
-      `blob:${ORIGIN}.attacker.test/6f1c0c7e`,
-      `blob:${ORIGIN}`,
+      OWN_BLOB,
+      `${OWN_BLOB}#fragment`,
       'javascript:alert(1)'
     ]) {
-      assert.equal(resolveResourceUrl(url, ORIGIN), BLOCKED_RESOURCE_URL, url)
+      assert.equal(resolveResourceUrl(url), BLOCKED_RESOURCE_URL, url)
     }
   })
 
-  it('blocks own-origin blob: URLs when the page has an opaque origin', () => {
-    assert.equal(resolveResourceUrl('blob:null/6f1c0c7e', 'null'), BLOCKED_RESOURCE_URL)
-    assert.equal(resolveResourceUrl('blob:x/6f1c0c7e', undefined), BLOCKED_RESOURCE_URL)
-  })
-
-  it('never lets through anything but data: or its own blob: URLs, for arbitrary input', () => {
+  it('never lets through anything but data: URIs or the blob: URLs it was given, for arbitrary input', () => {
     fc.assert(
       fc.property(fc.oneof(fc.string(), fc.webUrl(), fc.string({ unit: 'binary' })), (url) => {
-        const resolved = resolveResourceUrl(url, ORIGIN)
-        assert.ok(
-          resolved === BLOCKED_RESOURCE_URL ||
-            (resolved === url && (url.startsWith('data:') || url.startsWith(`blob:${ORIGIN}/`)))
-        )
+        const resolved = resolveResourceUrl(url, new Set([OWN_BLOB]))
+        assert.ok(resolved === BLOCKED_RESOURCE_URL || (resolved === url && (/^data:/i.test(url) || url === OWN_BLOB)))
       }),
       { numRuns: FUZZ_RUNS }
     )

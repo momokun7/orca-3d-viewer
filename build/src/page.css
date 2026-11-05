@@ -34,9 +34,11 @@ button, select { font: inherit; color: inherit; }
 .viewport { position: absolute; inset: 0; }
 .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 32px; color: var(--muted-fg); text-align: center; font-size: 13px; }
 .overlay p { margin: 0; max-width: 480px; }
-.notice { padding: 5px 12px; border-top: 1px solid var(--border); background: var(--muted); color: var(--muted-fg); }
+.overlay-icon:empty { display: none; }
+.notice { max-height: 4.5em; overflow-y: auto; padding: 5px 12px; border-top: 1px solid var(--border); background: var(--muted); color: var(--muted-fg); overflow-wrap: anywhere; }
+.viewport canvas:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
 
-.toolbar { display: flex; align-items: center; gap: 16px; padding: 6px 16px; border-top: 1px solid var(--border); color: var(--muted-fg); overflow: hidden; white-space: nowrap; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; padding: 6px 16px; border-top: 1px solid var(--border); color: var(--muted-fg); white-space: nowrap; }
 .group { display: flex; flex: none; align-items: center; gap: 4px; }
 .tool { display: inline-flex; align-items: center; justify-content: center; padding: 4px; border: 0; border-radius: calc(var(--radius) - 2px); background: none; cursor: default; }
 .tool:hover:not(:disabled), .tool[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }

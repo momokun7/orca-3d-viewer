@@ -33,7 +33,9 @@
           { "context": "Browser security tests" },
           { "context": "Orca plugin validation" },
           { "context": "Security audit" },
-          { "context": "Workflow audit" }
+          { "context": "Workflow audit" },
+          { "context": "Analyze (javascript-typescript)" },
+          { "context": "Analyze (actions)" }
         ]
       }
     }

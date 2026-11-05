@@ -38,18 +38,25 @@ afterEach(() => frame.close())
 after(closeBrowser)
 
 describe('network isolation', () => {
-  it('never requests an external texture, whatever its URI, and says which ones it left off', async () => {
-    const state = await frame.open({ bytes: glb(triangleGltf({ imageUris: HOSTILE_URIS })) })
-    assert.equal(state.kind, 'model')
-    const notice = state.kind === 'model' ? (state.notice ?? '') : ''
-    for (const uri of HOSTILE_URIS.filter((uri) => !uri.startsWith('blob:'))) {
-      assert.ok(notice.includes(uri.trim()), `the notice does not name ${uri}`)
+  it('never requests an external texture, whatever its URI', async () => {
+    for (const uri of HOSTILE_URIS) {
+      const state = await frame.open({ bytes: glb(triangleGltf({ imageUris: [uri] })) })
+      assert.equal(state.kind, 'model', uri)
+      assert.match(state.kind === 'model' ? (state.notice ?? '') : '', /are not shown/, uri)
     }
     assertContained(await frame.report())
   })
 
+  it('names a few of the textures it left off and counts the rest', async () => {
+    const state = await frame.open({ bytes: glb(triangleGltf({ imageUris: HOSTILE_URIS })) })
+    const notice = state.kind === 'model' ? (state.notice ?? '') : ''
+    assert.ok(notice.includes(`“${HOSTILE_URIS[0]}”`), notice)
+    assert.match(notice, new RegExp(`and ${HOSTILE_URIS.length - 3} more`))
+    assertContained(await frame.report())
+  })
+
   it('refuses external geometry before requesting anything', async () => {
-    for (const bufferUri of HOSTILE_URIS.filter((uri) => !uri.startsWith('blob:'))) {
+    for (const bufferUri of HOSTILE_URIS) {
       const state = await frame.open({ text: JSON.stringify(triangleGltf({ bufferUri })) })
       assert.equal(state.kind, 'error', `${bufferUri} was not refused`)
     }

@@ -1,4 +1,6 @@
-# High-risk paths. These always need the maintainer.
+# High-risk paths: a pull request touching them requests the maintainer's review. The repository
+# has one maintainer, so the ruleset cannot also require that review without blocking every merge;
+# outside contributions get it because only the maintainer can merge.
 /.github/              @momokun7
 /.githooks/            @momokun7
 /tools/                @momokun7
