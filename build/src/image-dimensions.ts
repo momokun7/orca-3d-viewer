@@ -34,14 +34,26 @@ function nextFF(source: ByteSource, at: number): number {
   return -1
 }
 
+// A run of 0xFF before a marker is fill; real encoders write a few bytes, never this many.
+const MAX_JPEG_FILL = 64 * 1024
+
+/** The offset after a run of 0xFF fill starting at `at`; -1 when the run is longer than any encoder writes. */
+function afterFill(source: ByteSource, at: number): number {
+  for (let start = at; start < source.length && start - at <= MAX_JPEG_FILL; start += SCAN_CHUNK) {
+    const chunk = source.read(start, SCAN_CHUNK)
+    const end = chunk.findIndex((byte) => byte !== 0xff)
+    if (end !== -1) return start + end
+  }
+  return -1
+}
+
 function jpegSize(source: ByteSource): ImageSize | null {
   let at = 2
   for (let segment = 0; segment < MAX_JPEG_SEGMENTS; segment++) {
     at = nextFF(source, at)
     if (at === -1) return null
-    // Any run of 0xFF before a marker is fill.
-    while (at < source.length && source.read(at, 1)[0] === 0xff) at++
-    if (at >= source.length) return null
+    at = afterFill(source, at)
+    if (at === -1 || at >= source.length) return null
     const marker = source.read(at, 1)[0]
     at++
     if (marker === 0x00 || marker === 0x01 || marker === 0xd8 || (marker >= 0xd0 && marker <= 0xd7)) continue
@@ -117,21 +129,88 @@ function avifSize(source: ByteSource): ImageSize | null {
   return largest
 }
 
+// KTX2 fields this viewer accepts: Basis Universal (what KHR_texture_basisu means) or plain RGBA8, one
+// 2D image (no array layers, cube faces or depth), with each level's size what its format implies.
+const KTX2_VK_UNDEFINED = 0
+const KTX2_VK_RGBA8 = new Set([37, 43])
+const KTX2_SUPERCOMPRESSION = { none: 0, basisLz: 1, zstd: 2 } as const
+const KTX2_LEVEL_INDEX = 80
+const KTX2_LEVEL_BYTES = 24
+const uint64le = (bytes: Uint8Array, at: number): number => uint32le(bytes, at) + uint32le(bytes, at + 4) * 2 ** 32
+
+function ktx2Size(source: ByteSource): ImageSize | null {
+  const head = source.read(0, KTX2_LEVEL_INDEX)
+  if (head.length < KTX2_LEVEL_INDEX) return null
+  const vkFormat = uint32le(head, 12)
+  const width = uint32le(head, 20)
+  const height = uint32le(head, 24)
+  const depth = uint32le(head, 28)
+  const layers = uint32le(head, 32)
+  const faces = uint32le(head, 36)
+  const levels = Math.max(1, uint32le(head, 40))
+  const supercompression = uint32le(head, 44)
+  const basis = vkFormat === KTX2_VK_UNDEFINED
+  if (!basis && !KTX2_VK_RGBA8.has(vkFormat)) return null
+  if (width === 0 || height === 0 || depth !== 0 || layers > 1 || faces !== 1) return null
+  if (levels > Math.floor(Math.log2(Math.max(width, height))) + 1) return null
+  if (supercompression === KTX2_SUPERCOMPRESSION.basisLz ? !basis : supercompression !== KTX2_SUPERCOMPRESSION.none && supercompression !== KTX2_SUPERCOMPRESSION.zstd) {
+    return null
+  }
+  const index = source.read(KTX2_LEVEL_INDEX, levels * KTX2_LEVEL_BYTES)
+  if (index.length < levels * KTX2_LEVEL_BYTES) return null
+  for (let level = 0; level < levels; level++) {
+    const levelWidth = Math.max(1, width >> level)
+    const levelHeight = Math.max(1, height >> level)
+    const at = level * KTX2_LEVEL_BYTES
+    const byteOffset = uint64le(index, at)
+    const byteLength = uint64le(index, at + 8)
+    const uncompressed = uint64le(index, at + 16)
+    if (byteOffset + byteLength > source.length) return null
+    // BasisLZ levels record no uncompressed size; UASTC is 16 bytes per 4×4 block, RGBA8 4 per pixel.
+    const expected =
+      supercompression === KTX2_SUPERCOMPRESSION.basisLz
+        ? 0
+        : basis
+          ? Math.ceil(levelWidth / 4) * Math.ceil(levelHeight / 4) * 16
+          : levelWidth * levelHeight * 4
+    if (uncompressed !== expected) return null
+  }
+  return { width, height }
+}
+
 export type ImageFormat = 'png' | 'jpeg' | 'webp' | 'avif' | 'ktx2'
+
+const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+// Formats Chromium recognises before AVIF; a file that is one of these is never read as AVIF here.
+const BLINK_EARLIER_SIGNATURES = [[0x00, 0x00, 0x01, 0x00], [0x00, 0x00, 0x02, 0x00], [0x42, 0x4d], [0x47, 0x49, 0x46, 0x38]]
+const AVIF_BRANDS = new Set(['avif', 'avis'])
+
+const startsWith = (head: Uint8Array, signature: number[]): boolean => signature.every((byte, index) => head[index] === byte)
+
+function isAvif(head: Uint8Array): boolean {
+  if (ascii(head, 4, 4) !== 'ftyp') return false
+  const boxSize = Math.min(uint32be(head, 0), head.length)
+  // The major brand at 8, then compatible brands from 16, four bytes each.
+  for (let at = 8; at + 4 <= boxSize; at += at === 8 ? 8 : 4) {
+    if (AVIF_BRANDS.has(ascii(head, at, 4))) return true
+  }
+  return false
+}
 
 export function imageFormat(head: Uint8Array): ImageFormat | null {
   if (head.length < 16) return null
-  if (head[0] === 0x89 && ascii(head, 1, 3) === 'PNG') return 'png'
-  if (head[0] === 0xff && head[1] === 0xd8) return 'jpeg'
+  if (BLINK_EARLIER_SIGNATURES.some((signature) => startsWith(head, signature))) return null
+  if (startsWith(head, PNG_SIGNATURE)) return 'png'
+  if (startsWith(head, [0xff, 0xd8, 0xff])) return 'jpeg'
   if (ascii(head, 0, 4) === 'RIFF' && ascii(head, 8, 4) === 'WEBP') return 'webp'
-  if (ascii(head, 4, 4) === 'ftyp') return 'avif'
-  if (KTX2_IDENTIFIER.every((byte, index) => head[index] === byte)) return 'ktx2'
+  if (isAvif(head)) return 'avif'
+  if (startsWith(head, KTX2_IDENTIFIER)) return 'ktx2'
   return null
 }
 
 /** The pixel size an image will decode to, or null when it is not a format and header this reader knows. */
 export function imageSize(source: ByteSource): ImageSize | null {
-  const head = source.read(0, 32)
+  const head = source.read(0, 64)
   switch (imageFormat(head)) {
     case 'png':
       return head.length >= 24 && ascii(head, 12, 4) === 'IHDR' ? { width: uint32be(head, 16), height: uint32be(head, 20) } : null
@@ -142,7 +221,7 @@ export function imageSize(source: ByteSource): ImageSize | null {
     case 'avif':
       return avifSize(source)
     case 'ktx2':
-      return head.length >= 28 ? { width: uint32le(head, 20), height: Math.max(1, uint32le(head, 24)) } : null
+      return ktx2Size(source)
     default:
       return null
   }

@@ -30,7 +30,8 @@ export const STRUCTURE_LIMITS = {
   elements: 1_000_000,
   primitivesPerMesh: 4096,
   attributesPerPrimitive: 64,
-  morphTargetsPerPrimitive: 1024,
+  morphTargetsPerPrimitive: 256,
+  lights: 64,
   childrenPerNode: 1_000_000
 } as const
 
@@ -138,6 +139,15 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
     if (!isCount(offset)) return problem(`${path}.byteOffset`, 'is not a non-negative integer')
     if (accessor.bufferView !== undefined) {
       if (!isIndex(accessor.bufferView, bufferViews.length)) return problem(`${path}.bufferView`, 'is not a buffer view')
+      const view = bufferViews[accessor.bufferView]
+      // Why: typed-array views over unaligned offsets throw a RangeError inside the loader.
+      if ((((view.byteOffset as number | undefined) ?? 0) + offset) % componentBytes !== 0) {
+        return problem(`${path}.byteOffset`, 'is not aligned to its component size')
+      }
+      const stride = view.byteStride as number | undefined
+      if (stride !== undefined && (offset + componentBytes * components > stride || stride % componentBytes !== 0)) {
+        return problem(path, 'does not fit its buffer view’s stride')
+      }
       if (!fits(accessor.bufferView, offset, accessor.count, componentBytes * components)) return problem(path, 'reads past its buffer view')
     } else if (offset !== 0) {
       return problem(`${path}.byteOffset`, 'is set without a buffer view')
@@ -159,6 +169,22 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
         !fits(values.bufferView, valuesOffset, sparse.count, componentBytes * components)
       ) {
         return problem(`${path}.sparse`, 'reads past its buffer views')
+      }
+    }
+  }
+
+  // POSITION bounds frame the model and cull it, so they must be finite and ordered.
+  for (const mesh of meshes) {
+    for (const primitive of Array.isArray(mesh.primitives) ? mesh.primitives : []) {
+      const position = isRecord(primitive) && isRecord(primitive.attributes) ? primitive.attributes.POSITION : undefined
+      if (!isIndex(position, accessors.length)) continue
+      const accessor = accessors[position]
+      if (accessor.type !== 'VEC3') return problem(`accessors[${position}]`, 'is a POSITION that is not VEC3')
+      const { min, max } = accessor
+      if (min !== undefined || max !== undefined) {
+        if (!finiteNumbers(min, 3) || !finiteNumbers(max, 3) || !(min as number[]).every((value, axis) => value <= (max as number[])[axis])) {
+          return problem(`accessors[${position}]`, 'has POSITION bounds that are not finite and ordered')
+        }
       }
     }
   }
@@ -235,6 +261,12 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
     }
   }
 
+  const documentExtensions = isRecord(document.extensions) ? document.extensions : {}
+  const lightsExtension = documentExtensions.KHR_lights_punctual
+  const lights = isRecord(lightsExtension) && Array.isArray(lightsExtension.lights) ? lightsExtension.lights : []
+  // Why a cap: every light becomes a loop in every fragment shader.
+  if (lights.length > STRUCTURE_LIMITS.lights) return problem('extensions.KHR_lights_punctual.lights', `has more than ${STRUCTURE_LIMITS.lights}`)
+
   const parents = new Int32Array(nodes.length).fill(-1)
   for (const [index, node] of nodes.entries()) {
     const path = `nodes[${index}]`
@@ -243,6 +275,30 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
     }
     if (!finiteNumbers(node.matrix, 16) || !finiteNumbers(node.translation, 3) || !finiteNumbers(node.rotation, 4) || !finiteNumbers(node.scale, 3)) {
       return problem(path, 'has a transform that is not finite numbers')
+    }
+    const nodeExtensions = isRecord(node.extensions) ? node.extensions : {}
+    const instancing = nodeExtensions.EXT_mesh_gpu_instancing
+    if (instancing !== undefined) {
+      const attributes = isRecord(instancing) && isRecord(instancing.attributes) ? instancing.attributes : null
+      if (!attributes || Object.keys(attributes).length === 0) return problem(`${path}.extensions.EXT_mesh_gpu_instancing`, 'has no attributes')
+      let instances: number | null = null
+      for (const [name, value] of Object.entries(attributes)) {
+        if (!isIndex(value, accessors.length)) return problem(`${path}.extensions.EXT_mesh_gpu_instancing.${name}`, 'is not an accessor')
+        const accessor = accessors[value]
+        const expectedType = name === 'ROTATION' ? 'VEC4' : name === 'TRANSLATION' || name === 'SCALE' ? 'VEC3' : null
+        const floatOrNormalized = accessor.componentType === 5126 || (accessor.normalized === true && name === 'ROTATION')
+        if (expectedType && (accessor.type !== expectedType || !floatOrNormalized)) {
+          return problem(`${path}.extensions.EXT_mesh_gpu_instancing.${name}`, 'has the wrong type')
+        }
+        if (instances !== null && accessor.count !== instances) {
+          return problem(`${path}.extensions.EXT_mesh_gpu_instancing`, 'has attributes of different counts')
+        }
+        instances = accessor.count as number
+      }
+    }
+    const light = nodeExtensions.KHR_lights_punctual
+    if (light !== undefined && !(isRecord(light) && isIndex(light.light, lights.length))) {
+      return problem(`${path}.extensions.KHR_lights_punctual.light`, 'is not a light')
     }
     if (node.children !== undefined) {
       if (!Array.isArray(node.children) || node.children.length > STRUCTURE_LIMITS.childrenPerNode) return problem(`${path}.children`, 'is not a list')
@@ -282,6 +338,24 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
     if (!isOptionalIndex(skin.inverseBindMatrices, accessors.length) || !isOptionalIndex(skin.skeleton, nodes.length)) {
       return problem(`skins[${index}]`, 'refers to a missing accessor or node')
     }
+    if (skin.inverseBindMatrices !== undefined) {
+      const matrices = accessors[skin.inverseBindMatrices as number]
+      if (matrices.type !== 'MAT4' || matrices.componentType !== 5126 || (matrices.count as number) < joints.length) {
+        return problem(`skins[${index}].inverseBindMatrices`, 'is not a float MAT4 per joint')
+      }
+    }
+  }
+
+  // Output type each animated property takes, and whether normalized integers are allowed.
+  const ANIMATION_OUTPUTS: Record<string, { type: string; normalized: boolean }> = {
+    translation: { type: 'VEC3', normalized: false },
+    scale: { type: 'VEC3', normalized: false },
+    rotation: { type: 'VEC4', normalized: true },
+    weights: { type: 'SCALAR', normalized: true }
+  }
+  const morphTargets = (meshIndex: number): number => {
+    const primitive = (meshes[meshIndex].primitives as unknown[])[0]
+    return isRecord(primitive) && Array.isArray(primitive.targets) ? primitive.targets.length : 0
   }
 
   for (const [index, animation] of animations.entries()) {
@@ -303,6 +377,22 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
       }
       if (!isOptionalIndex(channel.target.node, nodes.length) || typeof channel.target.path !== 'string') {
         return problem(`${path}.channels`, 'target a missing node')
+      }
+      const output = ANIMATION_OUTPUTS[channel.target.path]
+      if (!output || channel.target.node === undefined) continue
+      const sampler = samplerList[channel.sampler as number] as Record<string, unknown>
+      const input = accessors[sampler.input as number]
+      const values = accessors[sampler.output as number]
+      if (input.type !== 'SCALAR' || input.componentType !== 5126) return problem(`${path}.samplers`, 'have input that is not float scalars')
+      if (values.type !== output.type || !(values.componentType === 5126 || (output.normalized && values.normalized === true))) {
+        return problem(`${path}.samplers`, `have ${channel.target.path} output of the wrong type`)
+      }
+      const node = nodes[channel.target.node as number]
+      const perKey =
+        (sampler.interpolation === 'CUBICSPLINE' ? 3 : 1) *
+        (channel.target.path === 'weights' && typeof node.mesh === 'number' ? morphTargets(node.mesh) : 1)
+      if (values.count !== (input.count as number) * perKey) {
+        return problem(`${path}.samplers`, 'have output counts that do not match their keyframes')
       }
     }
   }

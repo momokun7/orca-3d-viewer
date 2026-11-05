@@ -1,37 +1,56 @@
 // Refuses a model before three.js allocates for it when its JSON declares more than the viewer can
 // hold. Runs after validateGltfStructure, so every index, enum and count here is known to be valid.
 // It counts what three.js will allocate, not what the file stores: zero-filled sparse accessors,
-// Meshopt and Draco decoded sizes (Draco's from its own header, since the decoder ignores the JSON),
-// morph target textures, one GPU texture per image and sampler pair, and skin joints.
+// strided views copied per accessor, Meshopt and Draco decoded sizes (Draco's from its own header),
+// strips and fans rebuilt as triangle lists, instance matrices, keyframe tracks copied per channel,
+// morph target textures, and one GPU texture per image, sampler and colour space. It also bounds the
+// work per frame (draw calls, vertices drawn) and its own running time.
 import { type BufferSources, bufferSources } from './byte-sources.ts'
-import { dracoSize } from './draco-header.ts'
+import { type DracoSize, dracoSize } from './draco-header.ts'
 import { GLTF_MESHOPT_EXTENSIONS, type GltfDocument, isRecord } from './gltf-document-inspection.ts'
 import { COMPONENT_BYTES, TYPE_COMPONENTS } from './gltf-validation.ts'
-import { imageSize } from './image-dimensions.ts'
+import { type ImageSize, imageSize } from './image-dimensions.ts'
 
 export const BUDGET = {
-  /** Decoded vertex, index and animation data on the CPU side. */
+  /** Decoded vertex, index, instance and animation data on the CPU side. */
   geometryBytes: 512 * 1024 * 1024,
   /** Textures (with mipmaps) and morph target data on the GPU. */
   gpuBytes: 1024 * 1024 * 1024,
   nodes: 100_000,
   drawCalls: 50_000,
+  /** Vertices the GPU processes per frame, instances included. */
+  drawnVertices: 100_000_000,
+  materials: 4096,
   images: 1024,
   textures: 4096,
+  animationChannels: 100_000,
   imageSide: 16_384,
   skinJoints: 65_536,
-  jointsPerSkin: 4096
+  jointsPerSkin: 4096,
+  /** How long checking may take on the UI thread. */
+  checkMilliseconds: 2000
 } as const
 
 export type BudgetExcess =
   | {
-      kind: 'geometryBytes' | 'gpuBytes' | 'nodes' | 'drawCalls' | 'images' | 'textures' | 'skinJoints'
+      kind:
+        | 'geometryBytes'
+        | 'gpuBytes'
+        | 'nodes'
+        | 'drawCalls'
+        | 'drawnVertices'
+        | 'materials'
+        | 'images'
+        | 'textures'
+        | 'animationChannels'
+        | 'skinJoints'
       value: number
       limit: number
     }
   | { kind: 'imageSide'; value: number; limit: number; width: number; height: number }
   | { kind: 'unreadableImage'; index: number }
   | { kind: 'unreadableDraco'; mesh: number }
+  | { kind: 'tooComplex' }
 
 type Records = Record<string, unknown>[]
 const list = (document: GltfDocument, key: string): Records => (Array.isArray(document[key]) ? (document[key] as Records) : [])
@@ -40,25 +59,88 @@ const list = (document: GltfDocument, key: string): Records => (Array.isArray(do
 const MIPMAPPED = 4 / 3
 const RGBA_BYTES = 4
 const MORPH_TEXEL_BYTES = 16
+const MATRIX_BYTES = 64
+const FLOAT_BYTES = 4
+// Strips and fans become JavaScript arrays of indices first: about this many bytes each, transiently.
+const TRANSIENT_INDEX_BYTES = 24
+const STRIP_MODES = new Set([5, 6])
+// Texture slots three.js reads as sRGB; every other slot is linear, and each needs its own texture.
+const SRGB_TEXTURES = new Set(['baseColorTexture', 'emissiveTexture', 'sheenColorTexture', 'specularColorTexture'])
+
+class TooComplex extends Error {}
+
+type Context = {
+  document: GltfDocument
+  accessors: Records
+  bufferViews: Records
+  sources: BufferSources
+  deadline: number
+  dracoSizes: Map<number, DracoSize | null>
+  imageSizes: Map<string, ImageSize | null>
+}
+
+function checkTime(context: Context): void {
+  if (performance.now() > context.deadline) throw new TooComplex()
+}
 
 function elementBytes(accessor: Record<string, unknown>): number {
   return COMPONENT_BYTES.get(accessor.componentType as number)! * TYPE_COMPONENTS.get(accessor.type as string)!
 }
 
-function geometryBytes(document: GltfDocument, sources: BufferSources): BudgetExcess | number {
-  const accessors = list(document, 'accessors')
+function dracoSizeOf(context: Context, viewIndex: number): DracoSize | null {
+  if (!context.dracoSizes.has(viewIndex)) {
+    checkTime(context)
+    const source = context.sources.bufferView(viewIndex)
+    context.dracoSizes.set(viewIndex, source && dracoSize(source))
+  }
+  return context.dracoSizes.get(viewIndex) ?? null
+}
+
+/** Vertices a primitive draws, from its POSITION accessor or its Draco header. */
+function primitiveVertices(context: Context, primitive: Record<string, unknown>): number {
+  const draco = isRecord(primitive.extensions) ? primitive.extensions.KHR_draco_mesh_compression : undefined
+  if (isRecord(draco)) return dracoSizeOf(context, draco.bufferView as number)?.points ?? 0
+  const position = context.accessors[(primitive.attributes as Record<string, number>).POSITION]
+  return (position?.count as number | undefined) ?? 0
+}
+
+function accessorBytes(context: Context): number {
   let total = 0
-  for (const accessor of accessors) total += (accessor.count as number) * elementBytes(accessor)
-  for (const view of list(document, 'bufferViews')) {
+  // three.js copies a strided view into one interleaved buffer per (view, component type, count).
+  const interleaved = new Map<string, number>()
+  for (const accessor of context.accessors) {
+    const count = accessor.count as number
+    const view = typeof accessor.bufferView === 'number' ? context.bufferViews[accessor.bufferView] : undefined
+    const stride = view?.byteStride as number | undefined
+    if (stride !== undefined && stride !== elementBytes(accessor)) {
+      const bytes = count * stride
+      interleaved.set(`${accessor.bufferView}:${accessor.componentType}:${count}`, bytes)
+      // Why twice for sparse: three.js slices the whole interleaved array before applying the sparse values.
+      if (accessor.sparse !== undefined) total += bytes
+    } else {
+      total += count * elementBytes(accessor)
+    }
+  }
+  for (const bytes of interleaved.values()) total += bytes
+  return total
+}
+
+function geometryBytes(context: Context): BudgetExcess | number {
+  const { document, accessors } = context
+  let total = accessorBytes(context)
+  for (const view of context.bufferViews) {
     const extensions = isRecord(view.extensions) ? view.extensions : {}
     if (GLTF_MESHOPT_EXTENSIONS.some((name) => extensions[name] !== undefined)) total += view.byteLength as number
   }
   for (const [meshIndex, mesh] of list(document, 'meshes').entries()) {
     for (const primitive of mesh.primitives as Records) {
+      if (STRIP_MODES.has(primitive.mode as number)) {
+        const indices = typeof primitive.indices === 'number' ? (accessors[primitive.indices].count as number) : primitiveVertices(context, primitive)
+        total += Math.max(0, indices - 2) * 3 * FLOAT_BYTES + indices * TRANSIENT_INDEX_BYTES
+      }
       const draco = isRecord(primitive.extensions) ? primitive.extensions.KHR_draco_mesh_compression : undefined
       if (!isRecord(draco)) continue
-      const source = sources.bufferView(draco.bufferView as number)
-      const size = source && dracoSize(source)
+      const size = dracoSizeOf(context, draco.bufferView as number)
       if (!size) return { kind: 'unreadableDraco', mesh: meshIndex }
       const attributeBytes = Object.keys(draco.attributes as object).reduce((sum, name) => {
         const accessor = accessors[(primitive.attributes as Record<string, number>)[name]]
@@ -67,68 +149,152 @@ function geometryBytes(document: GltfDocument, sources: BufferSources): BudgetEx
       total += size.points * attributeBytes + size.faces * 3 * 4
     }
   }
+  total += animationBytes(context)
+  total += instanceBytes(context)
   return total > BUDGET.geometryBytes ? { kind: 'geometryBytes', value: total, limit: BUDGET.geometryBytes } : total
 }
 
-function morphBytes(document: GltfDocument): number {
-  const accessors = list(document, 'accessors')
+/** three.js builds a track per channel, and for weights one per mesh primitive, copying keys to floats. */
+function animationBytes(context: Context): number {
+  const nodes = list(context.document, 'nodes')
+  const meshes = list(context.document, 'meshes')
   let total = 0
-  for (const mesh of list(document, 'meshes')) {
-    for (const primitive of mesh.primitives as Records) {
-      const targets = primitive.targets as Records | undefined
-      if (!targets?.length) continue
-      const position = accessors[(primitive.attributes as Record<string, number>).POSITION]
-      const vertices = (position?.count as number | undefined) ?? 0
-      const attributes = new Set(targets.flatMap((target) => Object.keys(target))).size
-      // three.js packs every target's position, normal and colour into one float texture.
-      total += vertices * targets.length * Math.max(attributes, 1) * MORPH_TEXEL_BYTES
+  for (const animation of list(context.document, 'animations')) {
+    const samplers = animation.samplers as Records
+    for (const channel of animation.channels as Records) {
+      const sampler = samplers[channel.sampler as number]
+      const input = context.accessors[sampler.input as number]
+      const output = context.accessors[sampler.output as number]
+      const target = channel.target as Record<string, unknown>
+      const node = typeof target.node === 'number' ? nodes[target.node] : undefined
+      const copies =
+        target.path === 'weights' && typeof node?.mesh === 'number' ? (meshes[node.mesh].primitives as unknown[]).length : 1
+      const keys = (input.count as number) + (output.count as number) * TYPE_COMPONENTS.get(output.type as string)!
+      total += keys * FLOAT_BYTES * copies
     }
   }
   return total
 }
 
-function textureBytes(document: GltfDocument, sources: BufferSources): BudgetExcess | number {
-  const images = list(document, 'images')
+function instanceCount(context: Context, node: Record<string, unknown>): number {
+  const instancing = isRecord(node.extensions) ? node.extensions.EXT_mesh_gpu_instancing : undefined
+  if (!isRecord(instancing)) return 1
+  const [first] = Object.values(instancing.attributes as Record<string, number>)
+  return context.accessors[first].count as number
+}
+
+/** Each primitive of an instanced node is its own InstancedMesh with a matrix per instance. */
+function instanceBytes(context: Context): number {
+  const meshes = list(context.document, 'meshes')
+  let total = 0
+  for (const node of list(context.document, 'nodes')) {
+    if (typeof node.mesh !== 'number') continue
+    const instances = instanceCount(context, node)
+    if (instances > 1) total += instances * MATRIX_BYTES * (meshes[node.mesh].primitives as unknown[]).length
+  }
+  return total
+}
+
+function frameExcess(context: Context): BudgetExcess | null {
+  const { document } = context
+  const nodes = list(document, 'nodes')
+  if (nodes.length > BUDGET.nodes) return { kind: 'nodes', value: nodes.length, limit: BUDGET.nodes }
+  const materials = list(document, 'materials').length
+  if (materials > BUDGET.materials) return { kind: 'materials', value: materials, limit: BUDGET.materials }
+  const meshes = list(document, 'meshes')
+  const meshVertices = new Map<number, number>()
+  let drawCalls = 0
+  let drawnVertices = 0
+  for (const node of nodes) {
+    if (typeof node.mesh !== 'number') continue
+    const primitives = meshes[node.mesh].primitives as Records
+    // Why one per primitive: GPU instancing draws all instances of a node in a single call.
+    drawCalls += primitives.length
+    if (!meshVertices.has(node.mesh)) {
+      meshVertices.set(node.mesh, primitives.reduce((sum, primitive) => sum + primitiveVertices(context, primitive), 0))
+    }
+    drawnVertices += meshVertices.get(node.mesh)! * instanceCount(context, node)
+  }
+  if (drawCalls > BUDGET.drawCalls) return { kind: 'drawCalls', value: drawCalls, limit: BUDGET.drawCalls }
+  if (drawnVertices > BUDGET.drawnVertices) return { kind: 'drawnVertices', value: drawnVertices, limit: BUDGET.drawnVertices }
+  const channels = list(document, 'animations').reduce((sum, animation) => sum + (animation.channels as unknown[]).length, 0)
+  if (channels > BUDGET.animationChannels) return { kind: 'animationChannels', value: channels, limit: BUDGET.animationChannels }
+  return null
+}
+
+function morphBytes(context: Context): number {
+  let total = 0
+  for (const mesh of list(context.document, 'meshes')) {
+    for (const primitive of mesh.primitives as Records) {
+      const targets = primitive.targets as Records | undefined
+      if (!targets?.length) continue
+      const attributes = new Set(targets.flatMap((target) => Object.keys(target))).size
+      // three.js packs every target's position, normal and colour into one float texture.
+      total += primitiveVertices(context, primitive) * targets.length * Math.max(attributes, 1) * MORPH_TEXEL_BYTES
+    }
+  }
+  return total
+}
+
+function imageSizeOf(context: Context, image: Record<string, unknown>): ImageSize | null {
+  const key = typeof image.uri === 'string' ? `uri:${image.uri}` : `view:${image.bufferView}`
+  if (!context.imageSizes.has(key)) {
+    checkTime(context)
+    const source =
+      typeof image.uri === 'string'
+        ? bufferSources({ buffers: [{ uri: image.uri }] }, null).buffer(0)
+        : context.sources.bufferView(image.bufferView as number)
+    context.imageSizes.set(key, source && imageSize(source))
+  }
+  return context.imageSizes.get(key) ?? null
+}
+
+/** (texture index, colour space) for every texture slot of every material, at any depth. */
+function textureUses(document: GltfDocument): [number, 'srgb' | 'linear'][] {
+  const uses: [number, 'srgb' | 'linear'][] = []
+  const visit = (value: unknown, depth: number): void => {
+    if (depth > 16 || !isRecord(value)) return
+    for (const [key, child] of Object.entries(value)) {
+      if (/Texture$/.test(key) && isRecord(child) && typeof child.index === 'number') {
+        uses.push([child.index, SRGB_TEXTURES.has(key) ? 'srgb' : 'linear'])
+      }
+      visit(child, depth + 1)
+    }
+  }
+  for (const material of list(document, 'materials')) visit(material, 0)
+  return uses
+}
+
+function textureBytes(context: Context): BudgetExcess | number {
+  const images = list(context.document, 'images')
   if (images.length > BUDGET.images) return { kind: 'images', value: images.length, limit: BUDGET.images }
-  const sizes: (number | null)[] = []
+  const textures = list(context.document, 'textures')
+  if (textures.length > BUDGET.textures) return { kind: 'textures', value: textures.length, limit: BUDGET.textures }
+  const imageBytes: number[] = []
   for (const [index, image] of images.entries()) {
     // Why skip external images: the viewer never loads them, a white pixel stands in.
     if (typeof image.uri === 'string' && !/^data:/i.test(image.uri)) {
-      sizes.push(1)
+      imageBytes.push(RGBA_BYTES)
       continue
     }
-    const source = typeof image.uri === 'string' ? bufferSources({ buffers: [{ uri: image.uri }] }, null).buffer(0) : sources.bufferView(image.bufferView as number)
-    const size = source && imageSize(source)
+    const size = imageSizeOf(context, image)
     if (!size) return { kind: 'unreadableImage', index }
     if (size.width > BUDGET.imageSide || size.height > BUDGET.imageSide) {
       return { kind: 'imageSide', value: Math.max(size.width, size.height), limit: BUDGET.imageSide, ...size }
     }
-    sizes.push(size.width * size.height * RGBA_BYTES * MIPMAPPED)
+    imageBytes.push(size.width * size.height * RGBA_BYTES * MIPMAPPED)
   }
-  const textures = list(document, 'textures')
-  if (textures.length > BUDGET.textures) return { kind: 'textures', value: textures.length, limit: BUDGET.textures }
-  // three.js uploads one GPU texture per distinct image and sampler; textures sharing both share it.
+  // three.js uploads one GPU texture per distinct image, sampler and colour space.
   const uploads = new Map<string, number>()
-  for (const texture of textures) {
+  for (const [textureIndex, colorSpace] of textureUses(context.document)) {
+    const texture = textures[textureIndex]
     const extensions = isRecord(texture.extensions) ? Object.values(texture.extensions) : []
     const sourcesUsed = [texture.source, ...extensions.map((extension) => (isRecord(extension) ? extension.source : undefined))]
     for (const source of sourcesUsed) {
-      if (typeof source === 'number') uploads.set(`${source}:${texture.sampler ?? -1}`, sizes[source] ?? 0)
+      if (typeof source === 'number') uploads.set(`${source}:${texture.sampler ?? -1}:${colorSpace}`, imageBytes[source] ?? 0)
     }
   }
   return [...uploads.values()].reduce((sum, bytes) => sum + bytes, 0)
-}
-
-function drawCallExcess(document: GltfDocument): BudgetExcess | null {
-  const nodes = list(document, 'nodes')
-  if (nodes.length > BUDGET.nodes) return { kind: 'nodes', value: nodes.length, limit: BUDGET.nodes }
-  const primitives = list(document, 'meshes').map((mesh) => (mesh.primitives as unknown[]).length)
-  let drawCalls = 0
-  for (const node of nodes) {
-    // Why one per primitive: GPU instancing draws all instances of a node in a single call.
-    if (typeof node.mesh === 'number') drawCalls += primitives[node.mesh]
-  }
-  return drawCalls > BUDGET.drawCalls ? { kind: 'drawCalls', value: drawCalls, limit: BUDGET.drawCalls } : null
 }
 
 function skinExcess(document: GltfDocument): BudgetExcess | null {
@@ -142,14 +308,34 @@ function skinExcess(document: GltfDocument): BudgetExcess | null {
 }
 
 /** The first way a validated document exceeds the viewer's budget, or null when it fits. */
-export function gltfBudgetExcess(document: GltfDocument, bin: Uint8Array | null): BudgetExcess | null {
-  const excess = drawCallExcess(document) ?? skinExcess(document)
-  if (excess) return excess
-  const sources = bufferSources(document, bin)
-  const geometry = geometryBytes(document, sources)
-  if (typeof geometry !== 'number') return geometry
-  const textures = textureBytes(document, sources)
-  if (typeof textures !== 'number') return textures
-  const gpu = textures + morphBytes(document)
-  return gpu > BUDGET.gpuBytes ? { kind: 'gpuBytes', value: gpu, limit: BUDGET.gpuBytes } : null
+export function gltfBudgetExcess(
+  document: GltfDocument,
+  bin: Uint8Array | null,
+  timeLimitMs: number = BUDGET.checkMilliseconds
+): BudgetExcess | null {
+  const context: Context = {
+    document,
+    accessors: list(document, 'accessors'),
+    bufferViews: list(document, 'bufferViews'),
+    sources: bufferSources(document, bin),
+    deadline: performance.now() + timeLimitMs,
+    dracoSizes: new Map(),
+    imageSizes: new Map()
+  }
+  try {
+    const excess = skinExcess(document) ?? frameExcess(context)
+    if (excess) return excess
+    const geometry = geometryBytes(context)
+    if (typeof geometry !== 'number') return geometry
+    const textures = textureBytes(context)
+    if (typeof textures !== 'number') return textures
+    const gpu = textures + morphBytes(context)
+    return gpu > BUDGET.gpuBytes ? { kind: 'gpuBytes', value: gpu, limit: BUDGET.gpuBytes } : null
+  } catch (error) {
+    if (error instanceof TooComplex) return { kind: 'tooComplex' }
+    throw error
+  }
 }
+
+/** The decoded bytes the budget allows for a parse, for checking what decoders actually return. */
+export const DECODE_ALLOWANCE_BYTES = BUDGET.geometryBytes

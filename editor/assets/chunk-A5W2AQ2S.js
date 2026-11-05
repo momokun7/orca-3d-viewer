@@ -1,0 +1,1 @@
+var o=class extends Error{constructor(){super("decoded data exceeds what the file declared"),this.name="DecodeAllowanceError"}},r=Number.POSITIVE_INFINITY;function n(e){r=e}function t(e){if(r-=e,r<0)throw new o}export{n as a,t as b};

@@ -1,5 +1,6 @@
-import { formatBytes, formatCount, nameList } from './display-format.ts'
-import { type BudgetExcess, gltfBudgetExcess } from './gltf-budget.ts'
+import { displayName, formatBytes, formatCount, nameList } from './display-format.ts'
+import { type BudgetExcess, DECODE_ALLOWANCE_BYTES, gltfBudgetExcess } from './gltf-budget.ts'
+import { resetDecodeAllowance } from './decode-allowance.ts'
 import {
   type GltfDocument,
   type GltfModelData,
@@ -35,6 +36,13 @@ const ui = createViewerUi(root, t, locale)
 let stage: ModelStage | null = null
 let shownVersion: number | null = null
 let lastShown: { summary: ModelSummary; notices: string[] } | null = null
+// The notices on screen now, which a later failed save adds to; a driver reset brings them back as they were.
+let shownNotices: string[] = []
+
+function showModel(summary: ModelSummary, target: ModelStage, notices: string[], keepToggles: boolean): void {
+  shownNotices = notices
+  ui.showModel(summary, target, notices, keepToggles)
+}
 
 function modelData(content: OrcaDocument['content']): GltfModelData {
   return content.kind === 'bytes' ? content.bytes : content.text
@@ -54,6 +62,14 @@ function budgetMessage(excess: BudgetExcess): string {
       return t('tooManyDrawCalls', { value: count(excess.value), limit: count(excess.limit) })
     case 'images':
       return t('tooManyImages', { value: count(excess.value), limit: count(excess.limit) })
+    case 'drawnVertices':
+      return t('tooManyDrawnVertices', { value: count(excess.value), limit: count(excess.limit) })
+    case 'materials':
+      return t('tooManyMaterials', { value: count(excess.value), limit: count(excess.limit) })
+    case 'animationChannels':
+      return t('tooManyChannels', { value: count(excess.value), limit: count(excess.limit) })
+    case 'tooComplex':
+      return t('tooComplex')
     case 'textures':
       return t('tooManyTextures', { value: count(excess.value), limit: count(excess.limit) })
     case 'skinJoints':
@@ -78,7 +94,8 @@ function refusal(data: GltfModelData, gltf: GltfDocument | null): string | null 
   if (!gltf) return t('parseFailed')
   const bin = readGlbBinChunk(data)
   const structure = validateGltfStructure(gltf, bin?.byteLength ?? null)
-  if (structure) return t('corrupt', { path: structure.path, reason: structure.reason })
+  // Why cleaned: the path holds keys from the file, which may be long or carry control characters.
+  if (structure) return t('corrupt', { path: displayName(structure.path), reason: structure.reason })
   if (!gltfBuffersFitContainer(gltf, typeof data !== 'string')) return t('parseFailed')
   const unsupported = gltfUnsupportedRequiredExtensions(gltf)
   if (unsupported.length > 0) return t('unsupportedExtensions', { extensions: nameList(unsupported, more) })
@@ -92,7 +109,7 @@ function stageFor(): ModelStage {
   stage ??= createModelStage(ui.viewport, {
     onContextLost: () => ui.showError(t('contextLost')),
     onContextRestored: () => {
-      if (stage && lastShown) ui.showModel(lastShown.summary, stage, lastShown.notices, true)
+      if (stage && lastShown) showModel(lastShown.summary, stage, shownNotices, true)
     }
   })
   return stage
@@ -102,7 +119,7 @@ function stageFor(): ModelStage {
 function fail(message: string, log: string | null, error: unknown): void {
   if (log) console.error(log, error)
   if (stage && lastShown) {
-    ui.showModel(lastShown.summary, stage, [t('laterSaveFailed', { reason: message }), ...lastShown.notices], true)
+    showModel(lastShown.summary, stage, [t('laterSaveFailed', { reason: message }), ...lastShown.notices], true)
     return
   }
   stage?.clear()
@@ -112,7 +129,8 @@ function fail(message: string, log: string | null, error: unknown): void {
 async function load(orcaDocument: OrcaDocument): Promise<void> {
   const replacing = lastShown !== null
   // Why keep the old model up while the new one loads: an agent re-exporting a file should not flash it.
-  if (!replacing) ui.showLoading()
+  if (replacing) ui.setPending(t('loadingNewer'))
+  else ui.showLoading()
 
   const data = modelData(orcaDocument.content)
   const gltf = readGltfDocument(data)
@@ -132,6 +150,7 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
 
   let model: Awaited<ReturnType<typeof parseGltfModel>>
   try {
+    resetDecodeAllowance(DECODE_ALLOWANCE_BYTES)
     model = await parseGltfModel(data, gltf, { renderer: target.renderer })
   } catch (error) {
     fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
@@ -147,7 +166,7 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
         ? [t('otherScenes', { count: count(summary.otherSceneCount) }, summary.otherSceneCount)]
         : [])
     ]
-    ui.showModel(summary, target, notices, replacing)
+    showModel(summary, target, notices, replacing)
     // Why autoplay: a still frame cannot show whether the clips were exported at all.
     target.playAnimation(0)
     lastShown = { summary, notices }

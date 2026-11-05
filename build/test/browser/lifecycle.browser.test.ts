@@ -123,6 +123,18 @@ describe('the GPU', () => {
     assertContained(await frame.report())
   })
 
+  it('keeps the failed-save notice through a driver reset', async () => {
+    await frame.open({ bytes: glb(triangleGltf()) })
+    await frame.open({ bytes: glb(triangleGltf()).slice(0, 40) })
+    await frame.page.evaluate(() => {
+      const lose = document.querySelector('canvas')?.getContext('webgl2')?.getExtension('WEBGL_lose_context')
+      lose?.loseContext()
+      setTimeout(() => lose?.restoreContext(), 50)
+    })
+    await frame.page.waitForFunction(() => document.querySelector<HTMLElement>('.overlay')?.hidden === true)
+    await frame.page.waitForFunction(() => /latest save/.test(document.querySelector<HTMLElement>('.notice')?.innerText ?? ''))
+  })
+
   it('says WebGL is unavailable instead of calling the file corrupt', async () => {
     const noGpu = await openFrame({ webgl: false })
     try {

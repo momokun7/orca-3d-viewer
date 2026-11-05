@@ -18,8 +18,8 @@ const POINT_CLOUD = 0
 const SEQUENTIAL = 0
 const EDGEBREAKER = 1
 const MAX_METADATA_DEPTH = 32
-// The most bytes the header, metadata included, may take before the counts.
-const HEADER_WINDOW = 1024 * 1024
+// The most bytes the header, metadata included, may take before the counts; past it the stream is refused.
+const HEADER_WINDOW = 64 * 1024
 
 class Reader {
   private at = 0
@@ -53,16 +53,25 @@ class Reader {
     this.at += count
     if (this.at > this.bytes.length) throw new RangeError('Draco header ends early')
   }
+  remaining(): number {
+    return this.bytes.length - this.at
+  }
 }
 
+// As Draco's MetadataDecoder: an entry is a u8-length name and a varint-length value that must be
+// non-empty and fit the rest of the stream; a sub-metadata is a u8-length name and a nested element.
 function skipMetadataElement(reader: Reader, depth: number): void {
   if (depth > MAX_METADATA_DEPTH) throw new RangeError('Draco metadata nested too deep')
   const entries = reader.varint()
+  if (entries > reader.remaining()) throw new RangeError('Draco metadata entry count exceeds the stream')
   for (let entry = 0; entry < entries; entry++) {
     reader.skip(reader.u8())
-    reader.skip(reader.u8())
+    const size = reader.varint()
+    if (size === 0 || size > reader.remaining()) throw new RangeError('Draco metadata value size is invalid')
+    reader.skip(size)
   }
   const children = reader.varint()
+  if (children > reader.remaining()) throw new RangeError('Draco sub-metadata count exceeds the stream')
   for (let child = 0; child < children; child++) {
     reader.skip(reader.u8())
     skipMetadataElement(reader, depth + 1)

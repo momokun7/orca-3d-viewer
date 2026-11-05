@@ -16,6 +16,8 @@ export type ViewerUi = {
   viewport: HTMLElement
   showLoading: () => void
   showError: (message: string) => void
+  /** Notes in the toolbar that a newer save is loading while the current model stays up. */
+  setPending: (text: string | null) => void
   /** Shows a model's figures; `keepToggles` carries wireframe and guides over from the last model. */
   showModel: (summary: ModelSummary, actions: ViewerActions, notices: string[], keepToggles: boolean) => void
 }
@@ -59,12 +61,14 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   const stats = element('span', { className: 'figure' })
   const dimensions = element('span', { className: 'figure', title: t('dimensionsTitle') })
   const gridCell = element('span', { className: 'figure' })
+  const pending = element('span', { className: 'pending', role: 'status', hidden: true })
   const toolbar = element('footer', { className: 'toolbar' }, [
     element('div', { className: 'group' }, [reset, wireframe, guides]),
     animationGroup,
     stats,
     dimensions,
-    gridCell
+    gridCell,
+    pending
   ])
   root.replaceChildren(element('div', { className: 'stage' }, [viewport, overlay]), notice, toolbar)
 
@@ -109,7 +113,12 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
     actions?.playAnimation(Number(animationSelect.value))
   })
 
+  const setPending = (text: string | null): void => {
+    pending.hidden = text === null
+    pending.textContent = text ?? ''
+  }
   const clearFigures = (): void => {
+    setPending(null)
     actions = null
     setToolsEnabled(false)
     animationGroup.hidden = true
@@ -135,6 +144,7 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
     viewport,
     showLoading: () => showOverlay(t('loading'), false),
     showError: (message) => showOverlay(message, true),
+    setPending,
     showModel: (summary, modelActions, notices, keepToggles) => {
       clearFigures()
       actions = modelActions

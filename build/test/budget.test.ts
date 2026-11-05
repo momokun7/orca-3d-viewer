@@ -7,8 +7,8 @@ import { BUDGET, gltfBudgetExcess } from '../src/gltf-budget.ts'
 import { validateGltfStructure } from '../src/gltf-validation.ts'
 import { imageSize } from '../src/image-dimensions.ts'
 import { triangleGltf, type GltfJson } from './fixtures/models.ts'
-import { avifHeader, bmpHeader, jpegHeader, ktx2Header, pngHeader, webpHeader } from './fixtures/images.ts'
-import { dracoBitstream } from './fixtures/draco.ts'
+import { avifHeader, bmpHeader, jpegHeader, pngHeader, solidKtx2, webpHeader } from './fixtures/images.ts'
+import { decodeDracoCounts, dracoBitstream, withMetadata } from './fixtures/draco.ts'
 
 const FUZZ_RUNS = Number(process.env.FUZZ_RUNS ?? 2000)
 const FUZZ_SEED = process.env.FUZZ_SEED ? Number(process.env.FUZZ_SEED) : undefined
@@ -22,12 +22,12 @@ const check = (json: GltfJson, bin: Uint8Array | null = null): string | null => 
 }
 
 describe('imageSize', () => {
-  it('reads the size of every image format glTF allows from its header', () => {
+  it('reads the size of every image format glTF allows from its header', async () => {
     assert.deepEqual(imageSize(bytesSource(pngHeader(30_000, 20))), { width: 30_000, height: 20 })
     assert.deepEqual(imageSize(bytesSource(jpegHeader(640, 480))), { width: 640, height: 480 })
     assert.deepEqual(imageSize(bytesSource(webpHeader('VP8X', 9000, 300))), { width: 9000, height: 300 })
     assert.deepEqual(imageSize(bytesSource(webpHeader('VP8L', 1234, 77))), { width: 1234, height: 77 })
-    assert.deepEqual(imageSize(bytesSource(ktx2Header(4096, 2048))), { width: 4096, height: 2048 })
+    assert.deepEqual(imageSize(bytesSource(await solidKtx2(64, 32, [1, 2, 3]))), { width: 64, height: 32 })
     assert.deepEqual(imageSize(bytesSource(avifHeader(8000, 6000))), { width: 8000, height: 6000 })
   })
 
@@ -72,13 +72,36 @@ describe('data: URI sources', () => {
 })
 
 describe('dracoSize', () => {
-  it('reads the face and point counts of both Draco methods, through metadata', async () => {
+  it('reads the face and point counts of both Draco methods', async () => {
     for (const method of ['sequential', 'edgebreaker'] as const) {
       const { bytes, faces, points } = await dracoBitstream(method, 24)
       const size = dracoSize(bytesSource(bytes))
       assert.equal(size?.faces, faces, method)
       assert.ok(size && size.points >= points, method)
     }
+  })
+
+  it('reads the same counts as Google’s decoder through metadata, even with a value that hides fake counts', async () => {
+    for (const method of ['sequential', 'edgebreaker'] as const) {
+      const { bytes } = await dracoBitstream(method, 24)
+      // A value long enough to need a multi-byte varint length, holding what looks like a tiny mesh.
+      const decoy = new Uint8Array(16_384).fill(0x01)
+      const stream = withMetadata(bytes, decoy)
+      const reference = await decodeDracoCounts(stream)
+      assert.ok(reference, `the reference decoder refused the ${method} stream`)
+      const size = dracoSize(bytesSource(stream))
+      assert.equal(size?.faces, reference.faces, method)
+      assert.ok(size && size.points >= reference.points, method)
+    }
+  })
+
+  it('refuses metadata that claims more than the stream holds', async () => {
+    const { bytes } = await dracoBitstream('sequential', 4)
+    const stream = withMetadata(bytes, new Uint8Array(8))
+    // Make the one entry's value claim 2^20 bytes.
+    const at = 11 + 2 + 1 + 3
+    const forged = Uint8Array.from([...stream.slice(0, at), 0x80, 0x80, 0x40, ...stream.slice(at + 1)])
+    assert.equal(dracoSize(bytesSource(forged)), null)
   })
 
   it('has no size for bytes that are not Draco', () => {
@@ -153,8 +176,13 @@ describe('gltfBudgetExcess after validation', () => {
     json.images = [{ uri: base64Uri(pngHeader(8192, 8192)) }]
     json.samplers = Array.from({ length: 4 }, (_, index) => ({ wrapS: 33071 + index }))
     json.textures = Array.from({ length: 4 }, (_, sampler) => ({ source: 0, sampler }))
+    json.materials = [0, 1, 2, 3].map((index) => ({ pbrMetallicRoughness: { baseColorTexture: { index } } }))
     assert.equal(check(json), 'gpuBytes')
     json.textures = Array.from({ length: 4 }, () => ({ source: 0, sampler: 0 }))
+    assert.equal(check(json), null)
+    // The same image as colour and as data is two textures: one sRGB, one linear.
+    json.textures = [{ source: 0, sampler: 0 }]
+    json.materials = [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 }, metallicRoughnessTexture: { index: 0 } } }]
     assert.equal(check(json), null)
   })
 

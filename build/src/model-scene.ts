@@ -2,8 +2,10 @@ import {
   Box3,
   DirectionalLight,
   HemisphereLight,
+  type BufferGeometry,
   type Light,
   type Material,
+  type Mesh,
   NeutralToneMapping,
   type Object3D,
   PerspectiveCamera,
@@ -57,8 +59,11 @@ export type StageEvents = {
 
 // Why cap: past 2, each step multiplies the pixels shaded for little visible gain.
 export const MAX_PIXEL_RATIO = 2
-// Up to this many vertices the bounds follow the vertices, so rotated parts are not overstated.
-export const PRECISE_BOUNDS_VERTICES = 2_000_000
+// Up to this much vertex work (morph targets count once each) the bounds follow the vertices, so
+// rotated parts are not overstated; past it, each geometry's own box is transformed instead.
+export const PRECISE_BOUNDS_WORK = 2_000_000
+// Shaders still compiling by then are compiled by the first frame instead.
+const COMPILE_WAIT_MS = 10_000
 const MAX_ANISOTROPY = 8
 const DEFAULT_LIGHT_INTENSITIES = { hemisphere: 0.6, key: 1.2 }
 
@@ -71,11 +76,25 @@ type Shown = {
   materials: Material[]
 }
 
-function boundsOf(model: Object3D, vertices: number): Box3 {
+/** Vertices the precise bounds would visit, each morph target counting as another pass. */
+function boundsWork(root: Object3D): number {
+  let work = 0
+  root.traverse((node) => {
+    const geometry = (node as Mesh).geometry as BufferGeometry | undefined
+    const vertices = geometry?.getAttribute('position')?.count ?? 0
+    work += vertices * (1 + (geometry?.morphAttributes.position?.length ?? 0))
+  })
+  return work
+}
+
+/** The model's bounds, and whether it has any geometry at all. */
+function boundsOf(model: Object3D): { bounds: Box3; empty: boolean } {
   model.updateMatrixWorld(true)
-  const bounds = new Box3().setFromObject(model, vertices <= PRECISE_BOUNDS_VERTICES)
+  const bounds = new Box3().setFromObject(model, boundsWork(model) <= PRECISE_BOUNDS_WORK)
   // Why: a model with no geometry (only empty nodes or lights) has empty bounds.
-  return bounds.isEmpty() ? new Box3(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5)) : bounds
+  return bounds.isEmpty()
+    ? { bounds: new Box3(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5)), empty: true }
+    : { bounds, empty: false }
 }
 
 function collectMaterials(root: Object3D): Material[] {
@@ -97,6 +116,13 @@ function hasOwnLights(root: Object3D): boolean {
 
 function prepareForDisplay(root: Object3D, anisotropy: number): void {
   root.traverse((node) => {
+    // Why from the data: GLTFLoader takes these boxes from the file's min and max, which it never checks,
+    // and they decide what is culled.
+    const geometry = (node as Mesh).geometry as BufferGeometry | undefined
+    if (geometry?.getAttribute('position')) {
+      geometry.computeBoundingBox()
+      geometry.computeBoundingSphere()
+    }
     // Why: a skinned mesh's bounds follow its bind pose, so animated limbs would be culled at the edges.
     if ((node as SkinnedMesh).isSkinnedMesh) node.frustumCulled = false
   })
@@ -268,20 +294,24 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
       let summary: ModelSummary
       try {
         const stats = measureModel(model.scene)
-        const bounds = boundsOf(model.scene, stats.vertices)
+        prepareForDisplay(model.scene, anisotropy)
+        const { bounds, empty } = boundsOf(model.scene)
         const center = bounds.getCenter(new Vector3())
         const radius = Math.max(bounds.getSize(new Vector3()).length() / 2, 1e-6)
-        prepareForDisplay(model.scene, anisotropy)
         guides = createSceneGuides(bounds)
         animation = createSceneAnimation(model.scene, model.animations)
         next = { model: model.scene, guides, animation, center, radius, materials: collectMaterials(model.scene) }
         // Why compile first: programs for heavy materials otherwise compile inside the first frame.
-        // Without parallel compilation (software GL) compileAsync only warns, so compile directly.
-        if (renderer.extensions.has('KHR_parallel_shader_compile')) await renderer.compileAsync(model.scene, camera, scene)
-        else renderer.compile(model.scene, camera, scene)
+        // Without parallel compilation (software GL) compileAsync only warns, so compile directly; with
+        // a lost context it would wait for a restore that may never come, so the wait is bounded.
+        if (!contextLost && renderer.extensions.has('KHR_parallel_shader_compile')) {
+          await Promise.race([renderer.compileAsync(model.scene, camera, scene), new Promise((done) => setTimeout(done, COMPILE_WAIT_MS))])
+        } else if (!contextLost) {
+          renderer.compile(model.scene, camera, scene)
+        }
         summary = {
           stats,
-          dimensions: guides.dimensions,
+          dimensions: empty ? { width: 0, height: 0, depth: 0 } : guides.dimensions,
           gridCellSize: guides.gridCellSize,
           animationNames: animation.clipNames,
           otherSceneCount: model.otherSceneCount

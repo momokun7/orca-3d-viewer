@@ -66,7 +66,7 @@ const resolveOwnUrl = (url: string): string => resolveResourceUrl(url, ownBlobUr
 
 // Why shared: each new loader re-fetches and compiles its decoder and starts its own workers.
 let dracoLoader: Promise<DRACOLoader> | null = null
-const ktx2Loaders = new WeakMap<WebGLRenderer, Promise<KTX2Loader>>()
+const ktx2Loaders = new Map<WebGLRenderer, Promise<KTX2Loader>>()
 let meshoptReady: Promise<unknown> | null = null
 
 function sharedDracoLoader(): Promise<DRACOLoader> {
@@ -91,6 +91,21 @@ async function meshoptDecoder(): Promise<typeof import('three/examples/jsm/libs/
   return MeshoptDecoder
 }
 
+/**
+ * Terminates the decoder workers, so a parse that timed out stops decoding instead of running on
+ * beside the next one; the next parse that needs a decoder starts a fresh one.
+ */
+function stopDecoders(): void {
+  void dracoLoader?.then((loader) => loader.dispose())
+  dracoLoader = null
+  for (const loader of ktx2Loaders.values()) void loader.then((ktx2) => ktx2.dispose())
+  ktx2Loaders.clear()
+  if (meshoptReady) {
+    void import('three/examples/jsm/libs/meshopt_decoder.module.js').then(({ MeshoptDecoder }) => MeshoptDecoder.useWorkers(0))
+    meshoptReady = null
+  }
+}
+
 export class ParseTimeoutError extends Error {
   constructor(ms: number) {
     super(`glTF parse did not finish within ${ms} ms`)
@@ -104,6 +119,7 @@ function withTimeout(parsing: Promise<GLTF>, ms: number): Promise<GLTF> {
   const timeout = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
       parsing.then((late) => late.scenes.forEach(disposeObjectTree)).catch(() => {})
+      stopDecoders()
       reject(new ParseTimeoutError(ms))
     }, ms)
   })

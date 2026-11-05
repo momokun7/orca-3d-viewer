@@ -92,6 +92,14 @@ describe('rendering', () => {
     assertContained(await frame.report())
   })
 
+  it('reports no size, rather than a made-up one, for a model with no geometry', async () => {
+    const json = triangleGltf()
+    json.nodes = [{ name: 'empty' }]
+    const state = await frame.open({ bytes: glb(json) })
+    assert.equal(state.kind === 'model' && state.figures[1], '0 × 0 × 0 m')
+    assertContained(await frame.report())
+  })
+
   it('says which scene it shows when the file has several', async () => {
     const json = triangleGltf()
     json.scenes = [{ nodes: [0] }, { nodes: [] }, { nodes: [] }]

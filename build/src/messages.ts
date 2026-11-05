@@ -24,6 +24,12 @@ const EN = {
   tooManyDrawCalls:
     'This model is too large to display safely: it would take {{value}} draw calls per frame (the limit is {{limit}}).',
   tooManyImages: 'This model is too large to display safely: it has {{value}} images (the limit is {{limit}}).',
+  tooManyDrawnVertices:
+    'This model is too large to display safely: it would draw {{value}} vertices per frame (the limit is {{limit}}).',
+  tooManyMaterials: 'This model is too large to display safely: it has {{value}} materials (the limit is {{limit}}).',
+  tooManyChannels: 'This model is too large to display safely: its animations have {{value}} channels (the limit is {{limit}}).',
+  tooComplex: 'This model is too complex to check before loading, so it was not opened.',
+  loadingNewer: 'Loading the latest save…',
   tooManyTextures: 'This model is too large to display safely: it has {{value}} textures (the limit is {{limit}}).',
   tooManyJoints: 'This model is too large to display safely: a skin has {{value}} joints (the limit is {{limit}}).',
   imageTooLarge:
@@ -79,6 +85,12 @@ const JA: Record<MessageKey, Message> = {
   tooManyDrawCalls:
     'このモデルは大きすぎるため、安全に表示できません。1 フレームの描画が {{value}} 回になります(上限は {{limit}} 回)。',
   tooManyImages: 'このモデルは大きすぎるため、安全に表示できません。画像が {{value}} 枚あります(上限は {{limit}} 枚)。',
+  tooManyDrawnVertices:
+    'このモデルは大きすぎるため、安全に表示できません。1 フレームに {{value}} 頂点を描くことになります(上限は {{limit}})。',
+  tooManyMaterials: 'このモデルは大きすぎるため、安全に表示できません。マテリアルが {{value}} 個あります(上限は {{limit}} 個)。',
+  tooManyChannels: 'このモデルは大きすぎるため、安全に表示できません。アニメーションのチャンネルが {{value}} 個あります(上限は {{limit}} 個)。',
+  tooComplex: 'このモデルは複雑すぎて読み込む前に確認しきれないため、開きませんでした。',
+  loadingNewer: '最新の保存内容を読み込み中…',
   tooManyTextures: 'このモデルは大きすぎるため、安全に表示できません。テクスチャが {{value}} 個あります(上限は {{limit}} 個)。',
   tooManyJoints: 'このモデルは大きすぎるため、安全に表示できません。スキンのジョイントが {{value}} 個あります(上限は {{limit}} 個)。',
   imageTooLarge:
