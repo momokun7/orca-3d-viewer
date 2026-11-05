@@ -114,7 +114,9 @@ function boxes(source: ByteSource, start: number, end: number): Box[] {
 function avifSize(source: ByteSource): ImageSize | null {
   const child = (parent: Box | undefined, type: string, skip = 0): Box | undefined =>
     parent && boxes(source, parent.start + skip, parent.end).find((box) => box.type === type)
-  const meta = boxes(source, 0, source.length).find((box) => box.type === 'meta')
+  const top = boxes(source, 0, source.length)
+  if (top.some((box) => box.type === 'moov')) return null
+  const meta = top.find((box) => box.type === 'meta')
   // Why skip 4: meta is a full box, with version and flags before its children.
   const ipco = child(child(meta, 'iprp', 4), 'ipco')
   if (!ipco) return null
@@ -135,6 +137,10 @@ const KTX2_VK_UNDEFINED = 0
 const KTX2_VK_RGBA8 = new Set([37, 43])
 const KTX2_SUPERCOMPRESSION = { none: 0, basisLz: 1, zstd: 2 } as const
 const KTX2_LEVEL_INDEX = 80
+// Data format descriptor colour models: Basis ETC1S and UASTC LDR (not UASTC HDR, which transcodes to
+// 8 bytes a pixel), and RGBSDA for plain RGBA8.
+const KTX2_BASIS_COLOR_MODELS = new Set([163, 166])
+const KTX2_RGBSDA = 1
 const KTX2_LEVEL_BYTES = 24
 const uint64le = (bytes: Uint8Array, at: number): number => uint32le(bytes, at) + uint32le(bytes, at + 4) * 2 ** 32
 
@@ -156,6 +162,14 @@ function ktx2Size(source: ByteSource): ImageSize | null {
   if (supercompression === KTX2_SUPERCOMPRESSION.basisLz ? !basis : supercompression !== KTX2_SUPERCOMPRESSION.none && supercompression !== KTX2_SUPERCOMPRESSION.zstd) {
     return null
   }
+  // Why: three.js inflates zstd RGBA8 on the UI thread with a decoder whose memory never shrinks.
+  if (!basis && supercompression !== KTX2_SUPERCOMPRESSION.none) return null
+  const descriptorOffset = uint32le(head, 48)
+  const descriptor = source.read(descriptorOffset, 16)
+  if (descriptor.length < 16) return null
+  // The descriptor's total size (4 bytes), then the block's vendor, type and size (8), then its colour model.
+  const colorModel = descriptor[12]
+  if (basis ? !KTX2_BASIS_COLOR_MODELS.has(colorModel) : colorModel !== KTX2_RGBSDA) return null
   const index = source.read(KTX2_LEVEL_INDEX, levels * KTX2_LEVEL_BYTES)
   if (index.length < levels * KTX2_LEVEL_BYTES) return null
   for (let level = 0; level < levels; level++) {
@@ -183,18 +197,20 @@ export type ImageFormat = 'png' | 'jpeg' | 'webp' | 'avif' | 'ktx2'
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
 // Formats Chromium recognises before AVIF; a file that is one of these is never read as AVIF here.
 const BLINK_EARLIER_SIGNATURES = [[0x00, 0x00, 0x01, 0x00], [0x00, 0x00, 0x02, 0x00], [0x42, 0x4d], [0x47, 0x49, 0x46, 0x38]]
-const AVIF_BRANDS = new Set(['avif', 'avis'])
+// Still AVIF only: Chromium decodes an image sequence ('avis', with a 'moov' track) at the track's
+// size, which is not the 'ispe' size this reader checks.
+const AVIF_BRAND = 'avif'
+const AVIF_SEQUENCE_BRAND = 'avis'
 
 const startsWith = (head: Uint8Array, signature: number[]): boolean => signature.every((byte, index) => head[index] === byte)
 
 function isAvif(head: Uint8Array): boolean {
   if (ascii(head, 4, 4) !== 'ftyp') return false
   const boxSize = Math.min(uint32be(head, 0), head.length)
+  const brands: string[] = []
   // The major brand at 8, then compatible brands from 16, four bytes each.
-  for (let at = 8; at + 4 <= boxSize; at += at === 8 ? 8 : 4) {
-    if (AVIF_BRANDS.has(ascii(head, at, 4))) return true
-  }
-  return false
+  for (let at = 8; at + 4 <= boxSize; at += at === 8 ? 8 : 4) brands.push(ascii(head, at, 4))
+  return brands.includes(AVIF_BRAND) && !brands.includes(AVIF_SEQUENCE_BRAND)
 }
 
 export function imageFormat(head: Uint8Array): ImageFormat | null {

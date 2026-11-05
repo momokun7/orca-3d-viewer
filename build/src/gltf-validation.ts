@@ -268,6 +268,7 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
   if (lights.length > STRUCTURE_LIMITS.lights) return problem('extensions.KHR_lights_punctual.lights', `has more than ${STRUCTURE_LIMITS.lights}`)
 
   const parents = new Int32Array(nodes.length).fill(-1)
+  let lightNodes = 0
   for (const [index, node] of nodes.entries()) {
     const path = `nodes[${index}]`
     if (!isOptionalIndex(node.mesh, meshes.length) || !isOptionalIndex(node.skin, skins.length) || !isOptionalIndex(node.camera, cameras.length)) {
@@ -297,8 +298,12 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
       }
     }
     const light = nodeExtensions.KHR_lights_punctual
-    if (light !== undefined && !(isRecord(light) && isIndex(light.light, lights.length))) {
-      return problem(`${path}.extensions.KHR_lights_punctual.light`, 'is not a light')
+    if (light !== undefined) {
+      if (!(isRecord(light) && isIndex(light.light, lights.length))) {
+        return problem(`${path}.extensions.KHR_lights_punctual.light`, 'is not a light')
+      }
+      // Why per node: three.js clones a light for every node that places it.
+      if (++lightNodes > STRUCTURE_LIMITS.lights) return problem('nodes', `place more than ${STRUCTURE_LIMITS.lights} lights`)
     }
     if (node.children !== undefined) {
       if (!Array.isArray(node.children) || node.children.length > STRUCTURE_LIMITS.childrenPerNode) return problem(`${path}.children`, 'is not a list')

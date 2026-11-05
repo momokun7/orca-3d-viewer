@@ -86,7 +86,7 @@ function padTo4(bytes: Uint8Array, fill: number): Uint8Array {
 }
 
 /** Packs a glTF JSON document and an optional BIN chunk into a GLB container. */
-export function glb(json: GltfJson, bin: Uint8Array | null = TRIANGLE_BIN): Uint8Array {
+export function glb(json: GltfJson, bin: Uint8Array | null = TRIANGLE_BIN): Uint8Array<ArrayBuffer> {
   const jsonChunk = padTo4(new TextEncoder().encode(JSON.stringify(json)), 0x20)
   const binChunk = bin ? padTo4(bin, 0) : null
   const total = 12 + 8 + jsonChunk.byteLength + (binChunk ? 8 + binChunk.byteLength : 0)

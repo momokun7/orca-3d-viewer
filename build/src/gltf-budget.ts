@@ -24,6 +24,10 @@ export const BUDGET = {
   images: 1024,
   textures: 4096,
   animationChannels: 100_000,
+  /** Keyframe tracks three.js builds: one per channel, more for weights on multi-primitive meshes. */
+  animationTracks: 100_000,
+  /** Everything above together, CPU and GPU, as one ceiling. */
+  totalBytes: 2 * 1024 * 1024 * 1024,
   imageSide: 16_384,
   skinJoints: 65_536,
   jointsPerSkin: 4096,
@@ -43,6 +47,8 @@ export type BudgetExcess =
         | 'images'
         | 'textures'
         | 'animationChannels'
+        | 'animationTracks'
+        | 'totalBytes'
         | 'skinJoints'
       value: number
       limit: number
@@ -77,6 +83,8 @@ type Context = {
   deadline: number
   dracoSizes: Map<number, DracoSize | null>
   imageSizes: Map<string, ImageSize | null>
+  /** Decoded images kept on the CPU (ImageBitmaps), once each. */
+  decodedImageBytes: number
 }
 
 function checkTime(context: Context): void {
@@ -96,12 +104,28 @@ function dracoSizeOf(context: Context, viewIndex: number): DracoSize | null {
   return context.dracoSizes.get(viewIndex) ?? null
 }
 
-/** Vertices a primitive draws, from its POSITION accessor or its Draco header. */
+/** Vertices a primitive stores, from its POSITION accessor or its Draco header. */
 function primitiveVertices(context: Context, primitive: Record<string, unknown>): number {
   const draco = isRecord(primitive.extensions) ? primitive.extensions.KHR_draco_mesh_compression : undefined
   if (isRecord(draco)) return dracoSizeOf(context, draco.bufferView as number)?.points ?? 0
   const position = context.accessors[(primitive.attributes as Record<string, number>).POSITION]
   return (position?.count as number | undefined) ?? 0
+}
+
+/**
+ * Vertices a primitive makes the GPU process each frame: one per index when indexed (strips and fans
+ * once rebuilt as triangle lists), each run once more per morph target the shader loops over.
+ */
+function primitiveDrawnVertices(context: Context, primitive: Record<string, unknown>): number {
+  const draco = isRecord(primitive.extensions) ? primitive.extensions.KHR_draco_mesh_compression : undefined
+  let drawn = isRecord(draco)
+    ? (dracoSizeOf(context, draco.bufferView as number)?.faces ?? 0) * 3
+    : typeof primitive.indices === 'number'
+      ? (context.accessors[primitive.indices].count as number)
+      : primitiveVertices(context, primitive)
+  if (STRIP_MODES.has(primitive.mode as number)) drawn = Math.max(0, drawn - 2) * 3
+  const targets = Array.isArray(primitive.targets) ? primitive.targets.length : 0
+  return drawn * (1 + targets)
 }
 
 function accessorBytes(context: Context): number {
@@ -125,9 +149,29 @@ function accessorBytes(context: Context): number {
   return total
 }
 
+/** GLTFLoader copies each buffer view it reads in full, once; charge every view something reads. */
+function bufferViewBytes(context: Context): number {
+  const used = new Set<number>()
+  for (const accessor of context.accessors) {
+    if (typeof accessor.bufferView === 'number') used.add(accessor.bufferView)
+    const sparse = accessor.sparse as Record<string, Record<string, unknown>> | undefined
+    if (sparse) used.add(sparse.indices.bufferView as number).add(sparse.values.bufferView as number)
+  }
+  for (const image of list(context.document, 'images')) if (typeof image.bufferView === 'number') used.add(image.bufferView)
+  for (const mesh of list(context.document, 'meshes')) {
+    for (const primitive of mesh.primitives as Records) {
+      const draco = isRecord(primitive.extensions) ? primitive.extensions.KHR_draco_mesh_compression : undefined
+      if (isRecord(draco)) used.add(draco.bufferView as number)
+    }
+  }
+  let total = 0
+  for (const index of used) total += context.bufferViews[index].byteLength as number
+  return total
+}
+
 function geometryBytes(context: Context): BudgetExcess | number {
   const { document, accessors } = context
-  let total = accessorBytes(context)
+  let total = accessorBytes(context) + bufferViewBytes(context)
   for (const view of context.bufferViews) {
     const extensions = isRecord(view.extensions) ? view.extensions : {}
     if (GLTF_MESHOPT_EXTENSIONS.some((name) => extensions[name] !== undefined)) total += view.byteLength as number
@@ -154,10 +198,34 @@ function geometryBytes(context: Context): BudgetExcess | number {
   return total > BUDGET.geometryBytes ? { kind: 'geometryBytes', value: total, limit: BUDGET.geometryBytes } : total
 }
 
-/** three.js builds a track per channel, and for weights one per mesh primitive, copying keys to floats. */
-function animationBytes(context: Context): number {
+/**
+ * Tracks three.js builds for a channel: one, except that weights on a node whose mesh has several
+ * primitives (a Group) get one per child with morph targets: its own primitives and its glTF children.
+ */
+function channelTracks(context: Context, target: Record<string, unknown>): number {
+  if (target.path !== 'weights' || typeof target.node !== 'number') return 1
   const nodes = list(context.document, 'nodes')
   const meshes = list(context.document, 'meshes')
+  const node = nodes[target.node]
+  const primitives = typeof node.mesh === 'number' ? (meshes[node.mesh].primitives as Records) : []
+  if (primitives.length <= 1) return 1
+  const morphChildren = ((node.children as number[] | undefined) ?? []).filter((child) => {
+    const mesh = nodes[child].mesh
+    return typeof mesh === 'number' && (meshes[mesh].primitives as Records).some((primitive) => Array.isArray(primitive.targets))
+  }).length
+  return primitives.length + morphChildren
+}
+
+function animationTracks(context: Context): number {
+  let total = 0
+  for (const animation of list(context.document, 'animations')) {
+    for (const channel of animation.channels as Records) total += channelTracks(context, channel.target as Record<string, unknown>)
+  }
+  return total
+}
+
+/** three.js copies each channel's keyframes to floats once per track it builds for the channel. */
+function animationBytes(context: Context): number {
   let total = 0
   for (const animation of list(context.document, 'animations')) {
     const samplers = animation.samplers as Records
@@ -165,10 +233,7 @@ function animationBytes(context: Context): number {
       const sampler = samplers[channel.sampler as number]
       const input = context.accessors[sampler.input as number]
       const output = context.accessors[sampler.output as number]
-      const target = channel.target as Record<string, unknown>
-      const node = typeof target.node === 'number' ? nodes[target.node] : undefined
-      const copies =
-        target.path === 'weights' && typeof node?.mesh === 'number' ? (meshes[node.mesh].primitives as unknown[]).length : 1
+      const copies = channelTracks(context, channel.target as Record<string, unknown>)
       const keys = (input.count as number) + (output.count as number) * TYPE_COMPONENTS.get(output.type as string)!
       total += keys * FLOAT_BYTES * copies
     }
@@ -211,7 +276,7 @@ function frameExcess(context: Context): BudgetExcess | null {
     // Why one per primitive: GPU instancing draws all instances of a node in a single call.
     drawCalls += primitives.length
     if (!meshVertices.has(node.mesh)) {
-      meshVertices.set(node.mesh, primitives.reduce((sum, primitive) => sum + primitiveVertices(context, primitive), 0))
+      meshVertices.set(node.mesh, primitives.reduce((sum, primitive) => sum + primitiveDrawnVertices(context, primitive), 0))
     }
     drawnVertices += meshVertices.get(node.mesh)! * instanceCount(context, node)
   }
@@ -219,6 +284,8 @@ function frameExcess(context: Context): BudgetExcess | null {
   if (drawnVertices > BUDGET.drawnVertices) return { kind: 'drawnVertices', value: drawnVertices, limit: BUDGET.drawnVertices }
   const channels = list(document, 'animations').reduce((sum, animation) => sum + (animation.channels as unknown[]).length, 0)
   if (channels > BUDGET.animationChannels) return { kind: 'animationChannels', value: channels, limit: BUDGET.animationChannels }
+  const tracks = animationTracks(context)
+  if (tracks > BUDGET.animationTracks) return { kind: 'animationTracks', value: tracks, limit: BUDGET.animationTracks }
   return null
 }
 
@@ -270,10 +337,20 @@ function textureBytes(context: Context): BudgetExcess | number {
   if (images.length > BUDGET.images) return { kind: 'images', value: images.length, limit: BUDGET.images }
   const textures = list(context.document, 'textures')
   if (textures.length > BUDGET.textures) return { kind: 'textures', value: textures.length, limit: BUDGET.textures }
+  const uses = textureUses(context.document)
+  // Only images a material's texture uses are ever decoded; the rest are never read.
+  const usedImages = new Set<number>()
+  for (const [textureIndex] of uses) {
+    const texture = textures[textureIndex]
+    const extensions = isRecord(texture.extensions) ? Object.values(texture.extensions) : []
+    for (const source of [texture.source, ...extensions.map((extension) => (isRecord(extension) ? extension.source : undefined))]) {
+      if (typeof source === 'number') usedImages.add(source)
+    }
+  }
   const imageBytes: number[] = []
   for (const [index, image] of images.entries()) {
-    // Why skip external images: the viewer never loads them, a white pixel stands in.
-    if (typeof image.uri === 'string' && !/^data:/i.test(image.uri)) {
+    // Why skip external and unused images: the viewer never decodes them (a white pixel stands in for external ones).
+    if ((typeof image.uri === 'string' && !/^data:/i.test(image.uri)) || !usedImages.has(index)) {
       imageBytes.push(RGBA_BYTES)
       continue
     }
@@ -286,7 +363,7 @@ function textureBytes(context: Context): BudgetExcess | number {
   }
   // three.js uploads one GPU texture per distinct image, sampler and colour space.
   const uploads = new Map<string, number>()
-  for (const [textureIndex, colorSpace] of textureUses(context.document)) {
+  for (const [textureIndex, colorSpace] of uses) {
     const texture = textures[textureIndex]
     const extensions = isRecord(texture.extensions) ? Object.values(texture.extensions) : []
     const sourcesUsed = [texture.source, ...extensions.map((extension) => (isRecord(extension) ? extension.source : undefined))]
@@ -294,6 +371,7 @@ function textureBytes(context: Context): BudgetExcess | number {
       if (typeof source === 'number') uploads.set(`${source}:${texture.sampler ?? -1}:${colorSpace}`, imageBytes[source] ?? 0)
     }
   }
+  context.decodedImageBytes = [...usedImages].reduce((sum, index) => sum + (imageBytes[index] ?? 0) / MIPMAPPED, 0)
   return [...uploads.values()].reduce((sum, bytes) => sum + bytes, 0)
 }
 
@@ -320,7 +398,8 @@ export function gltfBudgetExcess(
     sources: bufferSources(document, bin),
     deadline: performance.now() + timeLimitMs,
     dracoSizes: new Map(),
-    imageSizes: new Map()
+    imageSizes: new Map(),
+    decodedImageBytes: 0
   }
   try {
     const excess = skinExcess(document) ?? frameExcess(context)
@@ -330,7 +409,10 @@ export function gltfBudgetExcess(
     const textures = textureBytes(context)
     if (typeof textures !== 'number') return textures
     const gpu = textures + morphBytes(context)
-    return gpu > BUDGET.gpuBytes ? { kind: 'gpuBytes', value: gpu, limit: BUDGET.gpuBytes } : null
+    if (gpu > BUDGET.gpuBytes) return { kind: 'gpuBytes', value: gpu, limit: BUDGET.gpuBytes }
+    // Geometry lives twice (CPU arrays and GPU buffers), and decoded images stay on the CPU too.
+    const total = geometry * 2 + gpu + context.decodedImageBytes
+    return total > BUDGET.totalBytes ? { kind: 'totalBytes', value: total, limit: BUDGET.totalBytes } : null
   } catch (error) {
     if (error instanceof TooComplex) return { kind: 'tooComplex' }
     throw error

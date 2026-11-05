@@ -144,6 +144,7 @@ describe('decompression bombs', () => {
     const json = triangleGltf()
     json.images = [{ uri: `data:image/png;base64,${Buffer.from(pngHeader(60_000, 60_000)).toString('base64')}` }]
     json.textures = [{ source: 0 }]
+    json.materials = [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } } }]
     await refusedQuickly({ bytes: glb(json) }, /an image is 60,000 × 60,000 pixels/)
   })
 
@@ -179,6 +180,48 @@ describe('resource exhaustion', () => {
     const state = await frame.open({ bytes: glb(json) })
     assert.ok(state.kind === 'error' || state.kind === 'model')
     assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
+  })
+})
+
+describe('values three.js does not check', () => {
+  it('keeps a usable view when one vertex is NaN', async () => {
+    const json = triangleGltf()
+    const bin = TRIANGLE_BIN.slice()
+    new DataView(bin.buffer).setFloat32(24, Number.NaN, true)
+    const state = await frame.open({ bytes: glb(json, bin) })
+    assert.equal(state.kind, 'model')
+    assert.doesNotMatch(state.kind === 'model' ? state.figures.join(' ') : '', /NaN|Infinity/)
+    assertContained(await frame.report())
+  })
+
+  it('refuses a GLB carrying a second JSON chunk, which three.js would load instead', async () => {
+    const one = glb(triangleGltf())
+    const json = new TextEncoder().encode(JSON.stringify({ asset: { version: '2.0' }, nodes: [{ name: 'HOSTILE' }] }).padEnd(48, ' '))
+    const two = new Uint8Array(one.length + 8 + json.length)
+    two.set(one)
+    const view = new DataView(two.buffer)
+    view.setUint32(one.length, json.length, true)
+    view.setUint32(one.length + 4, 0x4e4f534a, true)
+    two.set(json, one.length + 8)
+    view.setUint32(8, two.length, true)
+    const state = await frame.open({ bytes: two })
+    assert.match(state.kind === 'error' ? state.message : '', /one JSON and one BIN/)
+    assertContained(await frame.report())
+  })
+
+  it('turns wireframe off for a model too large to build an edge list for', async () => {
+    const json = triangleGltf()
+    ;(json.accessors as Record<string, unknown>[]).push({
+      componentType: 5125,
+      type: 'SCALAR',
+      count: 9_000_000,
+      sparse: { count: 1, indices: { bufferView: 1, componentType: 5125 }, values: { bufferView: 1 } }
+    })
+    ;(json.meshes as { primitives: Record<string, unknown>[] }[])[0].primitives[0].indices = 3
+    const state = await frame.open({ bytes: glb(json) })
+    assert.equal(state.kind, 'model')
+    assert.equal(await frame.page.locator('button[aria-label="Wireframe"]').isDisabled(), true)
+    assertContained(await frame.report())
   })
 })
 

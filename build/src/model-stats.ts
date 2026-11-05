@@ -38,13 +38,13 @@ export function measureModel(root: Object3D): ModelStats {
     if (object.isMesh) {
       stats.triangles += Math.floor(elements / 3) * instances
     } else if (object.isPoints) {
-      stats.points += elements
+      stats.points += elements * instances
     } else if (object.isLineSegments) {
-      stats.lineSegments += Math.floor(elements / 2)
+      stats.lineSegments += Math.floor(elements / 2) * instances
     } else if (object.isLineLoop) {
-      stats.lineSegments += elements
+      stats.lineSegments += elements * instances
     } else if (object.isLine) {
-      stats.lineSegments += Math.max(0, elements - 1)
+      stats.lineSegments += Math.max(0, elements - 1) * instances
     }
   })
   return stats

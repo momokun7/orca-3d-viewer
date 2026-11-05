@@ -7,11 +7,13 @@ import {
   type Material,
   type Mesh,
   NeutralToneMapping,
+  NoColorSpace,
   type Object3D,
   PerspectiveCamera,
   PMREMGenerator,
   Scene,
   type SkinnedMesh,
+  Sphere,
   SRGBColorSpace,
   Texture,
   Timer,
@@ -26,8 +28,13 @@ import { measureModel, type ModelStats } from './model-stats.ts'
 import { createSceneAnimation, type SceneAnimation } from './scene-animation.ts'
 import { createSceneGuides, type ModelDimensions, type SceneGuides } from './scene-guides.ts'
 
+// Turning on wireframe makes three.js build a JavaScript array of two entries per index, then upload it.
+export const WIREFRAME_MAX_INDICES = 6_000_000
+
 export type ModelSummary = {
   stats: ModelStats
+  /** Whether wireframe can be shown without building an unbounded edge list. */
+  wireframeAvailable: boolean
   dimensions: ModelDimensions
   gridCellSize: number
   animationNames: string[]
@@ -87,14 +94,57 @@ function boundsWork(root: Object3D): number {
   return work
 }
 
+const isFiniteBox = (box: Box3): boolean =>
+  [box.min.x, box.min.y, box.min.z, box.max.x, box.max.y, box.max.z].every(Number.isFinite)
+
 /** The model's bounds, and whether it has any geometry at all. */
 function boundsOf(model: Object3D): { bounds: Box3; empty: boolean } {
   model.updateMatrixWorld(true)
-  const bounds = new Box3().setFromObject(model, boundsWork(model) <= PRECISE_BOUNDS_WORK)
+  let bounds = new Box3().setFromObject(model, boundsWork(model) <= PRECISE_BOUNDS_WORK)
+  // Why: precise bounds visit every vertex, and one NaN vertex makes them NaN; the geometries' own
+  // boxes skip such vertices.
+  if (!isFiniteBox(bounds)) bounds = new Box3().setFromObject(model, false)
   // Why: a model with no geometry (only empty nodes or lights) has empty bounds.
-  return bounds.isEmpty()
+  return bounds.isEmpty() || !isFiniteBox(bounds)
     ? { bounds: new Box3(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5)), empty: true }
     : { bounds, empty: false }
+}
+
+/** A geometry's box from its base positions, skipping vertices that are not finite numbers. */
+function finiteBox(geometry: BufferGeometry): Box3 {
+  const box = new Box3()
+  const position = geometry.getAttribute('position')
+  const point = new Vector3()
+  for (let index = 0; index < position.count; index++) {
+    point.fromBufferAttribute(position, index)
+    if (Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z)) box.expandByPoint(point)
+  }
+  return box
+}
+
+// Material slots three.js reads as sRGB colour; every other map holds data and must stay linear.
+const SRGB_SLOTS = new Set(['map', 'emissiveMap', 'sheenColorMap', 'specularColorMap'])
+
+/**
+ * GLTFLoader caches one texture per image and sets its colour space on that shared object, so a
+ * texture used both as colour and as data (a normal or ORM map) ends up sRGB in both. Data slots get
+ * their own linear copy instead.
+ */
+function separateColorSpaces(materials: Material[]): void {
+  const linearCopies = new Map<Texture, Texture>()
+  for (const material of materials) {
+    const slots = material as unknown as Record<string, unknown>
+    for (const [slot, value] of Object.entries(slots)) {
+      if (!(value instanceof Texture) || SRGB_SLOTS.has(slot) || value.colorSpace !== SRGBColorSpace) continue
+      let copy = linearCopies.get(value)
+      if (!copy) {
+        copy = value.clone()
+        copy.colorSpace = NoColorSpace
+        linearCopies.set(value, copy)
+      }
+      slots[slot] = copy
+    }
+  }
 }
 
 function collectMaterials(root: Object3D): Material[] {
@@ -115,18 +165,24 @@ function hasOwnLights(root: Object3D): boolean {
 }
 
 function prepareForDisplay(root: Object3D, anisotropy: number): void {
+  const measured = new Set<BufferGeometry>()
   root.traverse((node) => {
     // Why from the data: GLTFLoader takes these boxes from the file's min and max, which it never checks,
-    // and they decide what is culled.
+    // and they decide what is culled. Once per geometry, from the base shape only: morph targets would
+    // multiply the work, so morphing meshes are simply never culled.
     const geometry = (node as Mesh).geometry as BufferGeometry | undefined
-    if (geometry?.getAttribute('position')) {
-      geometry.computeBoundingBox()
-      geometry.computeBoundingSphere()
+    if (geometry?.getAttribute('position') && !measured.has(geometry)) {
+      measured.add(geometry)
+      geometry.boundingBox = finiteBox(geometry)
+      geometry.boundingSphere = geometry.boundingBox.getBoundingSphere(new Sphere())
     }
+    if (geometry && Object.keys(geometry.morphAttributes).length > 0) node.frustumCulled = false
     // Why: a skinned mesh's bounds follow its bind pose, so animated limbs would be culled at the edges.
     if ((node as SkinnedMesh).isSkinnedMesh) node.frustumCulled = false
   })
-  for (const material of collectMaterials(root)) {
+  const materials = collectMaterials(root)
+  separateColorSpaces(materials)
+  for (const material of materials) {
     for (const value of Object.values(material)) {
       if (value instanceof Texture) value.anisotropy = anisotropy
     }
@@ -311,6 +367,7 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
         }
         summary = {
           stats,
+          wireframeAvailable: stats.triangles * 3 + stats.lineSegments * 2 <= WIREFRAME_MAX_INDICES,
           dimensions: empty ? { width: 0, height: 0, depth: 0 } : guides.dimensions,
           gridCellSize: guides.gridCellSize,
           animationNames: animation.clipNames,

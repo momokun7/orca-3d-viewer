@@ -21,6 +21,14 @@ const check = (json: GltfJson, bin: Uint8Array | null = null): string | null => 
   return gltfBudgetExcess(json, bin)?.kind ?? null
 }
 
+
+/** Makes a material use image 0 through texture 0, so the budget sizes it (unused images are never decoded). */
+function useImage(json: GltfJson): GltfJson {
+  json.textures = [{ source: 0 }]
+  json.materials = [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } } }]
+  return json
+}
+
 describe('imageSize', () => {
   it('reads the size of every image format glTF allows from its header', async () => {
     assert.deepEqual(imageSize(bytesSource(pngHeader(30_000, 20))), { width: 30_000, height: 20 })
@@ -151,6 +159,8 @@ describe('gltfBudgetExcess after validation', () => {
     json.bufferViews = [{ buffer: 0, byteLength: draco.length }]
     json.accessors = [{ componentType: 5126, count: 3, type: 'VEC3', min: [0, 0, 0], max: [1, 1, 1] }]
     json.meshes = [{ primitives: [{ attributes: { POSITION: 0 }, extensions: { KHR_draco_mesh_compression: { bufferView: 0, attributes: { POSITION: 0 } } } }] }]
+    // Why no node draws it: the frame budget would refuse 150M drawn vertices first.
+    json.nodes = [{}]
     assert.equal(check(json), 'geometryBytes')
     json.buffers = [{ byteLength: 4, uri: base64Uri(new Uint8Array(4), 'application/octet-stream') }]
     json.bufferViews = [{ buffer: 0, byteLength: 4 }]
@@ -161,6 +171,7 @@ describe('gltfBudgetExcess after validation', () => {
     const json = triangleGltf()
     json.accessors = [{ componentType: 5126, count: 1_000_000, type: 'VEC3', sparse: { count: 1, indices: { bufferView: 1, componentType: 5125 }, values: { bufferView: 0 } } }]
     json.meshes = [{ primitives: [{ attributes: { POSITION: 0 }, targets: Array.from({ length: 100 }, () => ({ POSITION: 0 })) }] }]
+    json.nodes = [{}]
     assert.equal(check(json), 'gpuBytes')
   })
 
@@ -189,13 +200,14 @@ describe('gltfBudgetExcess after validation', () => {
   it('refuses images whose size cannot be read rather than decoding them blind', () => {
     const json = triangleGltf()
     json.images = [{ uri: base64Uri(bmpHeader(30_000, 17_000), 'image/bmp') }]
-    assert.equal(check(json), 'unreadableImage')
+    assert.equal(check(json), null, 'an image no texture uses is never decoded')
+    assert.equal(check(useImage(json)), 'unreadableImage')
   })
 
   it('refuses an image that would decode to more pixels than any GPU holds', () => {
     const json = triangleGltf()
     json.images = [{ uri: base64Uri(pngHeader(40_000, 40_000)) }]
-    assert.equal(check(json), 'imageSide')
+    assert.equal(check(useImage(json)), 'imageSide')
   })
 
   it('refuses more nodes or draw calls than a frame can draw', () => {

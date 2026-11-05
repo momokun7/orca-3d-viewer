@@ -38,6 +38,7 @@ jobs:
         working-directory: build
         env:
           FUZZ_RUNS: "50000"
+          ORACLE_RUNS: "2000"
         run: npm test
       - name: Browser fuzzing (corrupted and random models in the sandboxed frame)
         working-directory: build

@@ -10,14 +10,22 @@ export class DecodeAllowanceError extends Error {
 }
 
 let remaining = Number.POSITIVE_INFINITY
+let spent = 0
 
 /** Starts a parse with `bytes` of decoded output allowed. */
 export function resetDecodeAllowance(bytes: number): void {
   remaining = bytes
+  spent = 0
+}
+
+/** Decoded bytes counted since the parse started. */
+export function decodedBytes(): number {
+  return spent
 }
 
 /** Counts `bytes` of decoded output against the allowance; throws once it is spent. */
 export function spendDecodeAllowance(bytes: number): void {
   remaining -= bytes
+  spent += bytes
   if (remaining < 0) throw new DecodeAllowanceError()
 }

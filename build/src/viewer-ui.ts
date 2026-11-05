@@ -49,7 +49,8 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   const overlayIcon = element('span', { className: 'overlay-icon' })
   const overlayText = element('p')
   const overlay = element('div', { className: 'overlay' }, [overlayIcon, overlayText])
-  const notice = element('div', { className: 'notice', role: 'note', hidden: true })
+  // Why a status region: a later save that failed must be announced, not only shown.
+  const notice = element('div', { className: 'notice', role: 'status', hidden: true })
 
   const reset = toolButton(RotateCcw, t('resetView'))
   const wireframe = toolButton(Grid3x3, t('wireframe'))
@@ -155,12 +156,18 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
       paused = false
       setPressed(wireframe, wireframeOn)
       setPressed(guides, guidesOn)
+      if (!summary.wireframeAvailable) {
+        wireframeOn = false
+        setPressed(wireframe, false)
+      }
       modelActions.setWireframe(wireframeOn)
       modelActions.setGuidesVisible(guidesOn)
       overlay.hidden = true
       toolbar.hidden = false
       viewport.hidden = false
       setToolsEnabled(true)
+      wireframe.disabled = !summary.wireframeAvailable
+      wireframe.title = summary.wireframeAvailable ? t('wireframe') : t('wireframeTooLarge')
       notice.hidden = notices.length === 0
       notice.textContent = notices.join(' ')
 

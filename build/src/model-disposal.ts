@@ -17,8 +17,8 @@ function texturesOf(material: Material): Texture[] {
  * drawable kind (meshes, points, lines), materials, textures and the ImageBitmaps behind them, which
  * three.js never closes, skin bone textures and instance buffers. Shared resources are released once.
  */
-export function disposeObjectTree(root: Object3D): void {
-  const released = new Set<Disposable>()
+export function disposeObjectTree(root: Object3D, keep: ReadonlySet<object> = new Set()): void {
+  const released = new Set<Disposable>(keep as ReadonlySet<Disposable>)
   const release = (resource: Disposable | null | undefined): void => {
     if (!resource || released.has(resource)) return
     released.add(resource)
@@ -29,7 +29,7 @@ export function disposeObjectTree(root: Object3D): void {
     release(object.geometry)
     for (const material of materials(object)) {
       for (const texture of texturesOf(material)) {
-        if (!released.has(texture) && typeof ImageBitmap !== 'undefined' && texture.image instanceof ImageBitmap) {
+        if (!released.has(texture) && !keep.has(texture.image as object) && typeof ImageBitmap !== 'undefined' && texture.image instanceof ImageBitmap) {
           texture.image.close()
         }
         release(texture)
@@ -40,4 +40,22 @@ export function disposeObjectTree(root: Object3D): void {
     // Why only instanced meshes: their dispose() frees instance buffers, while a plain Object3D has none.
     if ('isInstancedMesh' in object && object.isInstancedMesh) release(object as unknown as Disposable)
   })
+}
+
+/** Everything under `root` that disposeObjectTree would release: to keep it while releasing another tree. */
+export function resourcesOf(root: Object3D): Set<object> {
+  const resources = new Set<object>()
+  root.traverse((node) => {
+    const object = node as Renderable
+    if (object.geometry) resources.add(object.geometry)
+    for (const material of materials(object)) {
+      resources.add(material)
+      for (const texture of texturesOf(material)) {
+        resources.add(texture)
+        if (texture.image) resources.add(texture.image as object)
+      }
+    }
+    if (object.skeleton instanceof Skeleton) resources.add(object.skeleton)
+  })
+  return resources
 }

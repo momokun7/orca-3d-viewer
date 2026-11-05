@@ -82,6 +82,27 @@ export function readGlbBinChunk(data: GltfModelData): Uint8Array | null {
   return chunk ? new Uint8Array(data, chunk.start, chunk.length) : null
 }
 
+/**
+ * Why a GLB is not laid out as the spec says it must be, or null when it is: the header's length is
+ * the file's, and the chunks are one JSON chunk then at most one BIN chunk, covering the file exactly.
+ * Anything else is refused, since three.js reads the last JSON and BIN chunks and the viewer the
+ * first: a second chunk would load a document the checks never saw.
+ */
+export function glbLayoutProblem(data: GltfModelData): string | null {
+  if (typeof data === 'string') return null
+  const chunks = readGlbChunks(data)
+  if (!chunks) return 'is not a GLB container'
+  const view = new DataView(data)
+  if (view.getUint32(8, true) !== data.byteLength) return 'has a length other than its header declares'
+  const covered = chunks.reduce((end, chunk) => Math.max(end, chunk.start + chunk.length), GLB_HEADER_BYTES)
+  if (covered !== data.byteLength) return 'has bytes outside its chunks'
+  if (chunks.length === 0 || chunks[0].type !== GLB_JSON_CHUNK_TYPE) return 'does not start with a JSON chunk'
+  if (chunks.length > 2 || (chunks.length === 2 && chunks[1].type !== GLB_BIN_CHUNK_TYPE)) {
+    return 'has chunks other than one JSON and one BIN chunk'
+  }
+  return null
+}
+
 export type GlbTruncation = { declaredBytes: number; actualBytes: number }
 
 /** A GLB shorter than its header says, as an interrupted download or copy leaves it; null otherwise. */

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import fc from 'fast-check'
 import { bytesSource } from '../src/byte-sources.ts'
-import { BUDGET, gltfBudgetExcess } from '../src/gltf-budget.ts'
+import { gltfBudgetExcess } from '../src/gltf-budget.ts'
 import { STRUCTURE_LIMITS, validateGltfStructure } from '../src/gltf-validation.ts'
 import { imageSize } from '../src/image-dimensions.ts'
 import { jpegHeader, solidKtx2 } from './fixtures/images.ts'
@@ -182,6 +182,8 @@ describe('budget multipliers', () => {
   it('stops checking and refuses when checking itself would freeze the frame', () => {
     const json = triangleGltf() as Mutable
     json.images = Array.from({ length: 64 }, () => ({ uri: `data:image/jpeg;base64,${Buffer.from(jpegHeader(8, 8)).toString('base64')}` }))
+    json.textures = json.images.map((_: unknown, source: number) => ({ source }))
+    json.materials = [{ pbrMetallicRoughness: { baseColorTexture: { index: 0 } }, emissiveTexture: { index: 1 } }]
     assert.equal(gltfBudgetExcess(json, TRIANGLE_BIN, -1)?.kind, 'tooComplex')
   })
 })
@@ -235,4 +237,3 @@ describe('structured fuzzing', () => {
   })
 })
 
-assert.ok(BUDGET.drawnVertices > 0)

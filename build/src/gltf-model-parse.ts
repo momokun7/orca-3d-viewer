@@ -12,7 +12,7 @@ import {
   isDataUri,
   isRecord
 } from './gltf-document-inspection.ts'
-import { disposeObjectTree } from './model-disposal.ts'
+import { disposeObjectTree, resourcesOf } from './model-disposal.ts'
 
 export type GltfModel = {
   scene: Object3D
@@ -95,7 +95,7 @@ async function meshoptDecoder(): Promise<typeof import('three/examples/jsm/libs/
  * Terminates the decoder workers, so a parse that timed out stops decoding instead of running on
  * beside the next one; the next parse that needs a decoder starts a fresh one.
  */
-function stopDecoders(): void {
+export function stopDecoders(): void {
   void dracoLoader?.then((loader) => loader.dispose())
   dracoLoader = null
   for (const loader of ktx2Loaders.values()) void loader.then((ktx2) => ktx2.dispose())
@@ -106,6 +106,13 @@ function stopDecoders(): void {
   }
 }
 
+export class ParseAbortedError extends Error {
+  constructor() {
+    super('a newer document replaced this one')
+    this.name = 'ParseAbortedError'
+  }
+}
+
 export class ParseTimeoutError extends Error {
   constructor(ms: number) {
     super(`glTF parse did not finish within ${ms} ms`)
@@ -113,17 +120,33 @@ export class ParseTimeoutError extends Error {
   }
 }
 
-/** Rejects after `ms`; a result that arrives later is released, since nobody will show it. */
-function withTimeout(parsing: Promise<GLTF>, ms: number): Promise<GLTF> {
+/**
+ * Rejects after `ms`, or when `signal` aborts; either way the decoders stop, and a result that
+ * arrives later is released, since nobody will show it.
+ */
+function withLimits(parsing: Promise<GLTF>, ms: number, signal: AbortSignal | undefined): Promise<GLTF> {
   let timer: ReturnType<typeof setTimeout> | undefined
-  const timeout = new Promise<never>((_, reject) => {
+  let onAbort: (() => void) | undefined
+  const abandon = (): void => {
+    parsing.then((late) => late.scenes.forEach((scene) => disposeObjectTree(scene))).catch(() => {})
+    stopDecoders()
+  }
+  const stopped = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
-      parsing.then((late) => late.scenes.forEach(disposeObjectTree)).catch(() => {})
-      stopDecoders()
+      abandon()
       reject(new ParseTimeoutError(ms))
     }, ms)
+    onAbort = () => {
+      abandon()
+      reject(new ParseAbortedError())
+    }
+    if (signal?.aborted) onAbort()
+    else signal?.addEventListener('abort', onAbort, { once: true })
   })
-  return Promise.race([parsing, timeout]).finally(() => clearTimeout(timer))
+  return Promise.race([parsing, stopped]).finally(() => {
+    clearTimeout(timer)
+    if (onAbort) signal?.removeEventListener('abort', onAbort)
+  })
 }
 
 function rootNodeIndices(document: GltfDocument): number[] {
@@ -141,8 +164,10 @@ function rootNodeIndices(document: GltfDocument): number[] {
 async function sceneOf(gltf: GLTF, document: GltfDocument): Promise<{ scene: Object3D; otherSceneCount: number }> {
   const sceneCount = Array.isArray(document.scenes) ? document.scenes.length : 0
   if (gltf.scene) {
-    // Why the other scenes are left alone: they may share nodes and materials with the default one,
-    // and never reach the GPU, so dropping the GLTF result frees them.
+    // Why release the other scenes: their decoded images would otherwise wait for garbage collection.
+    // What they share with the default scene stays.
+    const shown = resourcesOf(gltf.scene)
+    for (const other of gltf.scenes) if (other !== gltf.scene) disposeObjectTree(other, shown)
     return { scene: gltf.scene, otherSceneCount: Math.max(0, sceneCount - 1) }
   }
   const group = new Group()
@@ -156,12 +181,14 @@ export type ParseOptions = {
   /** Needed for KTX2 textures, which are transcoded to a format this GPU supports. */
   renderer?: WebGLRenderer
   timeoutMs?: number
+  /** Aborts the parse, as a newer document arriving does. */
+  signal?: AbortSignal
 }
 
 export async function parseGltfModel(
   data: GltfModelData,
   document: GltfDocument,
-  { renderer, timeoutMs = PARSE_TIMEOUT_MS }: ParseOptions = {}
+  { renderer, timeoutMs = PARSE_TIMEOUT_MS, signal }: ParseOptions = {}
 ): Promise<GltfModel> {
   const untrack = trackBlobUrls()
   try {
@@ -180,7 +207,7 @@ export async function parseGltfModel(
     // Why the parsed document for text: it saves parsing a large .gltf twice; a GLB needs its BIN chunk.
     // GLTFLoader.parse takes a parsed JSON object as well, though its typings list only text and bytes.
     const parse = loader.parseAsync.bind(loader) as (data: ArrayBuffer | string | GltfDocument, path: string) => Promise<GLTF>
-    const gltf = await withTimeout(parse(typeof data === 'string' ? document : data, ''), timeoutMs)
+    const gltf = await withLimits(parse(typeof data === 'string' ? document : data, ''), timeoutMs, signal)
     return { ...(await sceneOf(gltf, document)), animations: gltf.animations }
   } finally {
     untrack()
