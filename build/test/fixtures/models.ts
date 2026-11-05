@@ -184,7 +184,11 @@ const QUAD_INDICES = new Uint16Array([0, 1, 2, 0, 2, 3])
  * An unlit square textured with `png`, embedded either in the GLB's BIN chunk (GLTFLoader turns it
  * into a blob: URL) or as a data: URI in a .gltf text.
  */
-export function texturedQuad(png: Uint8Array, embedding: 'bufferView' | 'dataUri'): Uint8Array | string {
+export function texturedQuad(
+  png: Uint8Array,
+  embedding: 'bufferView' | 'dataUri',
+  { ktx2 = false }: { ktx2?: boolean } = {}
+): Uint8Array | string {
   const geometry = concatBytes([bytesOf(QUAD_POSITIONS), bytesOf(QUAD_UVS), new Uint8Array(QUAD_INDICES.buffer)])
   const imageOffset = geometry.byteLength
   const bin = concatBytes([geometry, padTo4(png, 0)])
@@ -208,16 +212,23 @@ export function texturedQuad(png: Uint8Array, embedding: 'bufferView' | 'dataUri
       { bufferView: 2, componentType: 5123, count: 6, type: 'SCALAR' }
     ]
   }
+  if (ktx2) {
+    // The texture's image is a KTX2 file, read through KHR_texture_basisu.
+    json.extensionsUsed = ['KHR_materials_unlit', 'KHR_texture_basisu']
+    json.extensionsRequired = ['KHR_texture_basisu']
+    json.textures = [{ extensions: { KHR_texture_basisu: { source: 0 } } }]
+  }
+  const mimeType = ktx2 ? 'image/ktx2' : 'image/png'
   if (embedding === 'bufferView') {
     json.buffers = [{ byteLength: bin.byteLength }]
     ;(json.bufferViews as unknown[]).push({ buffer: 0, byteOffset: imageOffset, byteLength: png.byteLength })
-    json.images = [{ bufferView: 3, mimeType: 'image/png' }]
+    json.images = [{ bufferView: 3, mimeType }]
     return glb(json, bin)
   }
   json.buffers = [
     { byteLength: geometry.byteLength, uri: `data:application/octet-stream;base64,${Buffer.from(geometry).toString('base64')}` }
   ]
-  json.images = [{ uri: `data:image/png;base64,${Buffer.from(png).toString('base64')}` }]
+  json.images = [{ uri: `data:${mimeType};base64,${Buffer.from(png).toString('base64')}` }]
   return JSON.stringify(json)
 }
 

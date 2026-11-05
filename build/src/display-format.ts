@@ -36,8 +36,9 @@ export function formatBytes(bytes: number, locale: string): string {
   return `${new Intl.NumberFormat(locale, { maximumSignificantDigits: 3 }).format(value)} ${units[index]}`
 }
 
-// Bidirectional overrides and isolates, and C0/C1 controls: they can reorder or hide text around them.
-const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f-\u009f؜‎‏‪-‮⁦-⁩]/g
+// Controls (Cc), invisible formatting such as bidirectional overrides, zero-width characters and tags
+// (Cf), and line or paragraph separators: they can reorder, hide or split the text around them.
+const CONTROL_CHARACTERS = /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu
 export const MAX_NAME_CHARACTERS = 80
 export const MAX_LISTED_NAMES = 3
 

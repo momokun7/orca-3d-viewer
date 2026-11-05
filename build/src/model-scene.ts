@@ -9,8 +9,9 @@ import {
   PerspectiveCamera,
   PMREMGenerator,
   Scene,
+  type SkinnedMesh,
   SRGBColorSpace,
-  type Texture,
+  Texture,
   Timer,
   Vector3,
   WebGLRenderer
@@ -32,8 +33,13 @@ export type ModelSummary = {
 }
 
 export type ModelStage = {
-  /** Shows `model` in place of the current one; keeps the camera when `keepView` and the bounds are alike. */
-  show: (model: GltfModel, keepView: boolean) => ModelSummary
+  /** The renderer KTX2 textures are transcoded for. */
+  renderer: WebGLRenderer
+  /**
+   * Shows `model` in place of the current one once its shaders are compiled; keeps the camera when
+   * `keepView` and the bounds are alike. On failure the current model stays and `model` is released.
+   */
+  show: (model: GltfModel, keepView: boolean) => Promise<ModelSummary>
   /** Removes and releases the current model. */
   clear: () => void
   resetView: () => void
@@ -51,6 +57,9 @@ export type StageEvents = {
 
 // Why cap: past 2, each step multiplies the pixels shaded for little visible gain.
 export const MAX_PIXEL_RATIO = 2
+// Up to this many vertices the bounds follow the vertices, so rotated parts are not overstated.
+export const PRECISE_BOUNDS_VERTICES = 2_000_000
+const MAX_ANISOTROPY = 8
 const DEFAULT_LIGHT_INTENSITIES = { hemisphere: 0.6, key: 1.2 }
 
 type Shown = {
@@ -62,9 +71,9 @@ type Shown = {
   materials: Material[]
 }
 
-function boundsOf(model: Object3D): Box3 {
+function boundsOf(model: Object3D, vertices: number): Box3 {
   model.updateMatrixWorld(true)
-  const bounds = new Box3().setFromObject(model)
+  const bounds = new Box3().setFromObject(model, vertices <= PRECISE_BOUNDS_VERTICES)
   // Why: a model with no geometry (only empty nodes or lights) has empty bounds.
   return bounds.isEmpty() ? new Box3(new Vector3(-0.5, -0.5, -0.5), new Vector3(0.5, 0.5, 0.5)) : bounds
 }
@@ -86,6 +95,18 @@ function hasOwnLights(root: Object3D): boolean {
   return found
 }
 
+function prepareForDisplay(root: Object3D, anisotropy: number): void {
+  root.traverse((node) => {
+    // Why: a skinned mesh's bounds follow its bind pose, so animated limbs would be culled at the edges.
+    if ((node as SkinnedMesh).isSkinnedMesh) node.frustumCulled = false
+  })
+  for (const material of collectMaterials(root)) {
+    for (const value of Object.values(material)) {
+      if (value instanceof Texture) value.anisotropy = anisotropy
+    }
+  }
+}
+
 /**
  * One renderer, environment and camera for the life of the frame: a document change swaps the model
  * only, so reloads never pile up WebGL contexts (Chromium evicts the oldest past 16 per process).
@@ -98,6 +119,7 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
   canvas.style.display = 'block'
   canvas.tabIndex = 0
   host.appendChild(canvas)
+  const anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), MAX_ANISOTROPY)
 
   const scene = new Scene()
   const hemisphere = new HemisphereLight(0xffffff, 0x444444, DEFAULT_LIGHT_INTENSITIES.hemisphere)
@@ -122,16 +144,19 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
   controls.listenToKeyEvents(canvas)
   let shown: Shown | null = null
   let contextLost = false
+  let onScreen = true
 
   const render = (): void => {
-    if (!contextLost) renderer.render(scene, camera)
+    if (!contextLost && onScreen) renderer.render(scene, camera)
   }
-  // Why per change: fixed near/far set at reset clip the model when zooming far in or out.
+  // Why from the model's centre, not the orbit target: panning away from the model must not clip it.
   const updateClipping = (): void => {
+    const center = shown?.center ?? controls.target
     const radius = shown?.radius ?? 1
-    const distance = camera.position.distanceTo(controls.target)
-    camera.near = Math.max(distance / 1000, (distance - radius * 4) * 0.5, 1e-6)
-    camera.far = distance + radius * 8
+    const distance = camera.position.distanceTo(center)
+    camera.far = distance + radius * 4
+    // Why the floor at far / 1e4: a 24-bit depth buffer cannot separate surfaces past that ratio.
+    camera.near = Math.max(distance - radius * 4, camera.far / 1e4, 1e-6)
     camera.updateProjectionMatrix()
   }
   controls.addEventListener('change', () => {
@@ -140,17 +165,19 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
   })
 
   const timer = new Timer()
+  const running = (): boolean =>
+    shown !== null && !contextLost && onScreen && !document.hidden && shown.animation.isRunning()
   const loop = (): void => {
-    if (!shown || contextLost || document.hidden || !shown.animation.isRunning()) {
+    if (!running()) {
       renderer.setAnimationLoop(null)
       return
     }
     timer.update()
-    shown.animation.update(timer.getDelta())
+    shown!.animation.update(timer.getDelta())
     render()
   }
   const startLoop = (): void => {
-    if (shown?.animation.isRunning() && !contextLost && !document.hidden) {
+    if (running()) {
       timer.reset()
       renderer.setAnimationLoop(loop)
     }
@@ -159,6 +186,15 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
     if (!document.hidden) startLoop()
   }
   document.addEventListener('visibilitychange', onVisibilityChange)
+  // Why also an intersection check: a tab Orca hides with CSS still reports the document as visible.
+  const visibility = new IntersectionObserver(([entry]) => {
+    onScreen = entry?.isIntersecting ?? true
+    if (onScreen) {
+      render()
+      startLoop()
+    }
+  })
+  visibility.observe(host)
 
   const resize = (): void => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO))
@@ -206,53 +242,78 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
     controls.minDistance = radius * 1e-3
     controls.maxDistance = radius * 100
     controls.update()
-    updateClipping()
+  }
+
+  const release = (entry: Shown): void => {
+    entry.animation.dispose()
+    scene.remove(entry.model, entry.guides.group)
+    disposeObjectTree(entry.model)
+    entry.guides.dispose()
   }
 
   const clear = (): void => {
     if (!shown) return
     renderer.setAnimationLoop(null)
-    shown.animation.dispose()
-    scene.remove(shown.model, shown.guides.group)
-    disposeObjectTree(shown.model)
-    shown.guides.dispose()
+    release(shown)
     shown = null
     render()
   }
 
   return {
-    show: (model, keepView) => {
+    renderer,
+    show: async (model, keepView) => {
+      let guides: SceneGuides | null = null
+      let animation: SceneAnimation | null = null
+      let next: Shown
+      let summary: ModelSummary
+      try {
+        const stats = measureModel(model.scene)
+        const bounds = boundsOf(model.scene, stats.vertices)
+        const center = bounds.getCenter(new Vector3())
+        const radius = Math.max(bounds.getSize(new Vector3()).length() / 2, 1e-6)
+        prepareForDisplay(model.scene, anisotropy)
+        guides = createSceneGuides(bounds)
+        animation = createSceneAnimation(model.scene, model.animations)
+        next = { model: model.scene, guides, animation, center, radius, materials: collectMaterials(model.scene) }
+        // Why compile first: programs for heavy materials otherwise compile inside the first frame.
+        // Without parallel compilation (software GL) compileAsync only warns, so compile directly.
+        if (renderer.extensions.has('KHR_parallel_shader_compile')) await renderer.compileAsync(model.scene, camera, scene)
+        else renderer.compile(model.scene, camera, scene)
+        summary = {
+          stats,
+          dimensions: guides.dimensions,
+          gridCellSize: guides.gridCellSize,
+          animationNames: animation.clipNames,
+          otherSceneCount: model.otherSceneCount
+        }
+      } catch (error) {
+        animation?.dispose()
+        guides?.dispose()
+        disposeObjectTree(model.scene)
+        throw error
+      }
+
       const previous = shown
-      const bounds = boundsOf(model.scene)
-      const center = bounds.getCenter(new Vector3())
-      const radius = Math.max(bounds.getSize(new Vector3()).length() / 2, 1e-6)
-      const guides = createSceneGuides(bounds)
+      const alike =
+        previous !== null &&
+        previous.center.distanceTo(next.center) < Math.max(previous.radius, next.radius) * 0.5 &&
+        next.radius / previous.radius > 0.5 &&
+        next.radius / previous.radius < 2
       const ownLights = hasOwnLights(model.scene)
       hemisphere.intensity = ownLights ? DEFAULT_LIGHT_INTENSITIES.hemisphere * 0.25 : DEFAULT_LIGHT_INTENSITIES.hemisphere
       keyLight.visible = !ownLights
-      const alike =
-        previous !== null &&
-        previous.center.distanceTo(center) < Math.max(previous.radius, radius) * 0.5 &&
-        radius / previous.radius > 0.5 &&
-        radius / previous.radius < 2
       clear()
-      const animation = createSceneAnimation(model.scene, model.animations)
-      shown = { model: model.scene, guides, animation, center, radius, materials: collectMaterials(model.scene) }
-      scene.add(model.scene, guides.group)
-      if (!(keepView && alike)) frame(center, radius)
+      shown = next
+      scene.add(next.model, next.guides.group)
+      if (!(keepView && alike)) frame(next.center, next.radius)
       updateClipping()
       render()
-      return {
-        stats: measureModel(model.scene),
-        dimensions: guides.dimensions,
-        gridCellSize: guides.gridCellSize,
-        animationNames: animation.clipNames,
-        otherSceneCount: model.otherSceneCount
-      }
+      return summary
     },
     clear,
     resetView: () => {
       if (shown) frame(shown.center, shown.radius)
+      updateClipping()
       render()
     },
     setWireframe: (enabled) => {
@@ -280,6 +341,7 @@ export function createModelStage(host: HTMLElement, events: StageEvents): ModelS
       clear()
       document.removeEventListener('visibilitychange', onVisibilityChange)
       pixelRatioQuery?.removeEventListener('change', watchPixelRatio)
+      visibility.disconnect()
       observer.disconnect()
       canvas.removeEventListener('webglcontextlost', onContextLost)
       canvas.removeEventListener('webglcontextrestored', onContextRestored)

@@ -115,7 +115,12 @@ export async function launchBrowser(): Promise<Browser> {
   // ORCA_TEST_ANGLE=native keeps the platform's own backend (D3D11 on Windows, Metal on macOS).
   const native = process.env.ORCA_TEST_ANGLE === 'native'
   browser ??= await chromium.launch({
-    args: [...(native ? [] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']), '--ignore-gpu-blocklist']
+    args: [
+      ...(native ? [] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']),
+      '--ignore-gpu-blocklist',
+      // Why: the leak test collects garbage before it measures the heap.
+      '--js-flags=--expose-gc'
+    ]
   })
   return browser
 }

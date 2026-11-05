@@ -69,10 +69,62 @@ export function ktx2Header(width: number, height: number): Uint8Array {
   return out
 }
 
-export function gifHeader(width: number, height: number): Uint8Array {
-  const out = Buffer.alloc(32)
-  out.write('GIF89a', 0, 'ascii')
-  out.writeUInt16LE(width, 6)
-  out.writeUInt16LE(height, 8)
+/** A complete, uncompressed RGBA8 sRGB KTX2 texture of one colour. */
+export async function solidKtx2(width: number, height: number, [r, g, b]: [number, number, number]): Promise<Uint8Array> {
+  const ktx = await import('ktx-parse')
+  const container = ktx.createDefaultContainer()
+  container.vkFormat = ktx.VK_FORMAT_R8G8B8A8_SRGB
+  container.typeSize = 1
+  container.pixelWidth = width
+  container.pixelHeight = height
+  const pixels = new Uint8Array(width * height * 4)
+  for (let at = 0; at < pixels.length; at += 4) pixels.set([r, g, b, 255], at)
+  container.levels = [{ levelData: pixels, uncompressedByteLength: pixels.length }]
+  const [dfd] = container.dataFormatDescriptor
+  dfd.colorModel = ktx.KHR_DF_MODEL_RGBSDA
+  dfd.colorPrimaries = ktx.KHR_DF_PRIMARIES_BT709
+  dfd.transferFunction = ktx.KHR_DF_TRANSFER_SRGB
+  dfd.texelBlockDimension = [0, 0, 0, 0]
+  dfd.bytesPlane = [4, 0, 0, 0, 0, 0, 0, 0]
+  dfd.samples = [ktx.KHR_DF_CHANNEL_RGBSDA_RED, ktx.KHR_DF_CHANNEL_RGBSDA_GREEN, ktx.KHR_DF_CHANNEL_RGBSDA_BLUE, ktx.KHR_DF_CHANNEL_RGBSDA_ALPHA].map(
+    (channelType, index) => ({
+      bitOffset: index * 8,
+      bitLength: 7,
+      channelType: channelType | (index === 3 ? 0x40 : 0),
+      samplePosition: [0, 0, 0, 0],
+      sampleLower: 0,
+      sampleUpper: 255
+    })
+  )
+  return ktx.write(container)
+}
+
+export function bmpHeader(width: number, height: number): Uint8Array {
+  const out = Buffer.alloc(54)
+  out.write('BM', 0, 'ascii')
+  out.writeUInt32LE(40, 14)
+  out.writeInt32LE(width, 18)
+  out.writeInt32LE(height, 22)
   return out
+}
+
+function box(type: string, ...children: Uint8Array[]): Buffer {
+  const body = Buffer.concat(children)
+  const head = Buffer.alloc(8)
+  head.writeUInt32BE(8 + body.length, 0)
+  head.write(type, 4, 'ascii')
+  return Buffer.concat([head, body])
+}
+
+/** An AVIF skeleton whose 'ispe' box claims a size, after `padding` bytes of media data. */
+export function avifHeader(width: number, height: number, padding = 0): Uint8Array {
+  const ispeBody = Buffer.alloc(12)
+  ispeBody.writeUInt32BE(width, 4)
+  ispeBody.writeUInt32BE(height, 8)
+  const fullBox = Buffer.alloc(4)
+  return Buffer.concat([
+    box('ftyp', Buffer.from('avif\0\0\0\0avifmif1', 'ascii')),
+    box('mdat', Buffer.alloc(padding)),
+    box('meta', fullBox, box('hdlr', Buffer.alloc(24)), box('iprp', box('ipco', box('ispe', ispeBody))))
+  ])
 }

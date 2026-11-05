@@ -47,7 +47,8 @@ function restorePose(poses: RestPose[]): void {
     object.quaternion.copy(quaternion)
     object.scale.copy(scale)
     const influences = (object as Object3D & { morphTargetInfluences?: number[] }).morphTargetInfluences
-    if (morph && influences) influences.splice(0, influences.length, ...morph)
+    // Why a loop: spreading a long list into splice() overflows the call stack.
+    if (morph && influences) for (let index = 0; index < morph.length; index++) influences[index] = morph[index]
   }
 }
 

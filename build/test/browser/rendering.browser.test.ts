@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, afterEach, beforeEach, describe, it } from 'node:test'
-import { solidPng } from '../fixtures/images.ts'
+import { solidKtx2, solidPng } from '../fixtures/images.ts'
 import {
   dracoGlb,
   embeddedGltfText,
@@ -34,13 +34,19 @@ describe('rendering', () => {
   it('shows a GLB with its vertex count, size and grid', async () => {
     const state = await frame.open({ bytes: glb(triangleGltf()) })
     assert.equal(state.kind, 'model')
-    assert.deepEqual(state.kind === 'model' && state.figures, ['3 vertices · 1 triangles', '1 × 1 × 0 m', 'Grid 0.1 m'])
+    assert.deepEqual(state.kind === 'model' && state.figures, ['3 vertices · 1 triangle', '1 × 1 × 0 m', 'Grid 0.1 m'])
     assertContained(await frame.report())
   })
 
-  for (const embedding of ['bufferView', 'dataUri'] as const) {
-    it(`draws a texture embedded as a ${embedding}, not the stand-in for blocked images`, async () => {
-      const model = texturedQuad(solidPng(8, 8, [200, 0, 0]), embedding)
+  for (const [format, embedding] of [
+    ['PNG', 'bufferView'],
+    ['PNG', 'dataUri'],
+    ['KTX2', 'bufferView'],
+    ['KTX2', 'dataUri']
+  ] as const) {
+    it(`draws a ${format} texture embedded as a ${embedding}, not the stand-in for blocked images`, async () => {
+      const image = format === 'PNG' ? solidPng(8, 8, [200, 0, 0]) : await solidKtx2(8, 8, [200, 0, 0])
+      const model = texturedQuad(image, embedding, { ktx2: format === 'KTX2' })
       const state = await frame.open(typeof model === 'string' ? { text: model } : { bytes: model })
       assert.equal(state.kind, 'model')
       const [r, g, b] = await frame.pixel(...(await canvasCentre()))
@@ -82,7 +88,7 @@ describe('rendering', () => {
 
   it('shows every root node of a file that has no scenes', async () => {
     const state = await frame.open({ bytes: scenelessGlb() })
-    assert.equal(state.kind === 'model' && state.figures[0], '3 vertices · 1 triangles')
+    assert.equal(state.kind === 'model' && state.figures[0], '3 vertices · 1 triangle')
     assertContained(await frame.report())
   })
 
@@ -90,7 +96,7 @@ describe('rendering', () => {
     const json = triangleGltf()
     json.scenes = [{ nodes: [0] }, { nodes: [] }, { nodes: [] }]
     const state = await frame.open({ bytes: glb(json) })
-    assert.match(state.kind === 'model' ? (state.notice ?? '') : '', /2 more scene/)
+    assert.match(state.kind === 'model' ? (state.notice ?? '') : '', /2 more scenes; the default/)
     assertContained(await frame.report())
   })
 
@@ -125,7 +131,8 @@ describe('localization', () => {
       const odd = await openFrame({ locale })
       try {
         assert.equal((await odd.open({ bytes: glb(triangleGltf()) })).kind, 'model')
-        assert.equal((await odd.open({ bytes: glb(triangleGltf()).slice(0, -8) })).kind, 'error')
+        const cut = await odd.open({ bytes: glb(triangleGltf()).slice(0, -8) })
+        assert.match(cut.kind === 'model' ? (cut.notice ?? '') : '', /cut short|途中で切れて/)
         assertContained(await odd.report())
       } finally {
         await odd.close()

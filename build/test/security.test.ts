@@ -11,6 +11,7 @@ import { createTranslate } from '../src/messages.ts'
 import { glb, triangleGltf } from './fixtures/models.ts'
 
 const FUZZ_RUNS = Number(process.env.FUZZ_RUNS ?? 2000)
+const FUZZ_SEED = process.env.FUZZ_SEED ? Number(process.env.FUZZ_SEED) : undefined
 const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const SRC = path.join(ROOT, 'build', 'src')
 const ORIGIN = 'orca-plugin-frame://0123456789abcdef'
@@ -47,7 +48,7 @@ describe('resolveResourceUrl', () => {
         const resolved = resolveResourceUrl(url, new Set([OWN_BLOB]))
         assert.ok(resolved === BLOCKED_RESOURCE_URL || (resolved === url && (/^data:/i.test(url) || url === OWN_BLOB)))
       }),
-      { numRuns: FUZZ_RUNS }
+      { numRuns: FUZZ_RUNS, seed: FUZZ_SEED }
     )
   })
 
@@ -65,7 +66,7 @@ describe('readGltfDocument on hostile bytes', () => {
         const document = readGltfDocument(bytes.slice().buffer)
         assert.ok(document === null || (typeof document === 'object' && !Array.isArray(document)))
       }),
-      { numRuns: FUZZ_RUNS }
+      { numRuns: FUZZ_RUNS, seed: FUZZ_SEED }
     )
   })
 
@@ -80,7 +81,7 @@ describe('readGltfDocument on hostile bytes', () => {
           readGltfDocument(bytes.buffer)
         }
       ),
-      { numRuns: FUZZ_RUNS }
+      { numRuns: FUZZ_RUNS, seed: FUZZ_SEED }
     )
   })
 
@@ -90,7 +91,7 @@ describe('readGltfDocument on hostile bytes', () => {
         const document = readGltfDocument(text)
         assert.ok(document === null || typeof document === 'object')
       }),
-      { numRuns: FUZZ_RUNS }
+      { numRuns: FUZZ_RUNS, seed: FUZZ_SEED }
     )
   })
 })
@@ -110,7 +111,7 @@ describe('gltfExternalResources on hostile documents', () => {
           }
         }
       ),
-      { numRuns: FUZZ_RUNS }
+      { numRuns: FUZZ_RUNS, seed: FUZZ_SEED }
     )
   })
 })
@@ -141,9 +142,15 @@ describe('source', () => {
     [/orca\??\.(host|shell|files)\b|applyEdit|\.session\s*\(/, 'calls Orca beyond reading the document']
   ]
 
+  // Why strip comments: they may name these APIs while explaining what the code does instead.
+  const code = (file: string): string =>
+    readFileSync(path.join(SRC, file), 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/(^|[^:'"`\\])\/\/.*$/gm, '$1')
+
   for (const file of readdirSync(SRC).filter((name) => /\.(ts|css)$/.test(name))) {
     it(`${file} uses no API outside the viewer’s sandbox`, () => {
-      const text = readFileSync(path.join(SRC, file), 'utf8')
+      const text = code(file)
       for (const [pattern, reason] of FORBIDDEN) {
         assert.doesNotMatch(text, pattern, `${file} ${reason}`)
       }

@@ -24,9 +24,20 @@ describe('saving the file again', () => {
       const other = document.createElement('canvas').getContext('webgl2')
       ;(window as unknown as { __other: unknown }).__other = other
     })
+    const heapAfterGc = (): Promise<number> =>
+      frame.page.evaluate(() => {
+        ;(window as unknown as { gc: () => void }).gc()
+        return (performance as unknown as { memory: { usedJSHeapSize: number } }).memory.usedJSHeapSize
+      })
+    const draco = await dracoGlb()
+    let baseline = 0
     for (let save = 0; save < 24; save++) {
-      assert.equal((await frame.open({ bytes: glb(triangleGltf({ animationNames: [`Save ${save}`] })) })).kind, 'model')
+      const bytes = save % 2 ? draco : glb(triangleGltf({ animationNames: [`Save ${save}`] }))
+      assert.equal((await frame.open({ bytes })).kind, 'model')
+      if (save === 3) baseline = await heapAfterGc()
     }
+    const growth = (await heapAfterGc()) - baseline
+    assert.ok(growth < 8 * 1024 * 1024, `the heap grew by ${growth} bytes over 20 saves`)
     const otherLost = await frame.page.evaluate(
       () => ((window as unknown as { __other: WebGL2RenderingContext }).__other).isContextLost()
     )
@@ -61,12 +72,22 @@ describe('saving the file again', () => {
     assert.equal(await frame.page.locator('button[aria-label="Wireframe"]').getAttribute('aria-pressed'), 'true')
   })
 
-  it('ignores a resend of the version already on screen', async () => {
-    await frame.open({ bytes: glb(triangleGltf()) }, { version: 7 })
-    await frame.page.locator('button[aria-label="Wireframe"]').click()
-    const before = await screenshot()
-    assert.equal((await frame.open({ bytes: glb(triangleGltf()) }, { version: 7 })).kind, 'model')
-    assert.ok(before.equals(await screenshot()))
+  it('ignores a resend of the version already on screen, whatever it carries', async () => {
+    await frame.open({ bytes: glb(triangleGltf({ animationNames: ['First'] })) }, { version: 7 })
+    await frame.open({ bytes: glb(triangleGltf({ animationNames: ['Resent'] })) }, { version: 7 })
+    assert.equal(await frame.page.locator('.clip-name').innerText(), 'First')
+  })
+
+  it('keeps the last good model up when a later save cannot be shown, and says why', async () => {
+    await frame.open({ bytes: glb(triangleGltf({ animationNames: ['Good'] })) })
+    const half = await frame.open({ bytes: glb(triangleGltf()).slice(0, 40) })
+    assert.equal(half.kind, 'model')
+    assert.match(half.kind === 'model' ? (half.notice ?? '') : '', /latest save could not be shown.*cut short/)
+    assert.equal(await frame.page.locator('.clip-name').innerText(), 'Good')
+    const whole = await frame.open({ bytes: glb(triangleGltf({ animationNames: ['Whole'] })) })
+    assert.equal(whole.kind === 'model' && whole.notice, null)
+    assert.equal(await frame.page.locator('.clip-name').innerText(), 'Whole')
+    assertContained(await frame.report())
   })
 
   it('settles on the last of a burst of saves, with one canvas', async () => {

@@ -1,7 +1,8 @@
 // Builds ../editor:
 //   index.html                the page, with its stylesheet inline;
 //   assets/main-<hash>.js     the page's code, plus chunks loaded only for Draco or Meshopt models;
-//   draco/                    the Draco WebAssembly decoder three.js ships.
+//   draco/                    the Draco WebAssembly decoder three.js ships;
+//   basis/                    the Basis Universal transcoder three.js ships, for KTX2 textures.
 // Also writes ../THIRD_PARTY_NOTICES.txt from the packages that end up in the build.
 // Usage: npm ci && node build.mjs
 import { build } from 'esbuild'
@@ -14,6 +15,8 @@ const EDITOR = path.join(PLUGIN, 'editor')
 const NOTICES = path.join(PLUGIN, 'THIRD_PARTY_NOTICES.txt')
 const DRACO = path.join(HERE, 'node_modules', 'three', 'examples', 'jsm', 'libs', 'draco', 'gltf')
 const DRACO_FILES = ['draco_wasm_wrapper.js', 'draco_decoder.wasm']
+const BASIS = path.join(HERE, 'node_modules', 'three', 'examples', 'jsm', 'libs', 'basis')
+const BASIS_FILES = ['basis_transcoder.js', 'basis_transcoder.wasm']
 // Why: Orca's official catalog refuses any plugin file over 1 MiB; keep to the same bar.
 const MAX_FILE_BYTES = 1024 * 1024
 
@@ -58,6 +61,10 @@ const written = [
   ...DRACO_FILES.map((name) => ({
     file: path.join(EDITOR, 'draco', name),
     bytes: readFileSync(path.join(DRACO, name))
+  })),
+  ...BASIS_FILES.map((name) => ({
+    file: path.join(EDITOR, 'basis', name),
+    bytes: readFileSync(path.join(BASIS, name))
   }))
 ]
 for (const { file, bytes } of written) {
@@ -100,7 +107,10 @@ const three = packages.get('three')
 const sections = [
   ...[...packages.values()].sort((a, b) => a.name.localeCompare(b.name)).map(packageSection),
   `meshoptimizer decoder, bundled in three@${three.version} (MIT)\nhttps://github.com/zeux/meshoptimizer\n\n${reviewedLicence('meshoptimizer.txt')}`,
-  `Draco decoder (editor/draco/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/google/draco\n\n${reviewedLicence('draco-apache-2.0.txt')}`
+  `ktx-parse, bundled in three@${three.version} (MIT)\nhttps://github.com/donmccurdy/KTX-Parse\n\n${reviewedLicence('ktx-parse.txt')}`,
+  `zstddec, bundled in three@${three.version} (MIT)\nhttps://github.com/donmccurdy/zstddec\n\n${reviewedLicence('zstddec.txt')}`,
+  `Draco decoder (editor/draco/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/google/draco\n\n${reviewedLicence('apache-2.0.txt')}`,
+  `Basis Universal transcoder (editor/basis/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/BinomialLLC/basis_universal\n\n${reviewedLicence('basis-universal-notice.txt')}\n\n${reviewedLicence('apache-2.0.txt')}`
 ]
 writeFileSync(
   NOTICES,

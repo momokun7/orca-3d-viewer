@@ -42,7 +42,8 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   const animationLabel = (name: string | undefined, index: number): string =>
     cleanName(name ?? '') || t('animationFallback', { index: index + 1 })
 
-  const viewport = element('div', { className: 'viewport', role: 'img', ariaLabel: t('loading') })
+  // Why a group, not an img: an img's children are hidden from assistive technology, and the canvas takes focus.
+  const viewport = element('div', { className: 'viewport', role: 'group', ariaLabel: t('loading') })
   const overlayIcon = element('span', { className: 'overlay-icon' })
   const overlayText = element('p')
   const overlay = element('div', { className: 'overlay' }, [overlayIcon, overlayText])
@@ -166,12 +167,14 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
       animationName.textContent = animationLabel(names[0], 0)
 
       const counts = summary.stats
-      const figures = [
-        t('stats', { vertices: formatCount(counts.vertices, locale), triangles: formatCount(counts.triangles, locale) }),
-        ...(counts.points > 0 ? [t('statsPoints', { count: formatCount(counts.points, locale) })] : []),
-        ...(counts.lineSegments > 0 ? [t('statsLines', { count: formatCount(counts.lineSegments, locale) })] : [])
-      ]
-      stats.textContent = figures.join(' · ')
+      const figure = (key: 'vertices' | 'triangles' | 'points' | 'lineSegments', count: number): string =>
+        t(key, { count: formatCount(count, locale) }, count)
+      stats.textContent = [
+        figure('vertices', counts.vertices),
+        figure('triangles', counts.triangles),
+        ...(counts.points > 0 ? [figure('points', counts.points)] : []),
+        ...(counts.lineSegments > 0 ? [figure('lineSegments', counts.lineSegments)] : [])
+      ].join(' · ')
       const { width, height, depth } = summary.dimensions
       const lengths = lengthFormat([width, height, depth], locale)
       dimensions.textContent = t('dimensions', {

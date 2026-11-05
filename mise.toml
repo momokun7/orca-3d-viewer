@@ -6,7 +6,7 @@ node = "24"
 [tasks.install]
 description = "Install the build's dependencies and Chromium for the browser tests"
 dir = "build"
-run = ["npm ci", "npx playwright-core install chromium"]
+run = ["npm ci --ignore-scripts", "npx playwright-core install chromium"]
 
 [tasks.hooks]
 description = "Use the repository's git hooks (sensitive-text scan, branch and tag rules)"

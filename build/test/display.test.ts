@@ -50,6 +50,7 @@ describe('names from the model', () => {
   it('strips bidirectional overrides and control characters, so a name cannot disguise itself', () => {
     assert.equal(displayName('‮gnp.exe'), '“gnp.exe”')
     assert.equal(displayName('a\u0000b\nc⁦d'), '“abcd”')
+    assert.equal(displayName('zero​width line﻿tag\u{E0041} 2029'), '“zerowidthlinetag 2029”')
   })
 
   it('cuts a long name to a readable length', () => {

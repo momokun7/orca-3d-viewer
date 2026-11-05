@@ -1,12 +1,13 @@
-import { type AnimationClip, Group, LoadingManager, type Object3D } from 'three'
+import { type AnimationClip, Group, LoadingManager, type Object3D, type WebGLRenderer } from 'three'
 import type { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { type GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import type { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js'
 import {
+  GLTF_BASISU_EXTENSION,
   GLTF_DRACO_EXTENSION,
   GLTF_MESHOPT_EXTENSIONS,
   type GltfDocument,
   type GltfModelData,
-  gltfJsonText,
   gltfUsesExtension,
   isDataUri,
   isRecord
@@ -37,7 +38,7 @@ export function resolveResourceUrl(url: string, ownBlobUrls: ReadonlySet<string>
   return isDataUri(url) || ownBlobUrls.has(url) ? url : BLOCKED_RESOURCE_URL
 }
 
-// Blob URLs created while any parse runs; GLTFLoader creates its image URLs synchronously within.
+// Blob URLs created while a parse runs; GLTFLoader creates its image URLs within.
 const ownBlobUrls = new Set<string>()
 let activeParses = 0
 let originalCreateObjectURL: typeof URL.createObjectURL | null = null
@@ -61,12 +62,33 @@ function trackBlobUrls(): () => void {
   }
 }
 
+const resolveOwnUrl = (url: string): string => resolveResourceUrl(url, ownBlobUrls)
+
+// Why shared: each new loader re-fetches and compiles its decoder and starts its own workers.
 let dracoLoader: Promise<DRACOLoader> | null = null
+const ktx2Loaders = new WeakMap<WebGLRenderer, Promise<KTX2Loader>>()
+let meshoptReady: Promise<unknown> | null = null
 
 function sharedDracoLoader(): Promise<DRACOLoader> {
-  // Why shared: each new loader re-fetches and compiles the decoder and starts its own workers.
   dracoLoader ??= import('./draco-decoder.ts').then(({ createDracoLoader }) => createDracoLoader())
   return dracoLoader
+}
+
+function sharedKtx2Loader(renderer: WebGLRenderer): Promise<KTX2Loader> {
+  let loader = ktx2Loaders.get(renderer)
+  if (!loader) {
+    loader = import('./ktx2-decoder.ts').then(({ createKtx2Loader }) => createKtx2Loader(renderer, resolveOwnUrl))
+    ktx2Loaders.set(renderer, loader)
+  }
+  return loader
+}
+
+async function meshoptDecoder(): Promise<typeof import('three/examples/jsm/libs/meshopt_decoder.module.js').MeshoptDecoder> {
+  const { MeshoptDecoder } = await import('three/examples/jsm/libs/meshopt_decoder.module.js')
+  // Why a worker: decoding then runs off the UI thread, and its heap is not the page's.
+  meshoptReady ??= MeshoptDecoder.ready.then(() => MeshoptDecoder.useWorkers(1))
+  await meshoptReady
+  return MeshoptDecoder
 }
 
 export class ParseTimeoutError extends Error {
@@ -81,7 +103,7 @@ function withTimeout(parsing: Promise<GLTF>, ms: number): Promise<GLTF> {
   let timer: ReturnType<typeof setTimeout> | undefined
   const timeout = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
-      parsing.then((late) => disposeObjectTree(late.scene)).catch(() => {})
+      parsing.then((late) => late.scenes.forEach(disposeObjectTree)).catch(() => {})
       reject(new ParseTimeoutError(ms))
     }, ms)
   })
@@ -103,6 +125,8 @@ function rootNodeIndices(document: GltfDocument): number[] {
 async function sceneOf(gltf: GLTF, document: GltfDocument): Promise<{ scene: Object3D; otherSceneCount: number }> {
   const sceneCount = Array.isArray(document.scenes) ? document.scenes.length : 0
   if (gltf.scene) {
+    // Why the other scenes are left alone: they may share nodes and materials with the default one,
+    // and never reach the GPU, so dropping the GLTF result frees them.
     return { scene: gltf.scene, otherSceneCount: Math.max(0, sceneCount - 1) }
   }
   const group = new Group()
@@ -112,25 +136,35 @@ async function sceneOf(gltf: GLTF, document: GltfDocument): Promise<{ scene: Obj
   return { scene: group, otherSceneCount: 0 }
 }
 
+export type ParseOptions = {
+  /** Needed for KTX2 textures, which are transcoded to a format this GPU supports. */
+  renderer?: WebGLRenderer
+  timeoutMs?: number
+}
+
 export async function parseGltfModel(
   data: GltfModelData,
   document: GltfDocument,
-  timeoutMs = PARSE_TIMEOUT_MS
+  { renderer, timeoutMs = PARSE_TIMEOUT_MS }: ParseOptions = {}
 ): Promise<GltfModel> {
   const untrack = trackBlobUrls()
   try {
     const manager = new LoadingManager()
-    manager.setURLModifier((url) => resolveResourceUrl(url, ownBlobUrls))
+    manager.setURLModifier(resolveOwnUrl)
     const loader = new GLTFLoader(manager)
     if (gltfUsesExtension(document, GLTF_DRACO_EXTENSION)) {
       loader.setDRACOLoader(await sharedDracoLoader())
     }
     if (GLTF_MESHOPT_EXTENSIONS.some((extension) => gltfUsesExtension(document, extension))) {
-      const { MeshoptDecoder } = await import('three/examples/jsm/libs/meshopt_decoder.module.js')
-      loader.setMeshoptDecoder(MeshoptDecoder)
+      loader.setMeshoptDecoder(await meshoptDecoder())
     }
-    const input = typeof data === 'string' ? (gltfJsonText(data) ?? data) : data
-    const gltf = await withTimeout(loader.parseAsync(input, ''), timeoutMs)
+    if (renderer && gltfUsesExtension(document, GLTF_BASISU_EXTENSION)) {
+      loader.setKTX2Loader(await sharedKtx2Loader(renderer))
+    }
+    // Why the parsed document for text: it saves parsing a large .gltf twice; a GLB needs its BIN chunk.
+    // GLTFLoader.parse takes a parsed JSON object as well, though its typings list only text and bytes.
+    const parse = loader.parseAsync.bind(loader) as (data: ArrayBuffer | string | GltfDocument, path: string) => Promise<GLTF>
+    const gltf = await withTimeout(parse(typeof data === 'string' ? document : data, ''), timeoutMs)
     return { ...(await sceneOf(gltf, document)), animations: gltf.animations }
   } finally {
     untrack()

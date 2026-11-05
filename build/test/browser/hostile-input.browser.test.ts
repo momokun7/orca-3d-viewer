@@ -9,6 +9,7 @@ import { assertContained } from './frame-assertions.ts'
 import { closeBrowser, type Content, type Frame, openFrame } from './harness.ts'
 
 const FUZZ_RUNS = Number(process.env.FUZZ_RUNS ?? 40)
+const FUZZ_SEED = process.env.FUZZ_SEED ? Number(process.env.FUZZ_SEED) : undefined
 const DRACO_GLB = await dracoGlb()
 
 const MARKUP_PAYLOADS = [
@@ -126,10 +127,17 @@ describe('decompression bombs', () => {
   it('refuses a few hundred bytes that declare gigabytes of zero-filled vertices', async () => {
     const json = triangleGltf()
     json.accessors = [
-      { componentType: 5126, count: 100_000_000, type: 'VEC3', sparse: { count: 0 }, min: [0, 0, 0], max: [1, 1, 1] }
+      {
+        componentType: 5126,
+        count: 100_000_000,
+        type: 'VEC3',
+        min: [0, 0, 0],
+        max: [1, 1, 1],
+        sparse: { count: 1, indices: { bufferView: 1, componentType: 5125 }, values: { bufferView: 0 } }
+      }
     ]
     json.meshes = [{ primitives: [{ attributes: { POSITION: 0 } }] }]
-    await refusedQuickly({ bytes: glb(json) }, /too large to display safely: it declares 1\.12 GB/)
+    await refusedQuickly({ bytes: glb(json) }, /too large to display safely: it would decode to 1\.12 GB/)
   })
 
   it('refuses an image whose header claims more pixels than any GPU can hold', async () => {
@@ -220,9 +228,11 @@ describe('fuzzing', () => {
           for (const [at, value] of flips) bytes[at % bytes.length] = value
           const state = await frame.open({ bytes })
           assert.ok(state.kind === 'model' || state.kind === 'error')
+          // Why inside the property: fast-check then reports the input that broke containment.
+          assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
         }
       ),
-      { numRuns: FUZZ_RUNS }
+      { numRuns: FUZZ_RUNS, seed: FUZZ_SEED }
     )
     await assertNoInjection()
     assertContained(await frame.report(), { allowParseFailure: true, allowThreeLogs: true })
@@ -245,7 +255,7 @@ describe('fuzzing', () => {
         })
         assert.equal(state.kind, 'model')
       }),
-      { numRuns: FUZZ_RUNS }
+      { numRuns: FUZZ_RUNS, seed: FUZZ_SEED }
     )
     assertContained(await frame.report(), { allowThreeLogs: true })
   })

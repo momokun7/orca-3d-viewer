@@ -46,6 +46,9 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         working-directory: build
+        env:
+          # Why fixed: a failure on a pull request must reproduce; the weekly fuzz run picks new seeds.
+          FUZZ_SEED: "20261106"
         run: npm test
       - name: Build
         working-directory: build
@@ -86,6 +89,8 @@ jobs:
       # Runs the committed editor/, the bytes Orca would install.
       - name: Browser tests (Orca frame CSP, no network, hostile models)
         working-directory: build
+        env:
+          FUZZ_SEED: "20261106"
         run: npm run test:browser
 
   validate:
@@ -155,7 +160,10 @@ jobs:
           SENSITIVE_WORDS: ${{ secrets.SENSITIVE_WORDS }}
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: node tools/check-sensitive.ts commits "$BASE" "$HEAD"
+        # Why the merge base when BASE is gone: a force push leaves the old head unreachable.
+        run: |
+          if ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then BASE="$(git merge-base origin/main "$HEAD")"; fi
+          node tools/check-sensitive.ts commits "$BASE" "$HEAD"
       # Squash merges turn these into the commit message on main.
       - name: Personal details and private words in the pull request title and body
         if: github.event_name == 'pull_request'

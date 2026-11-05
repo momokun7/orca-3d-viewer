@@ -11,9 +11,9 @@ import {
   readGltfDocument
 } from './gltf-document-inspection.ts'
 import { ParseTimeoutError, parseGltfModel } from './gltf-model-parse.ts'
+import { validateGltfStructure } from './gltf-validation.ts'
 import { resolveLocale } from './locale.ts'
 import { createTranslate } from './messages.ts'
-import { disposeObjectTree } from './model-disposal.ts'
 import { createModelStage, type ModelStage, type ModelSummary } from './model-scene.ts'
 import { editorFrame, type OrcaDocument } from './orca-editor-host.ts'
 import { createViewerUi } from './viewer-ui.ts'
@@ -33,7 +33,6 @@ if (!root) {
 const ui = createViewerUi(root, t, locale)
 
 let stage: ModelStage | null = null
-let generation = 0
 let shownVersion: number | null = null
 let lastShown: { summary: ModelSummary; notices: string[] } | null = null
 
@@ -41,44 +40,51 @@ function modelData(content: OrcaDocument['content']): GltfModelData {
   return content.kind === 'bytes' ? content.bytes : content.text
 }
 
+const count = (value: number): string => formatCount(value, locale)
+
 function budgetMessage(excess: BudgetExcess): string {
   switch (excess.kind) {
-    case 'accessorBytes':
-      return t('tooLargeAccessorBytes', { value: formatBytes(excess.value, locale), limit: formatBytes(excess.limit, locale) })
+    case 'geometryBytes':
+      return t('tooLargeGeometry', { value: formatBytes(excess.value, locale), limit: formatBytes(excess.limit, locale) })
+    case 'gpuBytes':
+      return t('tooLargeGpu', { value: formatBytes(excess.value, locale), limit: formatBytes(excess.limit, locale) })
     case 'nodes':
-      return t('tooManyNodes', { value: formatCount(excess.value, locale), limit: formatCount(excess.limit, locale) })
+      return t('tooManyNodes', { value: count(excess.value), limit: count(excess.limit) })
     case 'drawCalls':
-      return t('tooManyDrawCalls', { value: formatCount(excess.value, locale), limit: formatCount(excess.limit, locale) })
+      return t('tooManyDrawCalls', { value: count(excess.value), limit: count(excess.limit) })
+    case 'images':
+      return t('tooManyImages', { value: count(excess.value), limit: count(excess.limit) })
+    case 'textures':
+      return t('tooManyTextures', { value: count(excess.value), limit: count(excess.limit) })
+    case 'skinJoints':
+      return t('tooManyJoints', { value: count(excess.value), limit: count(excess.limit) })
     case 'imageSide':
-      return t('imageTooLarge', {
-        width: formatCount(excess.width, locale),
-        height: formatCount(excess.height, locale),
-        limit: formatCount(excess.limit, locale)
-      })
-    case 'imagePixels':
-      return t('tooManyImagePixels', { value: formatCount(excess.value, locale), limit: formatCount(excess.limit, locale) })
-    case 'accessorOutOfRange':
-      return t('accessorOutOfRange', { index: excess.index })
+      return t('imageTooLarge', { width: count(excess.width), height: count(excess.height), limit: count(excess.limit) })
+    case 'unreadableImage':
+      return t('unreadableImage', { index: excess.index })
+    case 'unreadableDraco':
+      return t('unreadableDraco', { index: excess.mesh })
   }
 }
 
-const more = (list: string, count: number): string => t('moreFiles', { list, count: formatCount(count, locale) })
+const more = (list: string, rest: number): string => t('moreFiles', { list, count: count(rest) }, rest)
 
-/** Why the document cannot be shown at all, found from its bytes and JSON alone; null when it may load. */
+/** Why the document cannot be shown, found from its bytes and JSON alone; null when it may load. */
 function refusal(data: GltfModelData, gltf: GltfDocument | null): string | null {
   const truncation = glbTruncation(data)
   if (truncation) {
-    return t('truncated', {
-      actual: formatCount(truncation.actualBytes, locale),
-      declared: formatCount(truncation.declaredBytes, locale)
-    })
+    return t('truncated', { actual: count(truncation.actualBytes), declared: count(truncation.declaredBytes) })
   }
-  if (!gltf || !gltfBuffersFitContainer(gltf, typeof data !== 'string')) return t('parseFailed')
+  if (!gltf) return t('parseFailed')
+  const bin = readGlbBinChunk(data)
+  const structure = validateGltfStructure(gltf, bin?.byteLength ?? null)
+  if (structure) return t('corrupt', { path: structure.path, reason: structure.reason })
+  if (!gltfBuffersFitContainer(gltf, typeof data !== 'string')) return t('parseFailed')
   const unsupported = gltfUnsupportedRequiredExtensions(gltf)
   if (unsupported.length > 0) return t('unsupportedExtensions', { extensions: nameList(unsupported, more) })
   const { buffers } = gltfExternalResources(gltf)
   if (buffers.length > 0) return t('externalBuffers', { files: nameList(buffers, more) })
-  const excess = gltfBudgetExcess(gltf, readGlbBinChunk(data))
+  const excess = gltfBudgetExcess(gltf, bin)
   return excess ? budgetMessage(excess) : null
 }
 
@@ -92,27 +98,18 @@ function stageFor(): ModelStage {
   return stage
 }
 
-function fail(message: string, log: string, error: unknown): void {
-  console.error(log, error)
+/** Shows why `version` failed: over the last good model when there is one, else in its place. */
+function fail(message: string, log: string | null, error: unknown): void {
+  if (log) console.error(log, error)
+  if (stage && lastShown) {
+    ui.showModel(lastShown.summary, stage, [t('laterSaveFailed', { reason: message }), ...lastShown.notices], true)
+    return
+  }
   stage?.clear()
-  lastShown = null
-  shownVersion = null
   ui.showError(message)
 }
 
-async function show(orcaDocument: OrcaDocument): Promise<void> {
-  // Why: Orca may resend the version on screen; reloading it would only flash and reset the view.
-  if (orcaDocument.version === shownVersion && lastShown) return
-  const current = ++generation
-  try {
-    await load(orcaDocument, current)
-  } finally {
-    // Why: the old model stays up while a new one loads, so "settled" needs its own signal for tests and tools.
-    if (current === generation) document.documentElement.dataset.shownVersion = String(orcaDocument.version)
-  }
-}
-
-async function load(orcaDocument: OrcaDocument, current: number): Promise<void> {
+async function load(orcaDocument: OrcaDocument): Promise<void> {
   const replacing = lastShown !== null
   // Why keep the old model up while the new one loads: an agent re-exporting a file should not flash it.
   if (!replacing) ui.showLoading()
@@ -121,24 +118,7 @@ async function load(orcaDocument: OrcaDocument, current: number): Promise<void> 
   const gltf = readGltfDocument(data)
   const refused = refusal(data, gltf)
   if (refused || !gltf) {
-    stage?.clear()
-    lastShown = null
-    shownVersion = null
-    ui.showError(refused ?? t('parseFailed'))
-    return
-  }
-
-  let model: Awaited<ReturnType<typeof parseGltfModel>>
-  try {
-    model = await parseGltfModel(data, gltf)
-  } catch (error) {
-    if (current === generation) {
-      fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
-    }
-    return
-  }
-  if (current !== generation) {
-    disposeObjectTree(model.scene)
+    fail(refused ?? t('parseFailed'), null, null)
     return
   }
 
@@ -146,33 +126,67 @@ async function load(orcaDocument: OrcaDocument, current: number): Promise<void> 
   try {
     target = stageFor()
   } catch (error) {
-    disposeObjectTree(model.scene)
     fail(t('webglUnavailable'), RENDER_FAILURE_LOG, error)
     return
   }
+
+  let model: Awaited<ReturnType<typeof parseGltfModel>>
   try {
-    const summary = target.show(model, replacing)
+    model = await parseGltfModel(data, gltf, { renderer: target.renderer })
+  } catch (error) {
+    fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
+    return
+  }
+
+  try {
+    const summary = await target.show(model, replacing)
+    const images = gltfExternalResources(gltf).images
     const notices = [
-      ...(gltfExternalResources(gltf).images.length > 0
-        ? [t('externalImages', { files: nameList(gltfExternalResources(gltf).images, more) })]
-        : []),
-      ...(summary.otherSceneCount > 0 ? [t('otherScenes', { count: formatCount(summary.otherSceneCount, locale) })] : [])
+      ...(images.length > 0 ? [t('externalImages', { files: nameList(images, more) })] : []),
+      ...(summary.otherSceneCount > 0
+        ? [t('otherScenes', { count: count(summary.otherSceneCount) }, summary.otherSceneCount)]
+        : [])
     ]
     ui.showModel(summary, target, notices, replacing)
     // Why autoplay: a still frame cannot show whether the clips were exported at all.
     target.playAnimation(0)
     lastShown = { summary, notices }
-    shownVersion = orcaDocument.version
   } catch (error) {
-    disposeObjectTree(model.scene)
     fail(t('renderFailed'), RENDER_FAILURE_LOG, error)
+  }
+}
+
+// One load at a time: a save that arrives meanwhile waits, and only the newest waiting one runs.
+let loading = false
+let pending: OrcaDocument | null = null
+
+async function drain(): Promise<void> {
+  loading = true
+  try {
+    while (pending) {
+      const next = pending
+      pending = null
+      // Why: Orca may resend the version on screen; reloading it would only flash and reset the view.
+      if (next.version === shownVersion && lastShown) continue
+      try {
+        await load(next)
+      } catch (error) {
+        fail(t('renderFailed'), RENDER_FAILURE_LOG, error)
+      }
+      shownVersion = next.version
+      // Why: the old model stays up while a new one loads, so "settled" needs its own signal for tests and tools.
+      document.documentElement.dataset.shownVersion = String(next.version)
+    }
+  } finally {
+    loading = false
   }
 }
 
 if (frame?.document) {
   // Called with the current document right away, then again whenever the file changes on disk.
   frame.document.onDidChange((orcaDocument) => {
-    show(orcaDocument).catch((error: unknown) => fail(t('renderFailed'), RENDER_FAILURE_LOG, error))
+    pending = orcaDocument
+    if (!loading) void drain()
   })
 } else {
   ui.showError(t('parseFailed'))
