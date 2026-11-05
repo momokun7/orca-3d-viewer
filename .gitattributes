@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.wasm binary
+*.glb binary
+# Built by build/build.mjs.
+editor/** linguist-generated=true -diff
+THIRD_PARTY_NOTICES.txt linguist-generated=true

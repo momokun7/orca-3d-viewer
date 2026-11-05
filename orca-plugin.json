@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stablyai/orca/main/docs/schemas/plugins/orca-plugin.v2.schema.json",
+  "manifestVersion": 2,
+  "id": "gltf-viewer",
+  "name": "glTF Viewer",
+  "version": "1.0.0",
+  "execution": "sandboxed-ui",
+  "description": "Preview glTF / GLB 3D models in Orca's editor: orbit, zoom and pan, play animations, and check the model's real-world size in meters on a floor grid. Read-only.",
+  "license": "MIT",
+  "repository": "https://github.com/momokun7/orca-gltf-viewer",
+  "engines": {
+    "orca": ">=1.4.248"
+  },
+  "contributes": {
+    "customEditors": [
+      {
+        "id": "glb",
+        "title": "3D",
+        "extensions": [".glb"],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "bytes",
+        "frame": "isolated"
+      },
+      {
+        "id": "gltf",
+        "title": "3D",
+        "extensions": [".gltf"],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "text",
+        "frame": "isolated"
+      }
+    ]
+  },
+  "capabilities": []
+}
