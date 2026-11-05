@@ -35,6 +35,21 @@ function readGlbJsonText(data: ArrayBuffer): string | null {
   return new TextDecoder().decode(new Uint8Array(data, chunkStart, chunkLength))
 }
 
+export type GlbTruncation = { declaredBytes: number; actualBytes: number }
+
+/** A GLB shorter than its header says, as an interrupted download or copy leaves it; null otherwise. */
+export function glbTruncation(data: GltfModelData): GlbTruncation | null {
+  if (typeof data === 'string' || data.byteLength < GLB_HEADER_BYTES) {
+    return null
+  }
+  const view = new DataView(data)
+  if (view.getUint32(0, true) !== GLB_MAGIC) {
+    return null
+  }
+  const declaredBytes = view.getUint32(8, true)
+  return declaredBytes > data.byteLength ? { declaredBytes, actualBytes: data.byteLength } : null
+}
+
 /** The glTF JSON document of a `.gltf` text or a `.glb` container, or null when unreadable. */
 export function readGltfDocument(data: GltfModelData): GltfDocument | null {
   const text = typeof data === 'string' ? data : readGlbJsonText(data)

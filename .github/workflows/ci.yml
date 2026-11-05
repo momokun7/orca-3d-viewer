@@ -1,0 +1,189 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Orca release whose validator checks the manifest (v1.4.250). Bump it deliberately.
+  ORCA_REF: b98a0fba16561fadc06868fe3e8710781d705efd
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Harden Runner
+        if: matrix.os == 'ubuntu-latest'
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+      # Why no install scripts: nothing here needs one, and a compromised dependency's would run first.
+      - name: Install dependencies
+        working-directory: build
+        run: npm ci --ignore-scripts
+      - name: Type-check
+        working-directory: build
+        run: npm run typecheck
+      - name: Unit tests
+        working-directory: build
+        run: npm test
+      - name: Build
+        working-directory: build
+        run: npm run build
+      # The committed editor/ is what Orca installs: it must be exactly what these sources build.
+      - name: Check the committed build is reproducible
+        run: git diff --exit-code -- editor THIRD_PARTY_NOTICES.txt
+
+  browser:
+    name: Browser security tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+      - name: Install dependencies
+        working-directory: build
+        run: npm ci --ignore-scripts
+      - name: Install Chromium
+        working-directory: build
+        run: npx playwright-core install --with-deps chromium
+      # Runs the committed editor/, the bytes Orca would install.
+      - name: Browser tests (Orca frame CSP, no network, hostile models)
+        working-directory: build
+        run: npm run test:browser
+
+  validate:
+    name: Orca plugin validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: plugin
+          persist-credentials: false
+      - name: Check out Orca
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: stablyai/orca
+          ref: ${{ env.ORCA_REF }}
+          path: orca
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          package_json_file: orca/package.json
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+      # Why no install scripts: the validator needs only Orca's JavaScript, not Electron.
+      - name: Install Orca's validator
+        working-directory: orca
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm run build:packages
+      - name: Validate the plugin
+        working-directory: orca
+        run: pnpm validate:plugin "$GITHUB_WORKSPACE/plugin"
+
+  security:
+    name: Security audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+      - name: Gitleaks (secret scan of the full history)
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Personal details and private words in tracked files
+        env:
+          SENSITIVE_WORDS: ${{ secrets.SENSITIVE_WORDS }}
+        run: node tools/check-sensitive.ts files
+      - name: Personal details and private words in commit messages and authors
+        env:
+          SENSITIVE_WORDS: ${{ secrets.SENSITIVE_WORDS }}
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node tools/check-sensitive.ts commits "$BASE" "$HEAD"
+      # Squash merges turn these into the commit message on main.
+      - name: Personal details and private words in the pull request title and body
+        if: github.event_name == 'pull_request'
+        env:
+          SENSITIVE_WORDS: ${{ secrets.SENSITIVE_WORDS }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node tools/check-sensitive.ts env PR_TITLE PR_BODY
+      - name: Install dependencies
+        working-directory: build
+        run: npm ci --ignore-scripts
+      - name: npm audit (known vulnerabilities)
+        working-directory: build
+        run: npm audit --audit-level=low
+      - name: npm audit signatures (registry signatures and provenance)
+        working-directory: build
+        run: npm audit signatures
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: build
+          severity: CRITICAL,HIGH,MEDIUM
+          exit-code: 1
+
+  workflows:
+    name: Workflow audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: zizmor (GitHub Actions security lints)
+        uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          version: 1.31.1
+          persona: pedantic
+          # Why: code scanning needs a public repository; print findings and fail instead.
+          advanced-security: false

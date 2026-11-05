@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import {
   GLTF_DRACO_EXTENSION,
+  glbTruncation,
   gltfExternalResources,
   gltfUsesExtension,
   readGltfDocument
@@ -31,6 +32,16 @@ describe('readGltfDocument', () => {
     assert.equal(readGltfDocument(new TextEncoder().encode('not a model at all').buffer), null)
     assert.equal(readGltfDocument('[1, 2]'), null)
     assert.equal(readGltfDocument('{ broken'), null)
+  })
+})
+
+describe('glbTruncation', () => {
+  it('reports a GLB shorter than its header declares, and nothing for whole files or text', () => {
+    const whole = glbContainer(JSON.stringify({ asset: { version: '2.0' } }))
+    assert.equal(glbTruncation(whole), null)
+    assert.deepEqual(glbTruncation(whole.slice(0, 24)), { declaredBytes: whole.byteLength, actualBytes: 24 })
+    assert.equal(glbTruncation('{"asset":{}}'), null)
+    assert.equal(glbTruncation(new ArrayBuffer(8)), null)
   })
 })
 

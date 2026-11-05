@@ -1,0 +1,11 @@
+# High-risk paths. These always need the maintainer.
+/.github/              @momokun7
+/.githooks/            @momokun7
+/tools/                @momokun7
+/orca-plugin.json      @momokun7
+/editor/               @momokun7
+/build/build.mjs       @momokun7
+/build/package.json    @momokun7
+/build/package-lock.json @momokun7
+/build/src/gltf-model-parse.ts @momokun7
+/build/src/draco-decoder.ts    @momokun7

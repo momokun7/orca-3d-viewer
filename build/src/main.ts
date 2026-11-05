@@ -1,5 +1,6 @@
 import {
   type GltfModelData,
+  glbTruncation,
   gltfExternalResources,
   readGltfDocument
 } from './gltf-document-inspection.ts'
@@ -32,6 +33,16 @@ async function show(orcaDocument: OrcaDocument): Promise<void> {
   ui.showLoading()
 
   const data = modelData(orcaDocument.content)
+  const truncation = glbTruncation(data)
+  if (truncation) {
+    ui.showError(
+      t('truncated', {
+        actual: truncation.actualBytes.toLocaleString(locale),
+        declared: truncation.declaredBytes.toLocaleString(locale)
+      })
+    )
+    return
+  }
   const gltf = readGltfDocument(data)
   if (!gltf) {
     ui.showError(t('parseFailed'))

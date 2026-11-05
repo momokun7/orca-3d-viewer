@@ -3,6 +3,8 @@ const EN = {
   contextLost: 'The 3D view was reset by the graphics driver. Reopen the file to view it again.',
   parseFailed:
     'Unable to display this 3D model. It may be corrupt or use an unsupported extension.',
+  truncated:
+    'This GLB file is cut short: it has {{actual}} of the {{declared}} bytes its header declares. It may still be downloading or copying, or the transfer was interrupted.',
   externalBuffers:
     'This model keeps its geometry in separate files ({{files}}), which Orca plugins cannot read. Open a .glb, or a .gltf with its data embedded.',
   externalImages:
@@ -28,6 +30,8 @@ const JA: Record<MessageKey, string> = {
     'グラフィックドライバーにより 3D 表示がリセットされました。ファイルを開き直すと再表示できます。',
   parseFailed:
     'この 3D モデルを表示できません。ファイルが壊れているか、未対応の拡張機能を使っている可能性があります。',
+  truncated:
+    'この GLB ファイルは途中で切れています(ヘッダーにある {{declared}} バイトのうち {{actual}} バイトしかありません)。ダウンロードやコピーの途中か、転送が中断された可能性があります。',
   externalBuffers:
     'このモデルは形状データを別のファイル({{files}})に持っていますが、Orca のプラグインはそれを読み込めません。.glb か、データを埋め込んだ .gltf を開いてください。',
   externalImages:
@@ -51,6 +55,6 @@ export function createTranslate(locale: string | undefined): Translate {
   const table = locale?.toLowerCase().startsWith('ja') ? JA : EN
   return (key, values = {}) =>
     table[key].replace(/\{\{(\w+)\}\}/g, (match, name: string) =>
-      name in values ? String(values[name]) : match
+      Object.hasOwn(values, name) ? String(values[name]) : match
     )
 }
