@@ -61,7 +61,7 @@ const html = `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>glTF Viewer</title>
+<title>GLB Viewer</title>
 <style>
 ${readFileSync(path.join(HERE, 'src', 'page.css'), 'utf8').trim()}
 </style>
@@ -132,7 +132,7 @@ const sections = [
 ]
 writeFileSync(
   NOTICES,
-  `glTF Viewer's editor/ folder includes the following software.\n\n` +
+  `GLB Viewer's editor/ folder includes the following software.\n\n` +
     `${sections.join(`\n\n${'='.repeat(78)}\n\n`)}\n`
 )
 

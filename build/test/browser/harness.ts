@@ -23,8 +23,8 @@ const CONTENT_TYPES: Record<string, string> = {
 }
 
 // The viewer's own console lines (src/main.ts): a file it refused, and a failure of its own.
-export const PARSE_FAILURE_LOG = 'glTF Viewer: could not parse the model'
-export const RENDER_FAILURE_LOG = 'glTF Viewer: could not display the model'
+export const PARSE_FAILURE_LOG = 'GLB Viewer: could not parse the model'
+export const RENDER_FAILURE_LOG = 'GLB Viewer: could not display the model'
 
 export type ConsoleLine = { type: string; text: string }
 

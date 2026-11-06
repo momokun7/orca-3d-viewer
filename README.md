@@ -1,13 +1,14 @@
-# glTF Viewer for Orca
+# GLB Viewer for Orca
 
-Preview glTF / GLB 3D models in [Orca](https://github.com/stablyai/orca)'s editor.
+Preview GLB 3D models in [Orca](https://github.com/stablyai/orca)'s editor. A `.gltf` opens too
+when its data is embedded in it (see [Limits](#limits)).
 
 - Orbit, zoom and pan the model; reset the view at any time.
 - Play the model's animations, and pick a clip when it has several.
 - A floor grid and X / Y / Z axes, with the model's width × height × depth in meters, so a model
   authored in the wrong unit (say, centimeters) stands out at a glance.
 - Wireframe view, and vertex and triangle counts.
-- Draco and Meshopt compressed models.
+- Draco and Meshopt compressed models, and KTX2 / Basis Universal textures.
 - Follows Orca's light and dark themes, in English and Japanese.
 
 It is read-only: it never changes the file. `.glb` files open in the 3D view by default; for a
@@ -21,7 +22,6 @@ It is read-only: it never changes the file. `.glb` files open in the 3D view by 
 - **Desktop app only.** The viewer needs the Orca desktop app's isolated plugin frame; in a browser
   client the file opens in Source.
 - Files up to 64 MiB, Orca's limit for custom editors.
-- KTX2 / Basis Universal textures (`KHR_texture_basisu`) are not supported.
 
 Requires Orca 1.4.248 or later.
 

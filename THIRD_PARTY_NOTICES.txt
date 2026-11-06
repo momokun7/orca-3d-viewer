@@ -1,4 +1,4 @@
-glTF Viewer's editor/ folder includes the following software.
+GLB Viewer's editor/ folder includes the following software.
 
 lucide@1.59.0 (ISC)
 https://lucide.dev

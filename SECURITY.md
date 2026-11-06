@@ -6,11 +6,11 @@ Security fixes are released for the latest version of the plugin.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in glTF Viewer, please report it responsibly.
+If you discover a security vulnerability in GLB Viewer, please report it responsibly.
 
 **Do NOT open a public issue.**
 
-Instead, use **GitHub's [private vulnerability reporting](https://github.com/momokun7/orca-gltf-viewer/security/advisories/new)** feature on this repository.
+Instead, use **GitHub's [private vulnerability reporting](https://github.com/momokun7/orca-glb-viewer/security/advisories/new)** feature on this repository.
 
 ## Response Timeline
 

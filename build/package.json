@@ -1,5 +1,5 @@
 {
-  "name": "orca-gltf-viewer-build",
+  "name": "orca-glb-viewer-build",
   "private": true,
   "type": "module",
   "scripts": {

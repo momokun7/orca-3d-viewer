@@ -14,8 +14,8 @@ import { editorFrame, type OrcaDocument } from './orca-editor-host.ts'
 import { createViewerUi } from './viewer-ui.ts'
 
 // Console prefixes the tests tell apart: a file the viewer refused, and a failure of the viewer itself.
-export const PARSE_FAILURE_LOG = 'glTF Viewer: could not parse the model'
-export const RENDER_FAILURE_LOG = 'glTF Viewer: could not display the model'
+export const PARSE_FAILURE_LOG = 'GLB Viewer: could not parse the model'
+export const RENDER_FAILURE_LOG = 'GLB Viewer: could not display the model'
 
 const frame = editorFrame()
 const locale = resolveLocale(frame?.locale, navigator.language)

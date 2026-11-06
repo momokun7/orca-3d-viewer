@@ -141,7 +141,7 @@ describe('the GPU', () => {
       const state = await noGpu.open({ bytes: glb(triangleGltf()) })
       assert.match(state.kind === 'error' ? state.message : '', /needs WebGL/)
       const report = await noGpu.report()
-      assert.ok(report.console.every(({ text }) => !text.startsWith('glTF Viewer: could not parse')))
+      assert.ok(report.console.every(({ text }) => !text.startsWith('GLB Viewer: could not parse')))
     } finally {
       await noGpu.close()
     }
