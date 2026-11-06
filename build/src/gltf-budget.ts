@@ -20,9 +20,9 @@ export const BUDGET = {
   drawCalls: 50_000,
   /** Vertices the GPU processes per frame, instances included. */
   drawnVertices: 100_000_000,
-  materials: 4096,
+  materials: 16_384,
   images: 1024,
-  textures: 4096,
+  textures: 16_384,
   animationChannels: 100_000,
   /** Keyframe tracks three.js builds: one per channel, more for weights on multi-primitive meshes. */
   animationTracks: 100_000,
