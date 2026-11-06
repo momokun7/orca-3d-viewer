@@ -1,6 +1,7 @@
 // Builds ../editor:
 //   index.html                the page, with its stylesheet inline;
 //   assets/main-<hash>.js     the page's code, plus chunks loaded only for Draco or Meshopt models;
+//                             main carries the model-check worker's code as a string;
 //   draco/                    the Draco WebAssembly decoder three.js ships;
 //   basis/                    the Basis Universal transcoder three.js ships, for KTX2 textures.
 // Also writes ../THIRD_PARTY_NOTICES.txt from the packages that end up in the build.
@@ -20,8 +21,25 @@ const BASIS_FILES = ['basis_transcoder.js', 'basis_transcoder.wasm']
 // Why: Orca's official catalog refuses any plugin file over 1 MiB; keep to the same bar.
 const MAX_FILE_BYTES = 1024 * 1024
 
+// The model checks run in a blob worker; the frame's CSP allows those, and its source travels inside main.
+const worker = await build({
+  entryPoints: [path.join(HERE, 'src', 'model-check-worker.ts')],
+  bundle: true,
+  write: false,
+  platform: 'browser',
+  format: 'iife',
+  target: 'chrome120',
+  minify: true,
+  legalComments: 'none',
+  metafile: true,
+  logLevel: 'warning',
+  absWorkingDir: HERE
+})
+const workerSource = Buffer.from(worker.outputFiles[0].contents).toString()
+
 const result = await build({
   entryPoints: { main: path.join(HERE, 'src', 'main.ts') },
+  define: { MODEL_CHECK_WORKER_SOURCE: JSON.stringify(workerSource) },
   bundle: true,
   splitting: true,
   write: false,
@@ -85,7 +103,7 @@ for (const { file, bytes } of written) {
 // Notices: every npm package with code in the build, with its licence as reviewed into build/licenses,
 // plus the meshoptimizer and Draco decoders that three.js carries under their own licences.
 const packages = new Map()
-for (const input of Object.keys(result.metafile.inputs)) {
+for (const input of [...Object.keys(result.metafile.inputs), ...Object.keys(worker.metafile.inputs)]) {
   const at = input.lastIndexOf('node_modules/')
   if (at === -1) continue
   const name = /^(?:@[^/]+\/)?[^/]+/.exec(input.slice(at + 'node_modules/'.length))[0]

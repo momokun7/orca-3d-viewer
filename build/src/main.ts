@@ -1,21 +1,12 @@
 import { displayName, formatBytes, formatCount, nameList } from './display-format.ts'
-import { type BudgetExcess, DECODE_ALLOWANCE_BYTES, gltfBudgetExcess } from './gltf-budget.ts'
+import { type BudgetExcess, DECODE_ALLOWANCE_BYTES } from './gltf-budget.ts'
 import { decodedBytes, resetDecodeAllowance } from './decode-allowance.ts'
-import {
-  type GltfDocument,
-  type GltfModelData,
-  glbLayoutProblem,
-  glbTruncation,
-  gltfBuffersFitContainer,
-  gltfExternalResources,
-  gltfUnsupportedRequiredExtensions,
-  readGlbBinChunk,
-  readGltfDocument
-} from './gltf-document-inspection.ts'
+import { type GltfModelData, gltfExternalResources } from './gltf-document-inspection.ts'
 import { ParseAbortedError, ParseTimeoutError, parseGltfModel, stopDecoders } from './gltf-model-parse.ts'
 import { loadedModelExcess } from './loaded-model-limits.ts'
+import { checkModelOffThread } from './model-check.ts'
 import { disposeObjectTree } from './model-disposal.ts'
-import { validateGltfStructure } from './gltf-validation.ts'
+import type { Refusal } from './model-refusal.ts'
 import { resolveLocale } from './locale.ts'
 import { createTranslate } from './messages.ts'
 import { createModelStage, type ModelStage, type ModelSummary } from './model-scene.ts'
@@ -92,26 +83,22 @@ function budgetMessage(excess: BudgetExcess): string {
 
 const more = (list: string, rest: number): string => t('moreFiles', { list, count: count(rest) }, rest)
 
-/** Why the document cannot be shown, found from its bytes and JSON alone; null when it may load. */
-function refusal(data: GltfModelData, gltf: GltfDocument | null): string | null {
-  const truncation = glbTruncation(data)
-  if (truncation) {
-    return t('truncated', { actual: count(truncation.actualBytes), declared: count(truncation.declaredBytes) })
+function refusalMessage(refusal: Refusal): string {
+  switch (refusal.kind) {
+    case 'truncated':
+      return t('truncated', { actual: count(refusal.actualBytes), declared: count(refusal.declaredBytes) })
+    case 'corrupt':
+      // Why cleaned: the path holds keys from the file, which may be long or carry control characters.
+      return t('corrupt', { path: displayName(refusal.path), reason: refusal.reason })
+    case 'parseFailed':
+      return t('parseFailed')
+    case 'unsupportedExtensions':
+      return t('unsupportedExtensions', { extensions: nameList(refusal.extensions, more) })
+    case 'externalBuffers':
+      return t('externalBuffers', { files: nameList(refusal.files, more) })
+    case 'budget':
+      return budgetMessage(refusal.excess)
   }
-  const layout = glbLayoutProblem(data)
-  if (layout) return t('corrupt', { path: 'GLB', reason: layout })
-  if (!gltf) return t('parseFailed')
-  const bin = readGlbBinChunk(data)
-  const structure = validateGltfStructure(gltf, bin?.byteLength ?? null)
-  // Why cleaned: the path holds keys from the file, which may be long or carry control characters.
-  if (structure) return t('corrupt', { path: displayName(structure.path), reason: structure.reason })
-  if (!gltfBuffersFitContainer(gltf, typeof data !== 'string')) return t('parseFailed')
-  const unsupported = gltfUnsupportedRequiredExtensions(gltf)
-  if (unsupported.length > 0) return t('unsupportedExtensions', { extensions: nameList(unsupported, more) })
-  const { buffers } = gltfExternalResources(gltf)
-  if (buffers.length > 0) return t('externalBuffers', { files: nameList(buffers, more) })
-  const excess = gltfBudgetExcess(gltf, bin)
-  return excess ? budgetMessage(excess) : null
 }
 
 function stageFor(): ModelStage {
@@ -140,14 +127,20 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
   // Why keep the old model up while the new one loads: an agent re-exporting a file should not flash it.
   if (replacing) ui.setPending(t('loadingNewer'))
   else ui.showLoading()
-  // Why wait a frame: the checks below run on this thread, and the indicator would not paint until after them.
-  await new Promise((painted) => requestAnimationFrame(() => setTimeout(painted, 0)))
 
   const data = modelData(orcaDocument.content)
-  const gltf = readGltfDocument(data)
-  const refused = refusal(data, gltf)
-  if (refused || !gltf) {
-    fail(refused ?? t('parseFailed'), null, null)
+  abortLoad = new AbortController()
+  let checked: Awaited<ReturnType<typeof checkModelOffThread>>
+  try {
+    checked = await checkModelOffThread(data, { signal: abortLoad.signal })
+  } catch (error) {
+    if (error instanceof ParseAbortedError) return
+    fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
+    return
+  }
+  const gltf = checked.document
+  if (!gltf) {
+    fail(refusalMessage(checked.refusal), null, null)
     return
   }
 
@@ -162,15 +155,14 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
   let model: Awaited<ReturnType<typeof parseGltfModel>>
   try {
     resetDecodeAllowance(DECODE_ALLOWANCE_BYTES)
-    abortParse = new AbortController()
-    model = await parseGltfModel(data, gltf, { renderer: target.renderer, signal: abortParse.signal })
+    model = await parseGltfModel(data, gltf, { renderer: target.renderer, signal: abortLoad.signal })
   } catch (error) {
     // Why silent: a newer document is already waiting to load.
     if (error instanceof ParseAbortedError) return
     fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
     return
   } finally {
-    abortParse = null
+    abortLoad = null
     // Why: decoder workers keep the largest heap they grew to; after a big decode, start fresh ones next time.
     if (decodedBytes() > LARGE_DECODE_BYTES) stopDecoders()
   }
@@ -200,10 +192,10 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
   }
 }
 
-// One load at a time: a save that arrives meanwhile aborts the parse in progress and runs next.
+// One load at a time: a save that arrives meanwhile aborts the check or parse in progress and runs next.
 let loading = false
 let pending: OrcaDocument | null = null
-let abortParse: AbortController | null = null
+let abortLoad: AbortController | null = null
 // Decoding more than this in one parse restarts the decoder workers afterwards, to give the memory back.
 const LARGE_DECODE_BYTES = 64 * 1024 * 1024
 
@@ -233,7 +225,7 @@ if (frame?.document) {
   // Called with the current document right away, then again whenever the file changes on disk.
   frame.document.onDidChange((orcaDocument) => {
     pending = orcaDocument
-    abortParse?.abort()
+    abortLoad?.abort()
     if (!loading) void drain()
   })
 } else {

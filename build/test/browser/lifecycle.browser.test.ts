@@ -147,3 +147,34 @@ describe('the GPU', () => {
     }
   })
 })
+
+describe('model checks', () => {
+  it('stops a check that never returns, without freezing the page', async () => {
+    await frame.page.evaluate(() => {
+      const ended = { count: 0 }
+      const RealWorker = Worker
+      Object.assign(window, { __checksEnded: ended, __restoreWorker: () => (window.Worker = RealWorker) })
+      const spinning = URL.createObjectURL(new Blob(['onmessage = () => { for (;;) {} }'], { type: 'text/javascript' }))
+      window.Worker = class extends Worker {
+        constructor() {
+          super(spinning)
+        }
+        override terminate(): void {
+          ended.count++
+          super.terminate()
+        }
+      }
+    })
+    await frame.send({ bytes: glb(triangleGltf()) }, 1)
+    await frame.page.waitForTimeout(500)
+    const started = Date.now()
+    await frame.page.evaluate(() => document.title)
+    assert.ok(Date.now() - started < 1000, 'the page answers while the check spins')
+    const state = await frame.settled(1)
+    assert.match(state.kind === 'error' ? state.message : '', /took too long/)
+    assert.equal(await frame.page.evaluate(() => Reflect.get(window, '__checksEnded').count), 1)
+    await frame.page.evaluate(() => Reflect.get(window, '__restoreWorker')())
+    assert.equal((await frame.open({ bytes: glb(triangleGltf()) }, { version: 2 })).kind, 'model')
+    assertContained(await frame.report(), { allowParseFailure: true })
+  })
+})

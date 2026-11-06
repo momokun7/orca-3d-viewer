@@ -139,8 +139,14 @@ describe('source', () => {
     [/\bfetch\s*\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|RTCPeerConnection|importScripts/, 'opens a network channel'],
     [/window\.open\s*\(|location\s*\.\s*(href|assign|replace)|postMessage\s*\(/, 'navigates or messages another window'],
     [/localStorage|sessionStorage|indexedDB|document\.cookie/, 'keeps data beyond the open document'],
-    [/orca\??\.(host|shell|files)\b|applyEdit|\.session\s*\(/, 'calls Orca beyond reading the document']
+    [/orca\??\.(host|shell|files)\b|applyEdit|\.session\s*\(/, 'calls Orca beyond reading the document'],
+    [/new\s+(Shared)?Worker\b|serviceWorker/, 'starts code beside the page']
   ]
+  // The one worker the viewer starts itself, and the only messages it passes: the model in, the verdict out.
+  const ALLOWED: Record<string, RegExp> = {
+    'model-check.ts': /\bnew Worker\(workerUrl\)|\bworker\.postMessage\(data\)/g,
+    'model-check-worker.ts': /\bself\.postMessage\(/g
+  }
 
   // Why strip comments: they may name these APIs while explaining what the code does instead.
   const code = (file: string): string =>
@@ -150,7 +156,7 @@ describe('source', () => {
 
   for (const file of readdirSync(SRC).filter((name) => /\.(ts|css)$/.test(name))) {
     it(`${file} uses no API outside the viewer’s sandbox`, () => {
-      const text = code(file)
+      const text = code(file).replace(ALLOWED[file] ?? /$^/g, '')
       for (const [pattern, reason] of FORBIDDEN) {
         assert.doesNotMatch(text, pattern, `${file} ${reason}`)
       }

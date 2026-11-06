@@ -171,6 +171,19 @@ describe('budget multipliers', () => {
     assert.equal(budget(json), 'geometryBytes')
   })
 
+  it('accepts accessors that start past the stride, as Khronos’ Fox does, and charges each stride slice', () => {
+    const json = triangleGltf() as Mutable
+    const sliceBytes = 252 * 1_100_000
+    json.buffers.push({ byteLength: 2 * sliceBytes, uri: 'data:,' })
+    json.bufferViews.push({ buffer: 1, byteLength: 2 * sliceBytes, byteStride: 252 })
+    json.accessors.push(
+      ...[0, sliceBytes].map((byteOffset) => ({ bufferView: 3, byteOffset, componentType: 5121, type: 'SCALAR', count: 1_100_000 }))
+    )
+    json.meshes[0].primitives = [3, 4].map((accessor) => ({ attributes: { POSITION: 0, _DATA: accessor } }))
+    assert.equal(structure(json), null)
+    assert.equal(budget(json), 'geometryBytes')
+  })
+
   it('charges strips and fans for the triangle lists they become', () => {
     const json = triangleGltf() as Mutable
     const indices = zeroFilled(json, 30_000_000, 'SCALAR', 5125)

@@ -145,7 +145,8 @@ export function validateGltfStructure(document: GltfDocument, binLength: number 
         return problem(`${path}.byteOffset`, 'is not aligned to its component size')
       }
       const stride = view.byteStride as number | undefined
-      if (stride !== undefined && (offset + componentBytes * components > stride || stride % componentBytes !== 0)) {
+      // Why the offset may pass the stride: an accessor may start further into the view (Khronos' Fox does).
+      if (stride !== undefined && (componentBytes * components > stride || stride % componentBytes !== 0)) {
         return problem(path, 'does not fit its buffer view’s stride')
       }
       if (!fits(accessor.bufferView, offset, accessor.count, componentBytes * components)) return problem(path, 'reads past its buffer view')

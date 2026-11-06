@@ -31,7 +31,7 @@ export const BUDGET = {
   imageSide: 16_384,
   skinJoints: 65_536,
   jointsPerSkin: 4096,
-  /** How long checking may take on the UI thread. */
+  /** How long the budget check may run before it refuses the model as too complex. */
   checkMilliseconds: 2000
 } as const
 
@@ -130,7 +130,7 @@ function primitiveDrawnVertices(context: Context, primitive: Record<string, unkn
 
 function accessorBytes(context: Context): number {
   let total = 0
-  // three.js copies a strided view into one interleaved buffer per (view, component type, count).
+  // three.js copies a strided view into one interleaved buffer per (view, component type, stride slice, count).
   const interleaved = new Map<string, number>()
   for (const accessor of context.accessors) {
     const count = accessor.count as number
@@ -138,7 +138,8 @@ function accessorBytes(context: Context): number {
     const stride = view?.byteStride as number | undefined
     if (stride !== undefined && stride !== elementBytes(accessor)) {
       const bytes = count * stride
-      interleaved.set(`${accessor.bufferView}:${accessor.componentType}:${count}`, bytes)
+      const slice = Math.floor(((accessor.byteOffset as number | undefined) ?? 0) / stride)
+      interleaved.set(`${accessor.bufferView}:${accessor.componentType}:${slice}:${count}`, bytes)
       // Why twice for sparse: three.js slices the whole interleaved array before applying the sparse values.
       if (accessor.sparse !== undefined) total += bytes
     } else {
