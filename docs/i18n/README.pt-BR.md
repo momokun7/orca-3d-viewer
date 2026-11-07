@@ -25,7 +25,7 @@ Gire ao redor do modelo, reproduza as animações e confira num piscar de olhos 
 
 ## Início rápido
 
-1. No Orca, abra **Configurações → Plugins → Instalar plugin** e, na aba **URL do Git**, cole `https://github.com/momokun7/orca-3d-viewer#v1.0.1` em **URL do repositório**. Clique em **Continuar**, depois em **Instalar** e, na janela seguinte, em **Ativar plugin**.
+1. No Orca, abra **Configurações → Plugins → Instalar plugin** e, na aba **URL do Git**, cole `https://github.com/momokun7/orca-3d-viewer#v1.0.2` em **URL do repositório**. Clique em **Continuar**, depois em **Instalar** e, na janela seguinte, em **Ativar plugin**.
 2. Abra um arquivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Arraste para girar e use a roda do mouse para aproximar ou afastar.
 
@@ -145,7 +145,7 @@ inclui dados do modelo, exceto trechos citados em mensagens de erro.
 2. Na aba **URL do Git**, cole este endereço em **URL do repositório**:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. Clique em **Continuar** e depois em **Instalar**. Na janela que aparece em seguida, clique em **Ativar plugin**;

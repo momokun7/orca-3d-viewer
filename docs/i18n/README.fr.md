@@ -25,7 +25,7 @@ Faites tourner le modèle, lisez ses animations et vérifiez d’un coup d’œi
 
 ## Démarrage rapide
 
-1. Dans Orca, ouvrez **Paramètres → Plugins → Installer le plugin**, puis, dans l’onglet **URL Git**, collez `https://github.com/momokun7/orca-3d-viewer#v1.0.1` dans **URL du dépôt**. Cliquez sur **Continuer**, puis sur **Installer**, et enfin sur **Activer le plugin** dans la fenêtre qui s’affiche.
+1. Dans Orca, ouvrez **Paramètres → Plugins → Installer le plugin**, puis, dans l’onglet **URL Git**, collez `https://github.com/momokun7/orca-3d-viewer#v1.0.2` dans **URL du dépôt**. Cliquez sur **Continuer**, puis sur **Installer**, et enfin sur **Activer le plugin** dans la fenêtre qui s’affiche.
 2. Ouvrez un fichier `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Faites glisser la souris pour tourner autour du modèle, et zoomez avec la molette.
 
@@ -143,7 +143,7 @@ Cliquez sur **Copier** et collez-le dans une issue : il décrit ce qui s’est 
 2. Dans l’onglet **URL Git**, collez dans **URL du dépôt** :
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. Cliquez sur **Continuer**, puis sur **Installer**. Dans la fenêtre qui s’affiche ensuite, cliquez sur **Activer le plugin** : rien ne s’exécute tant que vous ne l’avez pas activé. La visionneuse ne demande aucune autorisation : vous n’avez rien d’autre à accorder.

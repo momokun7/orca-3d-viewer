@@ -25,7 +25,7 @@ Orbit around a model, play its animations, and check at a glance that it is the 
 
 ## Quick start
 
-1. In Orca, open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste `https://github.com/momokun7/orca-3d-viewer#v1.0.1` into **Repository URL**, choose **Continue**, then **Install**, and then **Enable plugin**.
+1. In Orca, open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste `https://github.com/momokun7/orca-3d-viewer#v1.0.2` into **Repository URL**, choose **Continue**, then **Install**, and then **Enable plugin**.
 2. Open a `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` or `.fbx` file.
 3. Drag to orbit, and scroll to zoom.
 
@@ -143,7 +143,7 @@ error message quotes.
 2. On the **Git URL** tab, paste this into **Repository URL**:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. Choose **Continue**, then **Install**. In the dialog that follows, choose **Enable plugin**; nothing runs until

@@ -25,7 +25,7 @@
 
 ## 快速开始
 
-1. 在 Orca 中打开 **设置 → 插件 → 安装插件**，在 **Git URL** 选项卡中输入 `https://github.com/momokun7/orca-3d-viewer#v1.0.1`，依次点击 **继续** 和 **安装**，再在随后弹出的对话框中点击 **启用插件**。
+1. 在 Orca 中打开 **设置 → 插件 → 安装插件**，在 **Git URL** 选项卡中输入 `https://github.com/momokun7/orca-3d-viewer#v1.0.2`，依次点击 **继续** 和 **安装**，再在随后弹出的对话框中点击 **启用插件**。
 2. 打开任意一个 `.glb`、`.gltf`、`.stl`、`.ply`、`.obj` 或 `.fbx` 文件。
 3. 拖动鼠标旋转视角，滚动滚轮缩放。
 
@@ -142,7 +142,7 @@
 2. 在 **Git URL** 选项卡的 **仓库 URL** 输入框中粘贴：
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. 点击 **继续**，再点击 **安装**，然后在随后弹出的对话框中点击 **启用插件**。启用之前，插件不会运行。

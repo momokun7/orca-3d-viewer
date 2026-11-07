@@ -25,7 +25,7 @@ Modelle von allen Seiten betrachten, Animationen abspielen und auf einen Blick s
 
 ## Schnellstart
 
-1. In Orca **Einstellungen → Plugins → Plugin installieren** öffnen, im Tab **Git-URL** `https://github.com/momokun7/orca-3d-viewer#v1.0.1` einfügen und nacheinander auf **Weiter**, **Installieren** und **Plugin aktivieren** klicken.
+1. In Orca **Einstellungen → Plugins → Plugin installieren** öffnen, im Tab **Git-URL** `https://github.com/momokun7/orca-3d-viewer#v1.0.2` einfügen und nacheinander auf **Weiter**, **Installieren** und **Plugin aktivieren** klicken.
 2. Eine `.glb`-, `.gltf`-, `.stl`-, `.ply`-, `.obj`- oder `.fbx`-Datei öffnen.
 3. Zum Drehen ziehen, zum Zoomen scrollen.
 
@@ -142,7 +142,7 @@ Mit **Kopieren** lässt sie sich in ein Issue einfügen und beschreibt dort, was
 2. Im Tab **Git-URL** Folgendes in das Feld **Repository-URL mit #ref** einfügen:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. Auf **Weiter** und dann auf **Installieren** klicken. Im anschließenden Dialog **Plugin aktivieren** wählen; vorher wird kein Code
