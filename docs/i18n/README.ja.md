@@ -28,33 +28,33 @@
 
 <table>
   <tr>
-    <td width="33%"><img alt="GLB の Flight Helmet。革と金属と木の質感と模様つき" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="データを埋め込んだ glTF の Suzanne。黒い光沢のある質感" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="STL の 3DBenchy。3D プリンターの試し刷りに使われる小さな船" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="GLB の A Beautiful Game。大理石の盤と、ガラスや金属の質感のチェスの駒" src="../images/formats/glb.png"></td>
+    <td width="33%"><img alt="データを埋め込んだ glTF の Corset。刺繍の布と金具の模様つき" src="../images/formats/gltf.png"></td>
+    <td width="33%"><img alt="STL の 3DBenchy。3D プリンターの試し刷りに使われる小さな船を、ファイルに書いたオレンジで" src="../images/formats/stl.png"></td>
   </tr>
   <tr>
-    <td align="center"><b>GLB</b>: Flight Helmet</td>
-    <td align="center"><b>glTF</b>: Suzanne</td>
+    <td align="center"><b>GLB</b>: A Beautiful Game</td>
+    <td align="center"><b>glTF</b>: Corset</td>
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="PLY のスタンフォードアルマジロ。3D スキャンのデータ" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="OBJ のユタのティーポット" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="FBX のキツネ。模様と動きつき" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="PLY のスタンフォードアルマジロ。3D スキャンのデータを、頂点に書いた緑で" src="../images/formats/ply.png"></td>
+    <td width="33%"><img alt="OBJ のユタのティーポットを、頂点に書いた紫で" src="../images/formats/obj.png"></td>
+    <td width="33%"><img alt="FBX の BoomBox。ボタンやスピーカーの網目の模様つき" src="../images/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
-    <td align="center"><b>FBX</b>: Fox</td>
+    <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
 </table>
 
 | 形式 | 拡張子 | 色と模様 | アニメーション | 大きさの単位 | 注意 |
 | --- | --- | --- | --- | --- | --- |
 | glTF 2.0 | `.glb` `.gltf` | あり | あり | メートル(glTF の決まり) | `.gltf` は、データを埋め込んだものだけ |
-| STL | `.stl` | 面の色(書き出したソフトが付けたときだけ) | なし | ミリメートル(3D プリントの慣習)、Z 軸が上 | バイナリとテキストの両方 |
-| PLY | `.ply` | 頂点の色だけ | なし | メートルとして表示 | バイナリとテキストの両方 |
-| OBJ | `.obj` | なし(`.mtl` は読めない) | なし | メートルとして表示 | |
+| STL | `.stl` | ファイルに書かれた色(ない場合は決まった色) | なし | ミリメートル(3D プリントの慣習)、Z 軸が上 | バイナリとテキストの両方 |
+| PLY | `.ply` | 頂点の色(ない場合は決まった色) | なし | メートルとして表示 | バイナリとテキストの両方 |
+| OBJ | `.obj` | 頂点の色(`.mtl` は読めない) | なし | メートルとして表示 | |
 | FBX | `.fbx` | 埋め込んだ模様だけ | あり | ファイルに書かれた単位 | バイナリの FBX 7.0(2011 年)以降 |
 
 Draco や Meshopt で圧縮した glTF と、KTX2 / Basis Universal の模様も開けます。
@@ -175,7 +175,7 @@ Khronos の [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Ass
 <details>
 <summary>模様や色が出ない</summary>
 
-模様が別の画像ファイルに分かれていると、プラグインからは読めません。画面の下の欄に、読めなかったファイルの名前が出ます。glTF なら `.glb` に、FBX なら模様を埋め込んで書き出すと表示されます。OBJ の `.mtl` は読めないので、決まった色で表示します。
+模様が別の画像ファイルに分かれていると、プラグインからは読めません。画面の下の欄に、読めなかったファイルの名前が出ます。glTF なら `.glb` に、FBX なら模様を埋め込んで書き出すと表示されます。OBJ の `.mtl` は読めないので、頂点に色があればその色、なければ決まった色で表示します。
 
 </details>
 
@@ -236,14 +236,15 @@ Issue、ラベル、プロジェクトの看板、マイルストーン、PR の
 
 [MIT](../../LICENSE)。同梱している three.js、meshoptimizer、fflate、Lucide(MIT / ISC)と Draco のデコーダー(Apache-2.0)は、それぞれのライセンスに従います。[THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt) を見てください。
 
-画像と GIF のモデルは、次のところから借りています。どの写しも、GLB などへの変換、色付け、向きの調整は私たちが手を加えたものです。
+画像と GIF のモデルは、次のところから借りています。どの写しも、形式の変換、色付け(3DBenchy・アルマジロ・ティーポットの色は、私たちがファイルに書き込んだもの)、向きの調整は、私たちが手を加えたものです。
 
 | モデル | 使った場所 | 出典 | ライセンス |
 | --- | --- | --- | --- |
 | Stanford Bunny | 一番上の画像、機能の GIF | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/)。Source: Stanford University Computer Graphics Laboratory | 出典を書いて、商用以外で使える |
 | Stanford Armadillo | PLY | 同上 | 同上 |
-| Flight Helmet | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)、Gary Hsu | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| Suzanne | glTF | Khronos glTF Sample Assets、Norbert Nopper(UX3D) | CC0 1.0 |
+| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)。元のモデルは MaterialX Project、glTF への変換は Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Corset | glTF | Khronos glTF Sample Assets、Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| BoomBox | FBX | Khronos glTF Sample Assets、Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/)、Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data)、Martin Newell(1975)、Kenzie Lamar | CC0 |
-| Fox | FBX、アニメーションの GIF | Khronos glTF Sample Assets。モデルは PixelMannen(CC0 1.0)、骨組みと動きは tomkranis、glTF への変換は @AsoboStudio と @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | アニメーションの GIF | Khronos glTF Sample Assets。モデルは PixelMannen(CC0 1.0)、骨組みと動きは tomkranis、glTF への変換は @AsoboStudio と @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
