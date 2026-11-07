@@ -38,6 +38,21 @@ describe('rendering', () => {
     assertContained(await frame.report())
   })
 
+  it('opens light whatever Orca’s theme, and the toolbar switches it to dark and back', async () => {
+    await frame.page.evaluate(() => {
+      document.head.append(Object.assign(document.createElement('style'), { textContent: ':root{--orca-background:#0a0a0a}' }))
+    })
+    await frame.open({ bytes: glb(triangleGltf()) })
+    const background = () => frame.page.evaluate(() => getComputedStyle(document.body).backgroundColor)
+    const toggle = frame.page.locator('button[aria-label="Dark theme"]')
+    assert.equal(await background(), 'rgb(255, 255, 255)')
+    await toggle.click()
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true')
+    assert.equal(await background(), 'rgb(10, 10, 10)')
+    await toggle.click()
+    assert.equal(await background(), 'rgb(255, 255, 255)')
+  })
+
   for (const [format, embedding] of [
     ['PNG', 'bufferView'],
     ['PNG', 'dataUri'],

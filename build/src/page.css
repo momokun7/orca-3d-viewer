@@ -1,27 +1,28 @@
+/* The viewer opens light and the toolbar switches it to dark; both use Orca's own colours. */
 :root {
-  --bg: var(--orca-background, #ffffff);
-  --fg: var(--orca-foreground, #0a0a0a);
-  --muted-fg: var(--orca-muted-foreground, #737373);
-  --muted: var(--orca-muted, #f5f5f5);
-  --accent: var(--orca-accent, #f5f5f5);
-  --accent-fg: var(--orca-accent-foreground, #171717);
-  --border: var(--orca-border, #e5e5e5);
-  --input: var(--orca-input, #e5e5e5);
-  --ring: var(--orca-ring, #a3a3a3);
+  --bg: #ffffff;
+  --fg: #0a0a0a;
+  --muted-fg: #737373;
+  --muted: #f5f5f5;
+  --accent: #f5f5f5;
+  --accent-fg: #171717;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #a1a1a1;
   --radius: var(--orca-radius, 6px);
   --ui-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color-scheme: light;
 }
 :root.dark {
-  --bg: var(--orca-background, #0a0a0a);
-  --fg: var(--orca-foreground, #fafafa);
-  --muted-fg: var(--orca-muted-foreground, #a3a3a3);
-  --muted: var(--orca-muted, #262626);
-  --accent: var(--orca-accent, #262626);
-  --accent-fg: var(--orca-accent-foreground, #fafafa);
-  --border: var(--orca-border, #2e2e2e);
-  --input: var(--orca-input, #2e2e2e);
-  --ring: var(--orca-ring, #737373);
+  --bg: #0a0a0a;
+  --fg: #fafafa;
+  --muted-fg: #a1a1a1;
+  --muted: #262626;
+  --accent: #404040;
+  --accent-fg: #fafafa;
+  --border: rgb(255 255 255 / 0.07);
+  --input: rgb(255 255 255 / 0.15);
+  --ring: #737373;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
