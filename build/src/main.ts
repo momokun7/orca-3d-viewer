@@ -200,7 +200,7 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
       // Why loaded here: GLB, the common case, should not wait for four more loaders.
       const { ASSUMED_METERS_PER_UNIT, parseMeshModel } = await import('./mesh-model-parse.ts')
       const stored = mesh.format === 'fbx' ? null : ASSUMED_METERS_PER_UNIT[mesh.format]
-      const parsed = parseMeshModel(mesh.format, data, mesh.metersPerUnit ?? stored ?? 1)
+      const parsed = await parseMeshModel(mesh.format, data, mesh.metersPerUnit ?? stored ?? 1)
       model = parsed
       if (parsed.blockedFiles.length > 0) notices.push(t('externalTextures', { files: nameList(parsed.blockedFiles, more) }))
       if (mesh.materialFiles) notices.push(t('objMaterials'))
