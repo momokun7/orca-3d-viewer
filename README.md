@@ -10,10 +10,10 @@ at a glance whether a model is the size you think it is.
 [![CI](https://github.com/momokun7/orca-glb-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-glb-viewer/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
-[![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#-security)
+[![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#security)
 
-[Features](#-features) · [Install](#-install) · [Usage](#%EF%B8%8F-usage) · [Limits](#-limits) ·
-[Security](#-security) · [Development](#%EF%B8%8F-development)
+[Features](#features) · [Install](#install) · [Usage](#usage) · [Limits](#limits) ·
+[Security](#security) · [Development](#development)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png">
@@ -22,18 +22,18 @@ at a glance whether a model is the size you think it is.
 
 </div>
 
-## ✨ Features
+## Features
 
 |     |     |
 | --- | --- |
-| 🧭 **Look around** | Orbit, zoom and pan; reset the view in one click. |
-| 📏 **Real-world size** | A floor grid, X / Y / Z axes and the width × height × depth, so a model authored in the wrong unit stands out at once. |
-| 🎞️ **Animations** | Play and pause, and pick a clip when the model has several. |
-| 🕸️ **Inspect** | Wireframe view, with vertex and triangle counts. |
-| 🗜️ **Compressed models** | Draco and Meshopt geometry, KTX2 / Basis Universal textures. |
-| 🔄 **Stays current** | Shows the latest save as the file changes. |
-| 🌗 **Feels native** | Follows Orca's light and dark themes, in English and Japanese. |
-| 🔒 **Hands off** | Read-only and sandboxed: it never changes the file, and asks Orca for no permissions. |
+| **Look around** | Orbit, zoom and pan; reset the view in one click. |
+| **Real-world size** | A floor grid, X / Y / Z axes and the width × height × depth, so a model authored in the wrong unit stands out at once. |
+| **Animations** | Play and pause, and pick a clip when the model has several. |
+| **Inspect** | Wireframe view, with vertex and triangle counts. |
+| **Compressed models** | Draco and Meshopt geometry, KTX2 / Basis Universal textures. |
+| **Stays current** | Shows the latest save as the file changes. |
+| **Feels native** | Follows Orca's light and dark themes, in English and Japanese. |
+| **Hands off** | Read-only and sandboxed: it never changes the file, and asks Orca for no permissions. |
 
 <table>
   <tr>
@@ -46,7 +46,7 @@ at a glance whether a model is the size you think it is.
   </tr>
 </table>
 
-## 📦 Install
+## Install
 
 1. In Orca, open **Settings → Plugins** and choose **Install plugin**.
 2. On the **Git URL** tab, enter:
@@ -59,7 +59,7 @@ at a glance whether a model is the size you think it is.
 
 Requires the Orca desktop app, version 1.4.248 or later.
 
-## 🖱️ Usage
+## Usage
 
 Open any `.glb` file and it shows in 3D. For a `.gltf`, switch the editor tab between **Source** and
 **3D**.
@@ -69,11 +69,11 @@ Open any `.glb` file and it shows in 3D. For a `.gltf`, switch the editor tab be
 | Orbit | Drag |
 | Pan | Right-drag, Shift + drag, or the arrow keys |
 | Zoom | Scroll |
-| Reset the view | ↺ in the toolbar |
+| Reset the view | The reset button, first in the toolbar |
 | Wireframe, grid and axes | The toolbar buttons beside it |
-| Animations | ▶ and the clip menu, when the model has any |
+| Animations | The play button and the clip menu, when the model has any |
 
-## 🚧 Limits
+## Limits
 
 - **Files next to the model are not read.** Orca plugins see only the open file, never its folder.
   A `.gltf` whose geometry lives in a separate `.bin` cannot be shown, and textures in separate
@@ -88,7 +88,7 @@ All 152 GLB and embedded glTF models in Khronos'
 [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets) were checked: every one
 opens, except three that require an extension three.js does not implement.
 
-## 🔒 Security
+## Security
 
 A model is untrusted input, so the viewer is built to be boring to attack:
 
@@ -101,7 +101,7 @@ A model is untrusted input, so the viewer is built to be boring to attack:
 
 See [SECURITY.md](SECURITY.md) for the details and how to report a vulnerability privately.
 
-## 🛠️ Development
+## Development
 
 The plugin's code lives in `build/src`. `build/build.mjs` bundles it into `editor/`, which is
 committed so Orca can load the plugin without a build step.
@@ -120,7 +120,7 @@ the rest.
 To try your changes in Orca, run `orca plugin dev watch .` from the repository root, or add the
 folder under **Settings → Plugins → Development folders**.
 
-## 📄 License
+## License
 
 [MIT](LICENSE). The bundled three.js, meshoptimizer and Lucide (MIT / ISC) and the Draco decoder
 (Apache-2.0) keep their own licenses; see [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt).
