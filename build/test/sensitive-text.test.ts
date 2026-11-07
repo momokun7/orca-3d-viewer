@@ -24,6 +24,8 @@ describe('findSensitive', () => {
   it('finds personal emails but allows GitHub noreply and reserved example domains', () => {
     assert.deepEqual(kinds('Signed-off-by: Jane <jane.doe@company.co.jp>'), ['email address'])
     assert.deepEqual(kinds('Jane <105904524+jane@users.noreply.github.com>'), [])
+    assert.deepEqual(kinds('GitHub <noreply@github.com>'), [])
+    assert.deepEqual(kinds('mallory <noreply@github.com.evil.example.org>'), ['email address'])
     assert.deepEqual(kinds('mail a@example.com or b@attacker.test'), [])
   })
 
