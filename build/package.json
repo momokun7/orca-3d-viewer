@@ -10,8 +10,8 @@
     "check": "npm run typecheck && npm test && npm run build && npm run test:browser"
   },
   "dependencies": {
-    "lucide": "1.59.0",
-    "three": "0.186.0"
+    "lucide": "1.61.0",
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@gltf-transform/core": "4.5.1",

@@ -1,6 +1,6 @@
 3D Viewer's editor/ folder includes the following software.
 
-lucide@1.59.0 (ISC)
+lucide@1.61.0 (ISC)
 https://lucide.dev
 
 ISC License
@@ -49,7 +49,7 @@ SOFTWARE.
 
 ==============================================================================
 
-three@0.186.0 (MIT)
+three@0.186.1 (MIT)
 https://threejs.org/
 
 The MIT License
@@ -76,7 +76,7 @@ THE SOFTWARE.
 
 ==============================================================================
 
-meshoptimizer decoder, bundled in three@0.186.0 (MIT)
+meshoptimizer decoder, bundled in three@0.186.1 (MIT)
 https://github.com/zeux/meshoptimizer
 
 MIT License
@@ -103,7 +103,7 @@ SOFTWARE.
 
 ==============================================================================
 
-ktx-parse, bundled in three@0.186.0 (MIT)
+ktx-parse, bundled in three@0.186.1 (MIT)
 https://github.com/donmccurdy/KTX-Parse
 
 The MIT License (MIT)
@@ -130,7 +130,7 @@ SOFTWARE.
 
 ==============================================================================
 
-fflate, bundled in three@0.186.0 (MIT)
+fflate, bundled in three@0.186.1 (MIT)
 https://github.com/101arrowz/fflate
 
 MIT License
@@ -157,7 +157,7 @@ SOFTWARE.
 
 ==============================================================================
 
-zstddec, bundled in three@0.186.0 (MIT)
+zstddec, bundled in three@0.186.1 (MIT)
 https://github.com/donmccurdy/zstddec
 
 The MIT License (MIT)
@@ -217,7 +217,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ==============================================================================
 
-Draco decoder (editor/draco/), shipped in three@0.186.0 (Apache-2.0)
+Draco decoder (editor/draco/), shipped in three@0.186.1 (Apache-2.0)
 https://github.com/google/draco
 
 Apache License
@@ -424,7 +424,7 @@ Apache License
 
 ==============================================================================
 
-Basis Universal transcoder (editor/basis/), shipped in three@0.186.0 (Apache-2.0)
+Basis Universal transcoder (editor/basis/), shipped in three@0.186.1 (Apache-2.0)
 https://github.com/BinomialLLC/basis_universal
 
 NOTICE
