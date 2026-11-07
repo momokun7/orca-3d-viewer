@@ -5,7 +5,7 @@
   "name": "3D Viewer",
   "version": "1.0.0",
   "execution": "sandboxed-ui",
-  "description": "Preview GLB 3D models in Orca's editor (and .gltf files with their data embedded): orbit, zoom and pan, play animations, and check the model's real-world size in meters on a floor grid. Read-only.",
+  "description": "Preview 3D models in Orca's editor: GLB and glTF, STL, PLY, OBJ and FBX. Orbit, zoom and pan, play animations, and check the model's real-world size on a floor grid. Read-only.",
   "license": "MIT",
   "repository": "https://github.com/momokun7/orca-3d-viewer",
   "engines": {
@@ -16,7 +16,9 @@
       {
         "id": "glb",
         "title": "3D",
-        "extensions": [".glb"],
+        "extensions": [
+          ".glb"
+        ],
         "entry": "editor/index.html",
         "priority": "default",
         "contentKind": "bytes",
@@ -25,10 +27,56 @@
       {
         "id": "gltf",
         "title": "3D",
-        "extensions": [".gltf"],
+        "extensions": [
+          ".gltf"
+        ],
         "entry": "editor/index.html",
         "priority": "default",
         "contentKind": "text",
+        "frame": "isolated"
+      },
+      {
+        "id": "stl",
+        "title": "3D",
+        "extensions": [
+          ".stl"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "bytes",
+        "frame": "isolated"
+      },
+      {
+        "id": "ply",
+        "title": "3D",
+        "extensions": [
+          ".ply"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "bytes",
+        "frame": "isolated"
+      },
+      {
+        "id": "obj",
+        "title": "3D",
+        "extensions": [
+          ".obj"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "text",
+        "frame": "isolated"
+      },
+      {
+        "id": "fbx",
+        "title": "3D",
+        "extensions": [
+          ".fbx"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "bytes",
         "frame": "isolated"
       }
     ]

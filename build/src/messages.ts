@@ -9,6 +9,7 @@ const EN = {
     'The 3D view was reset by the graphics driver. It comes back once the driver recovers; if it does not, reopen the file.',
   parseFailed: 'Unable to display this 3D model. It may be corrupt or use an unsupported extension.',
   corrupt: 'This model is corrupt: {{path}} {{reason}}.',
+  corruptFile: 'This {{format}} file is corrupt: {{reason}}.',
   parseTimeout: 'This 3D model took too long to load, so loading was stopped.',
   webglUnavailable:
     'This 3D view needs WebGL, which is not available right now. Graphics acceleration may be turned off or the GPU may have stopped responding.',
@@ -44,6 +45,12 @@ const EN = {
     'This model keeps its geometry in separate files ({{files}}), which Orca plugins cannot read. Open a .glb, or a .gltf with its data embedded.',
   externalImages:
     'Textures in separate files ({{files}}) are not shown: Orca plugins cannot read files beside the model. Use a .glb to see them.',
+  externalTextures:
+    'Textures in separate files ({{files}}) are not shown: Orca plugins cannot read files beside the model. Embed them in the file to see them.',
+  objMaterials: 'Materials in a separate .mtl file are not shown: Orca plugins cannot read files beside the model.',
+  assumedMeters: 'This format stores no unit, so its sizes are read as meters.',
+  fbxText: 'This is a text (ASCII) FBX file, which the viewer does not read. Export it as binary FBX.',
+  fbxVersion: 'This FBX file is version {{version}}; the viewer reads FBX 7.0 (2011) and later. Export it again from a current tool.',
   laterSaveFailed: 'The latest save could not be shown, so the previous one stays on screen: {{reason}}',
   moreFiles: '{{list}} and {{count}} more',
   otherScenes: { one: 'This file has 1 more scene; the default scene is shown.', other: 'This file has {{count}} more scenes; the default scene is shown.' },
@@ -75,6 +82,7 @@ const JA: Record<MessageKey, Message> = {
     'グラフィックドライバーにより 3D 表示がリセットされました。ドライバーが回復すると元に戻ります。戻らない場合はファイルを開き直してください。',
   parseFailed: 'この 3D モデルを表示できません。ファイルが壊れているか、未対応の拡張機能を使っている可能性があります。',
   corrupt: 'このモデルは壊れています: {{path}} {{reason}}',
+  corruptFile: 'この {{format}} ファイルは壊れています: {{reason}}',
   parseTimeout: 'この 3D モデルは読み込みに時間がかかりすぎたため、読み込みを止めました。',
   webglUnavailable:
     'この 3D 表示には WebGL が必要ですが、今は使えません。グラフィックのハードウェアアクセラレーションが無効か、GPU が応答していない可能性があります。',
@@ -110,6 +118,12 @@ const JA: Record<MessageKey, Message> = {
     'このモデルは形状データを別のファイル({{files}})に持っていますが、Orca のプラグインはそれを読み込めません。.glb か、データを埋め込んだ .gltf を開いてください。',
   externalImages:
     '別のファイルのテクスチャ({{files}})は表示されません。Orca のプラグインはモデルの隣にあるファイルを読み込めないためです。.glb にすると表示できます。',
+  externalTextures:
+    '別のファイルのテクスチャ({{files}})は表示されません。Orca のプラグインはモデルの隣にあるファイルを読み込めないためです。ファイルに埋め込むと表示できます。',
+  objMaterials: '別の .mtl ファイルにある質感は表示されません。Orca のプラグインはモデルの隣にあるファイルを読み込めないためです。',
+  assumedMeters: 'この形式は単位を持たないため、大きさをメートルとして表示しています。',
+  fbxText: 'これはテキスト(ASCII)形式の FBX で、ビューアは読み込めません。バイナリ形式の FBX で書き出してください。',
+  fbxVersion: 'この FBX はバージョン {{version}} です。ビューアが読めるのは FBX 7.0(2011 年)以降です。新しいツールで書き出し直してください。',
   laterSaveFailed: '最新の保存内容を表示できなかったため、前の内容を表示しています: {{reason}}',
   moreFiles: '{{list}} ほか {{count}} 件',
   otherScenes: { other: 'このファイルにはほかに {{count}} 個のシーンがあります。既定のシーンを表示しています。' },

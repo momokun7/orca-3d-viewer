@@ -9,6 +9,7 @@ import { disposeObjectTree } from './model-disposal.ts'
 import type { Refusal } from './model-refusal.ts'
 import { resolveLocale } from './locale.ts'
 import { createTranslate } from './messages.ts'
+import { modelFormat } from './model-format.ts'
 import { createModelStage, type ModelStage, type ModelSummary } from './model-scene.ts'
 import { editorFrame, type OrcaDocument } from './orca-editor-host.ts'
 import { createViewerUi } from './viewer-ui.ts'
@@ -98,6 +99,12 @@ function refusalMessage(refusal: Refusal): string {
       return t('externalBuffers', { files: nameList(refusal.files, more) })
     case 'budget':
       return budgetMessage(refusal.excess)
+    case 'corruptFile':
+      return t('corruptFile', { format: refusal.format, reason: refusal.reason })
+    case 'fbxText':
+      return t('fbxText')
+    case 'fbxVersion':
+      return t('fbxVersion', { version: String(refusal.version) })
   }
 }
 
@@ -129,20 +136,21 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
   else ui.showLoading()
 
   const data = modelData(orcaDocument.content)
+  const format = modelFormat(orcaDocument.fileType, data)
   abortLoad = new AbortController()
   let checked: Awaited<ReturnType<typeof checkModelOffThread>>
   try {
-    checked = await checkModelOffThread(data, { signal: abortLoad.signal })
+    checked = await checkModelOffThread(format, data, { signal: abortLoad.signal })
   } catch (error) {
     if (error instanceof ParseAbortedError) return
     fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
     return
   }
-  const gltf = checked.document
-  if (!gltf) {
+  if (checked.refusal) {
     fail(refusalMessage(checked.refusal), null, null)
     return
   }
+  const gltf = checked.document
 
   let target: ModelStage
   try {
@@ -153,9 +161,24 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
   }
 
   let model: Awaited<ReturnType<typeof parseGltfModel>>
+  const notices: string[] = []
   try {
-    resetDecodeAllowance(DECODE_ALLOWANCE_BYTES)
-    model = await parseGltfModel(data, gltf, { renderer: target.renderer, signal: abortLoad.signal })
+    if (gltf) {
+      resetDecodeAllowance(DECODE_ALLOWANCE_BYTES)
+      model = await parseGltfModel(data, gltf, { renderer: target.renderer, signal: abortLoad.signal })
+      const images = gltfExternalResources(gltf).images
+      if (images.length > 0) notices.push(t('externalImages', { files: nameList(images, more) }))
+    } else {
+      const mesh = checked.mesh
+      // Why loaded here: GLB, the common case, should not wait for four more loaders.
+      const { ASSUMED_METERS_PER_UNIT, parseMeshModel } = await import('./mesh-model-parse.ts')
+      const stored = mesh.format === 'fbx' ? null : ASSUMED_METERS_PER_UNIT[mesh.format]
+      const parsed = parseMeshModel(mesh.format, data, mesh.metersPerUnit ?? stored ?? 1)
+      model = parsed
+      if (parsed.blockedFiles.length > 0) notices.push(t('externalTextures', { files: nameList(parsed.blockedFiles, more) }))
+      if (mesh.materialFiles) notices.push(t('objMaterials'))
+      if (mesh.format === 'obj' || mesh.format === 'ply') notices.push(t('assumedMeters'))
+    }
   } catch (error) {
     // Why silent: a newer document is already waiting to load.
     if (error instanceof ParseAbortedError) return
@@ -176,13 +199,9 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
 
   try {
     const summary = await target.show(model, replacing)
-    const images = gltfExternalResources(gltf).images
-    const notices = [
-      ...(images.length > 0 ? [t('externalImages', { files: nameList(images, more) })] : []),
-      ...(summary.otherSceneCount > 0
-        ? [t('otherScenes', { count: count(summary.otherSceneCount) }, summary.otherSceneCount)]
-        : [])
-    ]
+    if (summary.otherSceneCount > 0) {
+      notices.push(t('otherScenes', { count: count(summary.otherSceneCount) }, summary.otherSceneCount))
+    }
     showModel(summary, target, notices, replacing)
     // Why autoplay: a still frame cannot show whether the clips were exported at all.
     target.playAnimation(0)

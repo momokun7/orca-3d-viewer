@@ -43,7 +43,7 @@ const ownBlobUrls = new Set<string>()
 let activeParses = 0
 let originalCreateObjectURL: typeof URL.createObjectURL | null = null
 
-function trackBlobUrls(): () => void {
+export function trackBlobUrls(): () => void {
   if (activeParses++ === 0) {
     const create = URL.createObjectURL.bind(URL)
     originalCreateObjectURL = URL.createObjectURL
@@ -62,7 +62,7 @@ function trackBlobUrls(): () => void {
   }
 }
 
-const resolveOwnUrl = (url: string): string => resolveResourceUrl(url, ownBlobUrls)
+export const resolveOwnUrl = (url: string): string => resolveResourceUrl(url, ownBlobUrls)
 
 // Why shared: each new loader re-fetches and compiles its decoder and starts its own workers.
 let dracoLoader: Promise<DRACOLoader> | null = null

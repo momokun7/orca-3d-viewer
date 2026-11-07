@@ -130,7 +130,8 @@ export async function closeBrowser(): Promise<void> {
   browser = null
 }
 
-export type Content = { bytes: Uint8Array } | { text: string }
+/** A document as Orca sends it; `fileType` defaults to .glb for bytes and .gltf for text. */
+export type Content = ({ bytes: Uint8Array } | { text: string }) & { fileType?: string }
 
 export type Frame = {
   page: Page
@@ -221,21 +222,21 @@ export async function openFrame({ locale = 'en-US', webgl = true } = {}): Promis
   let nextVersion = 1
   const send = async (content: Content, version: number): Promise<void> => {
     await page.evaluate(
-      ({ base64, text, version }) => {
+      ({ base64, text, version, fileType }) => {
         const document =
           base64 === null
-            ? { version, readOnly: false, content: { kind: 'text', text }, fileType: '.gltf' }
+            ? { version, readOnly: false, content: { kind: 'text', text }, fileType: fileType ?? '.gltf' }
             : {
                 version,
                 readOnly: false,
                 content: { kind: 'bytes', bytes: Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)).buffer },
-                fileType: '.glb'
+                fileType: fileType ?? '.glb'
               }
         window.__orcaTest.send(document)
       },
       'bytes' in content
-        ? { base64: Buffer.from(content.bytes).toString('base64'), text: null, version }
-        : { base64: null, text: content.text, version }
+        ? { base64: Buffer.from(content.bytes).toString('base64'), text: null, version, fileType: content.fileType }
+        : { base64: null, text: content.text, version, fileType: content.fileType }
     )
   }
   const settled = async (version: number): Promise<ViewerState> => {

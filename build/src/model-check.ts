@@ -1,5 +1,6 @@
 import type { GltfModelData } from './gltf-document-inspection.ts'
 import { ParseAbortedError, ParseTimeoutError } from './gltf-model-parse.ts'
+import type { ModelFormat } from './model-format.ts'
 import type { ModelCheck } from './model-refusal.ts'
 
 // Set by build.mjs to the bundled model-check-worker.ts.
@@ -22,6 +23,7 @@ export class ModelCheckError extends Error {
  * the page. The worker ends with the check: on its answer, after `timeoutMs`, or when `signal` aborts.
  */
 export function checkModelOffThread(
+  format: ModelFormat,
   data: GltfModelData,
   { timeoutMs = CHECK_TIMEOUT_MS, signal }: { timeoutMs?: number; signal?: AbortSignal } = {}
 ): Promise<ModelCheck> {
@@ -52,6 +54,6 @@ export function checkModelOffThread(
       settle()
       reject(new ModelCheckError(event.message || 'the worker stopped'))
     }
-    worker.postMessage(data)
+    worker.postMessage({ format, data })
   })
 }

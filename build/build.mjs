@@ -101,7 +101,7 @@ for (const { file, bytes } of written) {
 }
 
 // Notices: every npm package with code in the build, with its licence as reviewed into build/licenses,
-// plus the meshoptimizer and Draco decoders that three.js carries under their own licences.
+// plus the decoders and libraries that three.js carries under their own licences.
 const packages = new Map()
 for (const input of [...Object.keys(result.metafile.inputs), ...Object.keys(worker.metafile.inputs)]) {
   const at = input.lastIndexOf('node_modules/')
@@ -126,6 +126,7 @@ const sections = [
   ...[...packages.values()].sort((a, b) => a.name.localeCompare(b.name)).map(packageSection),
   `meshoptimizer decoder, bundled in three@${three.version} (MIT)\nhttps://github.com/zeux/meshoptimizer\n\n${reviewedLicence('meshoptimizer.txt')}`,
   `ktx-parse, bundled in three@${three.version} (MIT)\nhttps://github.com/donmccurdy/KTX-Parse\n\n${reviewedLicence('ktx-parse.txt')}`,
+  `fflate, bundled in three@${three.version} (MIT)\nhttps://github.com/101arrowz/fflate\n\n${reviewedLicence('fflate.txt')}`,
   `zstddec, bundled in three@${three.version} (MIT)\nhttps://github.com/donmccurdy/zstddec\n\n${reviewedLicence('zstddec.txt')}`,
   `Draco decoder (editor/draco/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/google/draco\n\n${reviewedLicence('apache-2.0.txt')}`,
   `Basis Universal transcoder (editor/basis/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/BinomialLLC/basis_universal\n\n${reviewedLicence('basis-universal-notice.txt')}\n\n${reviewedLicence('apache-2.0.txt')}`

@@ -18,7 +18,9 @@ export function lengthFormat(meters: number[], locale: string): LengthFormat {
   // Why 'km' only from 10 km, and m for nothing at all: buildings read better in meters, and 0 has no scale.
   const [unit, scale] = largest === 0 || (fitting[0] === 'km' && largest < 10_000) ? UNITS[1] : fitting
   const number = new Intl.NumberFormat(locale, { maximumSignificantDigits: 3 })
-  return { unit, format: (value) => number.format(value / scale) }
+  // Why: rotating a flat model leaves a rounding error of about 1e-16 where its thickness is 0.
+  const negligible = largest * 1e-6
+  return { unit, format: (value) => number.format(Math.abs(value) < negligible ? 0 : value / scale) }
 }
 
 export function formatCount(value: number, locale: string): string {
