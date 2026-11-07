@@ -2,6 +2,14 @@
 
 <!-- What changes and why. -->
 
+## Tracking
+
+<!-- See CONTRIBUTING.md: every pull request is assigned, labelled and in a milestone. -->
+
+- Closes #
+- [ ] Assigned to its author, with a type label (and an `area:` label when one fits)
+- [ ] In the milestone of the release it ships in
+
 ## Risk
 
 <!-- Low / Medium / High. High: anything in CODEOWNERS (manifest, editor/, build, workflows, hooks, URL policy). -->
