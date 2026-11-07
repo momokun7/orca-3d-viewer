@@ -1,7 +1,9 @@
 // Builds ../editor:
 //   index.html                the page, with its stylesheet inline;
 //   assets/main-<hash>.js     the page's code, plus chunks loaded only for Draco or Meshopt models;
-//   draco/                    the Draco WebAssembly decoder three.js ships.
+//                             main carries the model-check worker's code as a string;
+//   draco/                    the Draco WebAssembly decoder three.js ships;
+//   basis/                    the Basis Universal transcoder three.js ships, for KTX2 textures.
 // Also writes ../THIRD_PARTY_NOTICES.txt from the packages that end up in the build.
 // Usage: npm ci && node build.mjs
 import { build } from 'esbuild'
@@ -14,11 +16,30 @@ const EDITOR = path.join(PLUGIN, 'editor')
 const NOTICES = path.join(PLUGIN, 'THIRD_PARTY_NOTICES.txt')
 const DRACO = path.join(HERE, 'node_modules', 'three', 'examples', 'jsm', 'libs', 'draco', 'gltf')
 const DRACO_FILES = ['draco_wasm_wrapper.js', 'draco_decoder.wasm']
+const BASIS = path.join(HERE, 'node_modules', 'three', 'examples', 'jsm', 'libs', 'basis')
+const BASIS_FILES = ['basis_transcoder.js', 'basis_transcoder.wasm']
 // Why: Orca's official catalog refuses any plugin file over 1 MiB; keep to the same bar.
 const MAX_FILE_BYTES = 1024 * 1024
 
+// The model checks run in a blob worker; the frame's CSP allows those, and its source travels inside main.
+const worker = await build({
+  entryPoints: [path.join(HERE, 'src', 'model-check-worker.ts')],
+  bundle: true,
+  write: false,
+  platform: 'browser',
+  format: 'iife',
+  target: 'chrome120',
+  minify: true,
+  legalComments: 'none',
+  metafile: true,
+  logLevel: 'warning',
+  absWorkingDir: HERE
+})
+const workerSource = Buffer.from(worker.outputFiles[0].contents).toString()
+
 const result = await build({
   entryPoints: { main: path.join(HERE, 'src', 'main.ts') },
+  define: { MODEL_CHECK_WORKER_SOURCE: JSON.stringify(workerSource) },
   bundle: true,
   splitting: true,
   write: false,
@@ -40,7 +61,7 @@ const html = `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>glTF Viewer</title>
+<title>GLB Viewer</title>
 <style>
 ${readFileSync(path.join(HERE, 'src', 'page.css'), 'utf8').trim()}
 </style>
@@ -58,6 +79,10 @@ const written = [
   ...DRACO_FILES.map((name) => ({
     file: path.join(EDITOR, 'draco', name),
     bytes: readFileSync(path.join(DRACO, name))
+  })),
+  ...BASIS_FILES.map((name) => ({
+    file: path.join(EDITOR, 'basis', name),
+    bytes: readFileSync(path.join(BASIS, name))
   }))
 ]
 for (const { file, bytes } of written) {
@@ -78,7 +103,7 @@ for (const { file, bytes } of written) {
 // Notices: every npm package with code in the build, with its licence as reviewed into build/licenses,
 // plus the meshoptimizer and Draco decoders that three.js carries under their own licences.
 const packages = new Map()
-for (const input of Object.keys(result.metafile.inputs)) {
+for (const input of [...Object.keys(result.metafile.inputs), ...Object.keys(worker.metafile.inputs)]) {
   const at = input.lastIndexOf('node_modules/')
   if (at === -1) continue
   const name = /^(?:@[^/]+\/)?[^/]+/.exec(input.slice(at + 'node_modules/'.length))[0]
@@ -100,11 +125,14 @@ const three = packages.get('three')
 const sections = [
   ...[...packages.values()].sort((a, b) => a.name.localeCompare(b.name)).map(packageSection),
   `meshoptimizer decoder, bundled in three@${three.version} (MIT)\nhttps://github.com/zeux/meshoptimizer\n\n${reviewedLicence('meshoptimizer.txt')}`,
-  `Draco decoder (editor/draco/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/google/draco\n\n${reviewedLicence('draco-apache-2.0.txt')}`
+  `ktx-parse, bundled in three@${three.version} (MIT)\nhttps://github.com/donmccurdy/KTX-Parse\n\n${reviewedLicence('ktx-parse.txt')}`,
+  `zstddec, bundled in three@${three.version} (MIT)\nhttps://github.com/donmccurdy/zstddec\n\n${reviewedLicence('zstddec.txt')}`,
+  `Draco decoder (editor/draco/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/google/draco\n\n${reviewedLicence('apache-2.0.txt')}`,
+  `Basis Universal transcoder (editor/basis/), shipped in three@${three.version} (Apache-2.0)\nhttps://github.com/BinomialLLC/basis_universal\n\n${reviewedLicence('basis-universal-notice.txt')}\n\n${reviewedLicence('apache-2.0.txt')}`
 ]
 writeFileSync(
   NOTICES,
-  `glTF Viewer's editor/ folder includes the following software.\n\n` +
+  `GLB Viewer's editor/ folder includes the following software.\n\n` +
     `${sections.join(`\n\n${'='.repeat(78)}\n\n`)}\n`
 )
 

@@ -4,9 +4,13 @@
 node = "24"
 
 [tasks.install]
-description = "Install the build's dependencies"
+description = "Install the build's dependencies and Chromium for the browser tests"
 dir = "build"
-run = "npm ci"
+run = ["npm ci --ignore-scripts", "npx playwright-core install chromium"]
+
+[tasks.hooks]
+description = "Use the repository's git hooks (sensitive-text scan, branch and tag rules)"
+run = "git config core.hooksPath .githooks"
 
 [tasks.build]
 description = "Build editor/ and THIRD_PARTY_NOTICES.txt"
@@ -18,7 +22,24 @@ description = "Run the unit tests"
 dir = "build"
 run = "npm test"
 
+[tasks."test:browser"]
+description = "Run the viewer in headless Chromium under Orca's frame sandbox"
+dir = "build"
+run = "npm run test:browser"
+
 [tasks.typecheck]
-description = "Type-check the sources and tests"
+description = "Type-check the sources, tests and tools"
 dir = "build"
 run = "npm run typecheck"
+
+[tasks.check]
+description = "Everything CI runs locally: types, tests, build, browser tests, sensitive-text scan"
+run = [
+  "npm --prefix build run check",
+  "node tools/check-sensitive.ts files",
+  "git diff --exit-code -- editor THIRD_PARTY_NOTICES.txt"
+]
+
+[tasks.rulesets]
+description = "Apply .github/rulesets to GitHub (needs a public repository or GitHub Pro)"
+run = "node tools/apply-rulesets.ts"
