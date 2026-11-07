@@ -43,7 +43,7 @@ export type TriangleOptions = {
 /** A one-triangle glTF document. */
 export function triangleGltf({ animationNames = [], imageUris = [], bufferUri }: TriangleOptions = {}): GltfJson {
   const json: GltfJson = {
-    asset: { version: '2.0', generator: 'orca-glb-viewer tests' },
+    asset: { version: '2.0', generator: 'orca-3d-viewer tests' },
     scene: 0,
     scenes: [{ nodes: [0] }],
     nodes: [{ mesh: 0 }],
