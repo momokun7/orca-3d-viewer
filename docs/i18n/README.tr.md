@@ -25,7 +25,7 @@ Modeli her açıdan inceleyin, animasyonlarını oynatın ve beklediğiniz boyut
 
 ## Hızlı başlangıç
 
-1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.0` adresini yazın ve **Yükle**'ye tıklayın.
+1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.0` adresini yapıştırın, **Devam**'a ve **Yükle**'ye tıklayın, ardından **Eklentiyi etkinleştir**'i seçin.
 2. Bir `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` veya `.fbx` dosyası açın.
 3. Döndürmek için sürükleyin, yakınlaştırmak için fare tekerleğini çevirin.
 
@@ -134,21 +134,23 @@ Português, Русский, Türkçe, 简体中文 ve 繁體中文.
 
 Araç çubuğundaki **i** düğmesi (hata ekranında ise mesajın altındaki **Ayrıntılar** düğmesi) bir özet açar:
 görüntüleyicinin sürümü, tarayıcınız ve grafik donanımınız, son yüklemeler ve ne kadar sürdükleri, karşılaşılan
-hatalar. **Kopyala** ile alıp bir issue'ya yapıştırmanız, ne olduğunu anlatmaya yeter. Özette hiçbir model verisi
-bulunmaz.
+hatalar. **Kopyala** ile alıp bir issue'ya yapıştırmanız, ne olduğunu anlatmaya yeter. Bir hata mesajında
+aktarılanlar dışında özette hiçbir model verisi bulunmaz.
 
 <img alt="Ayrıntılar paneli: görüntüleyicinin sürümü, tarayıcı, yükleme geçmişi ve bir dosyanın neden reddedildiği; altta Kopyala ve Kapat düğmeleri" src="../images/details.png" width="600">
 
 ## Kurulum
 
 1. Orca'da **Ayarlar → Eklentiler** bölümünü açın ve **Eklenti yükle**'ye tıklayın.
-2. **Git URL'si** sekmesine şu adresi yazın:
+2. **Git URL'si** sekmesinde **#ref içeren repository URL'si** alanına şu adresi yapıştırın:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
-3. **Yükle**'ye tıklayın. Görüntüleyici hiçbir izin istemediği için onaylamanız gereken başka bir şey yoktur.
+3. **Devam**'a, ardından **Yükle**'ye tıklayın. Açılan onay penceresinde **Eklentiyi etkinleştir**'i seçin; siz
+   etkinleştirene kadar eklentinin hiçbir kodu çalışmaz. Görüntüleyici hiçbir izin istemediği için onaylamanız
+   gereken başka bir şey yoktur.
 
 > [!IMPORTANT]
 > Orca masaüstü uygulamasının 1.4.248 veya daha yeni bir sürümü gerekir.

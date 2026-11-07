@@ -25,7 +25,7 @@ Orbit around a model, play its animations, and check at a glance that it is the 
 
 ## Quick start
 
-1. In Orca, open **Settings → Plugins → Install plugin**, enter `https://github.com/momokun7/orca-3d-viewer#v1.0.0` on the **Git URL** tab, then choose **Install**.
+1. In Orca, open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste `https://github.com/momokun7/orca-3d-viewer#v1.0.0` into **Repository URL**, choose **Continue**, then **Install**, and then **Enable plugin**.
 2. Open a `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` or `.fbx` file.
 3. Drag to orbit, and scroll to zoom.
 
@@ -132,20 +132,22 @@ The viewer uses the same language as Orca: English, 日本語, Deutsch, Español
 
 The **i** button in the toolbar (or, on an error screen, the **Details** button below the message) opens a
 summary of the viewer's version, your browser and graphics hardware, recent loads and how long they took, and
-any errors. **Copy** it into an issue to show exactly what happened. It contains no model data.
+any errors. **Copy** it into an issue to show exactly what happened. It contains no model data, except what an
+error message quotes.
 
 <img alt="The Details panel, showing the viewer's version, the browser, the load history and why a file was refused, with Copy and Close buttons" src="docs/images/details.png" width="600">
 
 ## Install
 
 1. In Orca, open **Settings → Plugins** and choose **Install plugin**.
-2. On the **Git URL** tab, enter:
+2. On the **Git URL** tab, paste this into **Repository URL**:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
-3. Choose **Install**. The viewer needs no permissions, so there is nothing else to approve.
+3. Choose **Continue**, then **Install**. In the dialog that follows, choose **Enable plugin**; nothing runs until
+   you do. The viewer asks for no permissions.
 
 > [!IMPORTANT]
 > Requires the Orca desktop app, version 1.4.248 or later.

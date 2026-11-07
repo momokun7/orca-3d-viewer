@@ -25,7 +25,7 @@ Modelle von allen Seiten betrachten, Animationen abspielen und auf einen Blick s
 
 ## Schnellstart
 
-1. In Orca **Einstellungen → Plugins → Plugin installieren** öffnen, im Tab **Git-URL** `https://github.com/momokun7/orca-3d-viewer#v1.0.0` eingeben und auf **Installieren** klicken.
+1. In Orca **Einstellungen → Plugins → Plugin installieren** öffnen, im Tab **Git-URL** `https://github.com/momokun7/orca-3d-viewer#v1.0.0` einfügen und nacheinander auf **Weiter**, **Installieren** und **Plugin aktivieren** klicken.
 2. Eine `.glb`-, `.gltf`-, `.stl`-, `.ply`-, `.obj`- oder `.fbx`-Datei öffnen.
 3. Zum Drehen ziehen, zum Zoomen scrollen.
 
@@ -132,20 +132,21 @@ Der Viewer übernimmt die Sprache von Orca: English, 日本語, Deutsch, Españo
 
 Die Schaltfläche **i** in der Werkzeugleiste (bzw. auf einem Fehlerbildschirm die Schaltfläche **Details** unter der Meldung) öffnet eine Zusammenfassung:
 Version des Viewers, Browser und Grafik, die letzten Ladevorgänge samt Dauer sowie aufgetretene Fehler.
-Mit **Kopieren** lässt sie sich in ein Issue einfügen und beschreibt dort, was passiert ist. Modelldaten sind nicht enthalten.
+Mit **Kopieren** lässt sie sich in ein Issue einfügen und beschreibt dort, was passiert ist. Modelldaten sind nicht enthalten, abgesehen von Zitaten in Fehlermeldungen.
 
 <img alt="Das Panel „Details“: Version des Viewers, Browser, Ladeverlauf und der Grund, warum eine Datei abgelehnt wurde, mit den Schaltflächen „Kopieren“ und „Schließen“" src="../images/details.png" width="600">
 
 ## Installation
 
 1. In Orca **Einstellungen → Plugins** öffnen und auf **Plugin installieren** klicken.
-2. Im Tab **Git-URL** Folgendes eingeben:
+2. Im Tab **Git-URL** Folgendes in das Feld **Repository-URL mit #ref** einfügen:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
-3. Auf **Installieren** klicken. Der Viewer fordert keine Berechtigungen an, es muss also nichts weiter freigegeben werden.
+3. Auf **Weiter** und dann auf **Installieren** klicken. Im anschließenden Dialog **Plugin aktivieren** wählen; vorher wird kein Code
+   des Plugins ausgeführt. Der Viewer fordert keine Berechtigungen an, es muss also nichts weiter freigegeben werden.
 
 > [!IMPORTANT]
 > Erfordert die Desktop-App von Orca ab Version 1.4.248.

@@ -25,7 +25,7 @@ Gira la cámara alrededor del modelo, reproduce sus animaciones y comprueba de u
 
 ## Inicio rápido
 
-1. En Orca, abre **Ajustes → Plugins → Instalar plugin**, introduce `https://github.com/momokun7/orca-3d-viewer#v1.0.0` en la pestaña **Git URL** y elige **Instalar**.
+1. En Orca, abre **Ajustes → Plugins → Instalar plugin** y, en la pestaña **Git URL**, pega `https://github.com/momokun7/orca-3d-viewer#v1.0.0`. Elige **Continuar** e **Instalar**, y después **Activar plugin**.
 2. Abre un archivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` o `.fbx`.
 3. Arrastra para girar el modelo y usa la rueda del ratón para acercarlo o alejarlo.
 
@@ -132,20 +132,21 @@ El visor se muestra en el mismo idioma que Orca: English, 日本語, Deutsch, Es
 
 El botón **i** de la barra de herramientas (o, en una pantalla de error, el botón **Detalles** que aparece bajo el mensaje) abre un resumen
 con la versión del visor, tu navegador y tu GPU, las últimas cargas y lo que tardó cada una, y los errores que se hayan producido.
-Pulsa **Copiar** y pégalo en un issue: con eso basta para saber qué pasó. No incluye datos del modelo.
+Pulsa **Copiar** y pégalo en un issue: con eso basta para saber qué pasó. No incluye datos del modelo, salvo lo que cite algún mensaje de error.
 
 <img alt="El panel Detalles: la versión del visor, el navegador, el historial de cargas y el motivo por el que se rechazó un archivo, con los botones Copiar y Cerrar" src="../images/details.png" width="600">
 
 ## Instalación
 
 1. En Orca, abre **Ajustes → Plugins** y elige **Instalar plugin**.
-2. En la pestaña **Git URL**, introduce:
+2. En la pestaña **Git URL**, pega esta dirección en **URL del repositorio**:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
-3. Elige **Instalar**. Como el visor no pide ningún permiso, no tendrás que conceder nada más.
+3. Elige **Continuar** y luego **Instalar**. En el cuadro de diálogo que aparece, elige **Activar plugin**: hasta que no lo hagas, no se ejecuta nada.
+   Como el visor no pide ningún permiso, no tendrás que conceder nada más.
 
 > [!IMPORTANT]
 > Requiere la aplicación de escritorio de Orca, versión 1.4.248 o posterior.

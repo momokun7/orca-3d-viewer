@@ -25,7 +25,7 @@ Gire ao redor do modelo, reproduza as animações e confira num piscar de olhos 
 
 ## Início rápido
 
-1. No Orca, abra **Configurações → Plugins → Instalar plugin**, digite `https://github.com/momokun7/orca-3d-viewer#v1.0.0` na aba **URL do Git** e clique em **Instalar**.
+1. No Orca, abra **Configurações → Plugins → Instalar plugin** e, na aba **URL do Git**, cole `https://github.com/momokun7/orca-3d-viewer#v1.0.0` em **URL do repositório**. Clique em **Continuar**, depois em **Instalar** e, na janela seguinte, em **Ativar plugin**.
 2. Abra um arquivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Arraste para girar e use a roda do mouse para aproximar ou afastar.
 
@@ -135,20 +135,21 @@ Os textos do visualizador seguem o idioma do Orca: English, 日本語, Deutsch, 
 O botão **i** da barra de ferramentas (ou, em uma tela de erro, o botão **Detalhes** logo abaixo da mensagem) abre um
 resumo com a versão do visualizador, o navegador e a placa de vídeo, os últimos carregamentos e quanto tempo cada um
 levou, além dos erros que ocorreram. Clique em **Copiar**, cole em uma issue e pronto: está tudo ali. O resumo não
-inclui dados do modelo.
+inclui dados do modelo, exceto trechos citados em mensagens de erro.
 
 <img alt="O painel Detalhes: a versão do visualizador, o navegador, o histórico de carregamentos e o motivo pelo qual um arquivo foi recusado, com os botões Copiar e Fechar" src="../images/details.png" width="600">
 
 ## Instalação
 
 1. No Orca, abra **Configurações → Plugins** e clique em **Instalar plugin**.
-2. Na aba **URL do Git**, digite:
+2. Na aba **URL do Git**, cole este endereço em **URL do repositório**:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
-3. Clique em **Instalar**. Como o visualizador não pede nenhuma permissão, não há mais nada a autorizar.
+3. Clique em **Continuar** e depois em **Instalar**. Na janela que aparece em seguida, clique em **Ativar plugin**;
+   nada é executado antes disso. Como o visualizador não pede nenhuma permissão, não há mais nada a autorizar.
 
 > [!IMPORTANT]
 > É necessário o aplicativo de desktop do Orca, versão 1.4.248 ou mais recente.

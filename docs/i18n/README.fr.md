@@ -25,7 +25,7 @@ Faites tourner le modèle, lisez ses animations et vérifiez d’un coup d’œi
 
 ## Démarrage rapide
 
-1. Dans Orca, ouvrez **Paramètres → Plugins → Installer le plugin**, saisissez `https://github.com/momokun7/orca-3d-viewer#v1.0.0` dans l’onglet **URL Git**, puis cliquez sur **Installer**.
+1. Dans Orca, ouvrez **Paramètres → Plugins → Installer le plugin**, puis, dans l’onglet **URL Git**, collez `https://github.com/momokun7/orca-3d-viewer#v1.0.0` dans **URL du dépôt**. Cliquez sur **Continuer**, puis sur **Installer**, et enfin sur **Activer le plugin** dans la fenêtre qui s’affiche.
 2. Ouvrez un fichier `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Faites glisser la souris pour tourner autour du modèle, et zoomez avec la molette.
 
@@ -133,20 +133,20 @@ La visionneuse s’affiche dans la langue d’Orca : English, 日本語, Deutsc
 
 Le bouton **i** de la barre d’outils (ou, sur un écran d’erreur, le bouton **Détails** sous le message) ouvre un récapitulatif :
 version de la visionneuse, navigateur et configuration graphique, derniers chargements avec leur durée, et erreurs rencontrées.
-Cliquez sur **Copier** et collez-le dans une issue : il décrit ce qui s’est passé, sans inclure aucune donnée du modèle.
+Cliquez sur **Copier** et collez-le dans une issue : il décrit ce qui s’est passé. Il ne contient aucune donnée du modèle, hormis ce que cite un message d’erreur.
 
 <img alt="Le panneau Détails : version de la visionneuse, navigateur, historique des chargements et motif du refus d’un fichier, avec les boutons Copier et Fermer" src="../images/details.png" width="600">
 
 ## Installation
 
 1. Dans Orca, ouvrez **Paramètres → Plugins** et cliquez sur **Installer le plugin**.
-2. Dans l’onglet **URL Git**, saisissez :
+2. Dans l’onglet **URL Git**, collez dans **URL du dépôt** :
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
-3. Cliquez sur **Installer**. La visionneuse ne demande aucune autorisation : vous n’avez rien d’autre à accorder.
+3. Cliquez sur **Continuer**, puis sur **Installer**. Dans la fenêtre qui s’affiche ensuite, cliquez sur **Activer le plugin** : rien ne s’exécute tant que vous ne l’avez pas activé. La visionneuse ne demande aucune autorisation : vous n’avez rien d’autre à accorder.
 
 > [!IMPORTANT]
 > Nécessite l’application de bureau Orca 1.4.248 ou ultérieure.
