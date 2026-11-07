@@ -19,13 +19,13 @@
 [困ったとき](#困ったとき) · [安全性](#安全性) · [開発](#開発) ·
 [バグを報告](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="Orca の中の 3D Viewer で、床のグリッドの上に座るスタンフォードバニー。下の欄に 156 × 154 × 121 mm と大きさが表示されている" src="../images/hero.png" width="800">
+<img alt="Orca の中の 3D Viewer で、床のグリッドの上に座るスタンフォードバニー。下の欄に 156 × 154 × 121 mm と大きさが表示されている" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## すぐに使う
 
-1. Orca で **設定 → プラグイン → プラグインをインストール** を開き、**Git URL** のタブの **リポジトリ URL** に `https://github.com/momokun7/orca-3d-viewer#v1.0.0` を貼り付けて、**続行**、**インストール** の順に押す。続けて出る確認で **プラグインを有効にする** を押す。
+1. Orca で **設定 → プラグイン → プラグインをインストール** を開き、**Git URL** のタブの **リポジトリ URL** に `https://github.com/momokun7/orca-3d-viewer#v1.0.1` を貼り付けて、**続行**、**インストール** の順に押す。続けて出る確認で **プラグインを有効にする** を押す。
 2. `.glb`・`.gltf`・`.stl`・`.ply`・`.obj`・`.fbx` のどれかを開く。
 3. ドラッグで回し、ホイールで近づく。
 
@@ -37,9 +37,9 @@
 
 <table>
   <tr>
-    <td width="33%"><img alt="GLB の A Beautiful Game。大理石の盤と、ガラスや金属の質感のチェスの駒" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="データを埋め込んだ glTF の Corset。刺繍の布と金具の模様つき" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="STL の 3DBenchy。3D プリンターの試し出力によく使われる小さな船。ファイルに書き込んだオレンジ色で表示" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="GLB の A Beautiful Game。大理石の盤と、ガラスや金属の質感のチェスの駒" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="データを埋め込んだ glTF の Corset。刺繍の布と金具の模様つき" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="STL の 3DBenchy。3D プリンターの試し出力によく使われる小さな船。ファイルに書き込んだオレンジ色で表示" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="PLY のスタンフォードアルマジロ。3D スキャンのデータ。頂点に書き込んだ緑色で表示" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="OBJ のユタのティーポット。頂点に書き込んだ紫色で表示" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="FBX の BoomBox。ボタンやスピーカーの網目の模様つき" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="PLY のスタンフォードアルマジロ。3D スキャンのデータ。頂点に書き込んだ緑色で表示" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="OBJ のユタのティーポット。頂点に書き込んだ紫色で表示" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="FBX の BoomBox。ボタンやスピーカーの網目の模様つき" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@ Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 
 
 <table>
   <tr>
-    <td width="50%"><img alt="左ボタンでドラッグすると、バニーのまわりをカメラが回る" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="右ドラッグ、続けて Shift を押しながらの左ドラッグで、視点が横にずれる" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="左ボタンでドラッグすると、バニーのまわりをカメラが回る" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="右ドラッグ、続けて Shift を押しながらの左ドラッグで、視点が横にずれる" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>回す</b>: ドラッグ</td>
     <td align="center"><b>横にずらす</b>: 右ドラッグ、または <kbd>Shift</kbd> + ドラッグ</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="マウスのホイールで、バニーに近づいてまた離れる" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="逆さまになった視点が、リセットのボタンで最初の向きに戻る" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="マウスのホイールで、バニーに近づいてまた離れる" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="逆さまになった視点が、リセットのボタンで最初の向きに戻る" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>近づく</b>: ホイール</td>
@@ -96,31 +96,31 @@ Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 
 床のグリッドと X・Y・Z の軸、モデルの幅 × 高さ × 奥行きを表示するので、単位を間違えて作ったモデルにすぐ気づけます。
 たとえば画像のスタンフォードバニーは、幅 15.6 cm です。
 
-<img alt="10 mm のグリッドの上のバニー。下の欄に 156 × 154 × 121 mm、グリッド 10 mm と表示される" src="../images/features/size.gif" width="600">
+<img alt="10 mm のグリッドの上のバニー。下の欄に 156 × 154 × 121 mm、グリッド 10 mm と表示される" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### ワイヤーフレーム、グリッドと軸
 
 モデルを線の網目だけで表示したり、グリッドと軸を隠したりできます。頂点と三角形の数は、下の欄に表示されます。
 
-<img alt="ワイヤーフレームのボタンでバニーの網目が見え、グリッドと軸のボタンで床のグリッドが消える" src="../images/features/inspect.gif" width="600">
+<img alt="ワイヤーフレームのボタンでバニーの網目が見え、グリッドと軸のボタンで床のグリッドが消える" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### アニメーション
 
 アニメーションを再生・一時停止できます。アニメーションが複数あるモデルでは、一覧から選べます。
 
-<img alt="キツネが Survey のアニメーションを再生し、一覧から Run に切り替え、一時停止してまた再生する" src="../images/features/animations.gif" width="600">
+<img alt="キツネが Survey のアニメーションを再生し、一覧から Run に切り替え、一時停止してまた再生する" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### 保存するとすぐ反映
 
 ファイルを保存すると、カメラの位置はそのままで、新しい内容に切り替わります。
 
-<img alt="Ctrl + S で保存するたびに、バニーの色がその場で変わる" src="../images/features/live.gif" width="600">
+<img alt="Ctrl + S で保存するたびに、バニーの色がその場で変わる" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### ライトとダーク
 
 最初はライトで表示されます。ツールバーの月のボタンで、ダークとライトを切り替えられます。テーマ・ワイヤーフレーム・グリッドの状態は、最後に選んだものを覚えていて、Orca を再起動しても引き継がれます(Orca 1.4.250 以降)。
 
-<img alt="ツールバーの月のボタンを押すとダークになり、もう一度押すとライトに戻る" src="../images/features/theme.gif" width="600">
+<img alt="ツールバーの月のボタンを押すとダークになり、もう一度押すとライトに戻る" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### 11 の言語
 
@@ -130,7 +130,7 @@ Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 
 
 ツールバーの **i** のボタン(エラーの画面では、案内の下の **詳細** のボタン)を押すと、ビューアーのバージョン、ブラウザとグラフィックスの情報、最近の読み込みとかかった時間、発生したエラーがまとめて表示されます。**コピー**して Issue に貼れば、何が起きたかが伝わります。モデルのデータは含みません(エラーの文に引用された部分を除く)。
 
-<img alt="詳細の欄。ビューアーのバージョン、ブラウザ、読み込みの記録、開かなかった理由が並び、コピーと閉じるのボタンがある" src="../images/details.png" width="600">
+<img alt="詳細の欄。ビューアーのバージョン、ブラウザ、読み込みの記録、開かなかった理由が並び、コピーと閉じるのボタンがある" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## インストール
 
@@ -138,7 +138,7 @@ Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 
 2. **Git URL** のタブを選び、**リポジトリ URL** に次を貼り付ける。
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. **続行**、**インストール** の順に押し、続けて出る確認で **プラグインを有効にする** を押す。このプラグインは権限を何も求めません。

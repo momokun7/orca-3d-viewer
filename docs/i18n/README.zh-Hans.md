@@ -19,13 +19,13 @@
 [故障排除](#故障排除) · [安全性](#安全性) · [开发](#开发) ·
 [报告错误](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="在 Orca 中用 3D Viewer 查看放在地面网格上的 Stanford Bunny，状态栏显示其尺寸为 156 × 154 × 121 mm" src="../images/hero.png" width="800">
+<img alt="在 Orca 中用 3D Viewer 查看放在地面网格上的 Stanford Bunny，状态栏显示其尺寸为 156 × 154 × 121 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## 快速开始
 
-1. 在 Orca 中打开 **设置 → 插件 → 安装插件**，在 **Git URL** 选项卡中输入 `https://github.com/momokun7/orca-3d-viewer#v1.0.0`，依次点击 **继续** 和 **安装**，再在随后弹出的对话框中点击 **启用插件**。
+1. 在 Orca 中打开 **设置 → 插件 → 安装插件**，在 **Git URL** 选项卡中输入 `https://github.com/momokun7/orca-3d-viewer#v1.0.1`，依次点击 **继续** 和 **安装**，再在随后弹出的对话框中点击 **启用插件**。
 2. 打开任意一个 `.glb`、`.gltf`、`.stl`、`.ply`、`.obj` 或 `.fbx` 文件。
 3. 拖动鼠标旋转视角，滚动滚轮缩放。
 
@@ -37,9 +37,9 @@
 
 <table>
   <tr>
-    <td width="33%"><img alt="GLB 格式的 A Beautiful Game：大理石棋盘，以及玻璃和金属质感的棋子" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="内嵌数据的 glTF 格式的 Corset：带刺绣的布料和搭扣" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="STL 格式的 3DBenchy：用来测试 3D 打印机的小船，显示为文件中保存的橙色" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="GLB 格式的 A Beautiful Game：大理石棋盘，以及玻璃和金属质感的棋子" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="内嵌数据的 glTF 格式的 Corset：带刺绣的布料和搭扣" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="STL 格式的 3DBenchy：用来测试 3D 打印机的小船，显示为文件中保存的橙色" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="PLY 格式的 Stanford Armadillo：一份 3D 扫描数据，显示为顶点中保存的绿色" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="OBJ 格式的 Utah Teapot，显示为顶点中保存的紫色" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="FBX 格式的 BoomBox，按钮和扬声器网罩的纹理清晰可见" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="PLY 格式的 Stanford Armadillo：一份 3D 扫描数据，显示为顶点中保存的绿色" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="OBJ 格式的 Utah Teapot，显示为顶点中保存的紫色" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="FBX 格式的 BoomBox，按钮和扬声器网罩的纹理清晰可见" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@
 
 <table>
   <tr>
-    <td width="50%"><img alt="按住鼠标左键拖动，相机绕着 Bunny 旋转" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="先用右键拖动，再按住 Shift 用左键拖动，视图随之左右平移" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="按住鼠标左键拖动，相机绕着 Bunny 旋转" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="先用右键拖动，再按住 Shift 用左键拖动，视图随之左右平移" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>环绕</b>：拖动</td>
     <td align="center"><b>平移</b>：右键拖动，或 <kbd>Shift</kbd> + 拖动</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="滚动鼠标滚轮，把 Bunny 拉近再拉远" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="视图转得上下颠倒后，点击重置按钮回到初始视角" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="滚动鼠标滚轮，把 Bunny 拉近再拉远" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="视图转得上下颠倒后，点击重置按钮回到初始视角" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>缩放</b>：滚动滚轮</td>
@@ -96,32 +96,32 @@
 画面中有地面网格和 X / Y / Z 坐标轴，并标出模型的宽 × 高 × 深，单位用错的模型一看便知。
 比如 Stanford Bunny 宽 15.6 cm。
 
-<img alt="10 mm 网格上的 Bunny；状态栏显示 156 × 154 × 121 mm，后面是“网格 10 mm”" src="../images/features/size.gif" width="600">
+<img alt="10 mm 网格上的 Bunny；状态栏显示 156 × 154 × 121 mm，后面是“网格 10 mm”" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### 线框、网格和坐标轴
 
 可以把模型显示为线框，也可以隐藏地面网格和坐标轴。状态栏会显示顶点数和三角形数。
 
-<img alt="点击线框按钮后显示 Bunny 的网格结构，再点击网格和坐标轴按钮隐藏地面网格" src="../images/features/inspect.gif" width="600">
+<img alt="点击线框按钮后显示 Bunny 的网格结构，再点击网格和坐标轴按钮隐藏地面网格" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### 动画
 
 支持播放和暂停；模型包含多个片段时，还可以选择要播放的片段。
 
-<img alt="狐狸正在播放 Survey 片段，从片段菜单切换到 Run 后暂停，再继续播放" src="../images/features/animations.gif" width="600">
+<img alt="狐狸正在播放 Survey 片段，从片段菜单切换到 Run 后暂停，再继续播放" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### 自动刷新
 
 文件一保存，视图就会更新为新版本，相机位置保持不变。
 
-<img alt="每次按 Ctrl + S 保存文件，Bunny 都会在原位置换一种颜色" src="../images/features/live.gif" width="600">
+<img alt="每次按 Ctrl + S 保存文件，Bunny 都会在原位置换一种颜色" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### 浅色和深色
 
 查看器默认使用浅色主题，点击工具栏中的月亮按钮即可在深色和浅色之间切换。你上次选择的主题以及线框、网格设置都会被记住，
 重启 Orca 后依然有效（需要 Orca 1.4.250 及以上版本）。
 
-<img alt="点击工具栏中的月亮按钮，查看器切换为深色；再点击一次，又切回浅色" src="../images/features/theme.gif" width="600">
+<img alt="点击工具栏中的月亮按钮，查看器切换为深色；再点击一次，又切回浅色" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### 支持十一种语言
 
@@ -134,7 +134,7 @@
 其中包括查看器版本、浏览器和显卡信息、最近几次加载的记录和耗时，以及出现过的错误。
 点击 **复制** 并粘贴到 Issue 中，就能把问题说清楚。除错误消息中引用的内容外，摘要不包含任何模型数据。
 
-<img alt="详情面板：列出查看器版本、浏览器、加载记录以及某个文件被拒绝打开的原因，底部有复制和关闭按钮" src="../images/details.png" width="600">
+<img alt="详情面板：列出查看器版本、浏览器、加载记录以及某个文件被拒绝打开的原因，底部有复制和关闭按钮" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## 安装
 
@@ -142,7 +142,7 @@
 2. 在 **Git URL** 选项卡的 **仓库 URL** 输入框中粘贴：
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. 点击 **继续**，再点击 **安装**，然后在随后弹出的对话框中点击 **启用插件**。启用之前，插件不会运行。

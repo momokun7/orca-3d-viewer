@@ -19,13 +19,13 @@
 [Устранение неполадок](#устранение-неполадок) · [Безопасность](#безопасность) · [Разработка](#разработка) ·
 [Сообщить об ошибке](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="Стэнфордский кролик в 3D Viewer внутри Orca стоит на сетке пола, в строке состояния — его размер: 156 × 154 × 121 mm" src="../images/hero.png" width="800">
+<img alt="Стэнфордский кролик в 3D Viewer внутри Orca стоит на сетке пола, в строке состояния — его размер: 156 × 154 × 121 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## Быстрый старт
 
-1. В Orca откройте **Настройки → Плагины → Установить плагин**, на вкладке **URL Git** вставьте `https://github.com/momokun7/orca-3d-viewer#v1.0.0`, нажмите **Продолжить**, затем **Установить** и в появившемся окне — **Включить плагин**.
+1. В Orca откройте **Настройки → Плагины → Установить плагин**, на вкладке **URL Git** вставьте `https://github.com/momokun7/orca-3d-viewer#v1.0.1`, нажмите **Продолжить**, затем **Установить** и в появившемся окне — **Включить плагин**.
 2. Откройте файл `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` или `.fbx`.
 3. Перетаскивайте модель мышью, чтобы повернуть её, и крутите колёсико, чтобы изменить масштаб.
 
@@ -37,9 +37,9 @@
 
 <table>
   <tr>
-    <td width="33%"><img alt="A Beautiful Game в формате GLB: мраморная шахматная доска со стеклянными и металлическими фигурами" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="Corset в формате glTF со встроенными данными: вышитая ткань и пряжки" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="3DBenchy в формате STL: кораблик для проверки 3D-принтеров; оранжевый цвет записан в самом файле" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="A Beautiful Game в формате GLB: мраморная шахматная доска со стеклянными и металлическими фигурами" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="Corset в формате glTF со встроенными данными: вышитая ткань и пряжки" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="3DBenchy в формате STL: кораблик для проверки 3D-принтеров; оранжевый цвет записан в самом файле" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="Стэнфордский броненосец в формате PLY: 3D-скан; зелёный цвет записан в вершинах" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="Чайник Юта в формате OBJ; фиолетовый цвет записан в вершинах" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="BoomBox в формате FBX с текстурой кнопок и решёток динамиков" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="Стэнфордский броненосец в формате PLY: 3D-скан; зелёный цвет записан в вершинах" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="Чайник Юта в формате OBJ; фиолетовый цвет записан в вершинах" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="BoomBox в формате FBX с текстурой кнопок и решёток динамиков" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@
 
 <table>
   <tr>
-    <td width="50%"><img alt="При перетаскивании левой кнопкой мыши камера вращается вокруг кролика" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Перетаскивание правой кнопкой, а затем левой с зажатой клавишей Shift сдвигает вид в сторону" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="При перетаскивании левой кнопкой мыши камера вращается вокруг кролика" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="Перетаскивание правой кнопкой, а затем левой с зажатой клавишей Shift сдвигает вид в сторону" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Вращение</b>: перетаскивание</td>
     <td align="center"><b>Сдвиг</b>: перетаскивание правой кнопкой или <kbd>Shift</kbd> + перетаскивание</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="Колёсико мыши приближает кролика, а затем отдаляет" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="Кнопка сброса возвращает перевёрнутый вид к исходному" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="Колёсико мыши приближает кролика, а затем отдаляет" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="Кнопка сброса возвращает перевёрнутый вид к исходному" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Масштаб</b>: колёсико</td>
@@ -96,33 +96,33 @@
 Сетка пола, оси X / Y / Z и габариты модели (ширина × высота × глубина): если модель сделана не в тех единицах,
 это сразу бросается в глаза. Например, ширина стэнфордского кролика — 15,6 см.
 
-<img alt="Кролик на сетке с шагом 10 mm; в строке состояния — 156 × 154 × 121 mm, затем «Сетка 10 mm»" src="../images/features/size.gif" width="600">
+<img alt="Кролик на сетке с шагом 10 mm; в строке состояния — 156 × 154 × 121 mm, затем «Сетка 10 mm»" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### Каркас, сетка и оси
 
 Меш можно показать одними линиями, а сетку и оси — скрыть. Число вершин и треугольников выводится в строке
 состояния.
 
-<img alt="Кнопка «Каркас» показывает меш кролика, затем кнопка «Сетка и оси» скрывает сетку пола" src="../images/features/inspect.gif" width="600">
+<img alt="Кнопка «Каркас» показывает меш кролика, затем кнопка «Сетка и оси» скрывает сетку пола" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### Анимации
 
 Анимацию можно запустить и поставить на паузу, а если у модели несколько клипов — выбрать нужный.
 
-<img alt="Лиса проигрывает клип Survey, в меню клипов выбирается Run, затем анимация ставится на паузу и запускается снова" src="../images/features/animations.gif" width="600">
+<img alt="Лиса проигрывает клип Survey, в меню клипов выбирается Run, затем анимация ставится на паузу и запускается снова" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### Всегда актуально
 
 Сохраните файл — и на экране появится новая версия, а камера останется там, где была.
 
-<img alt="При каждом сохранении файла по Ctrl + S кролик меняет цвет, не сдвигаясь с места" src="../images/features/live.gif" width="600">
+<img alt="При каждом сохранении файла по Ctrl + S кролик меняет цвет, не сдвигаясь с места" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### Светлая или тёмная тема
 
 По умолчанию включена светлая тема; кнопка с луной на панели инструментов переключает её на тёмную и обратно.
 Выбранные тема, каркас и сетка сохраняются и после перезапуска Orca (в Orca 1.4.250 и новее).
 
-<img alt="Нажатие кнопки с луной на панели инструментов включает тёмную тему, повторное — возвращает светлую" src="../images/features/theme.gif" width="600">
+<img alt="Нажатие кнопки с луной на панели инструментов включает тёмную тему, повторное — возвращает светлую" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### Одиннадцать языков
 
@@ -135,7 +135,7 @@
 версия средства просмотра, ваш браузер и графика, последние загрузки с их длительностью и возникшие ошибки.
 Нажмите **Копировать** и вставьте текст в issue — по нему будет понятно, что произошло. Данных модели в сводке нет, кроме фрагментов, процитированных в сообщениях об ошибках.
 
-<img alt="Панель «Подробности»: версия средства просмотра, браузер, история загрузок и причина, по которой файл не был открыт; внизу кнопки «Копировать» и «Закрыть»" src="../images/details.png" width="600">
+<img alt="Панель «Подробности»: версия средства просмотра, браузер, история загрузок и причина, по которой файл не был открыт; внизу кнопки «Копировать» и «Закрыть»" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## Установка
 
@@ -143,7 +143,7 @@
 2. На вкладке **URL Git** вставьте в поле **URL репозитория с #ref**:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. Нажмите **Продолжить**, затем **Установить**. В появившемся окне нажмите **Включить плагин** — пока вы этого

@@ -19,13 +19,13 @@ Modeli her açıdan inceleyin, animasyonlarını oynatın ve beklediğiniz boyut
 [Sorun giderme](#sorun-giderme) · [Güvenlik](#güvenlik) · [Geliştirme](#geliştirme) ·
 [Hata bildir](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="Orca içinde 3D Viewer'da açılmış, zemin ızgarasının üzerinde duran Stanford Bunny; durum çubuğunda boyutu yazıyor: 156 × 154 × 121 mm" src="../images/hero.png" width="800">
+<img alt="Orca içinde 3D Viewer'da açılmış, zemin ızgarasının üzerinde duran Stanford Bunny; durum çubuğunda boyutu yazıyor: 156 × 154 × 121 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## Hızlı başlangıç
 
-1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.0` adresini yapıştırın, **Devam**'a ve **Yükle**'ye tıklayın, ardından **Eklentiyi etkinleştir**'i seçin.
+1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.1` adresini yapıştırın, **Devam**'a ve **Yükle**'ye tıklayın, ardından **Eklentiyi etkinleştir**'i seçin.
 2. Bir `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` veya `.fbx` dosyası açın.
 3. Döndürmek için sürükleyin, yakınlaştırmak için fare tekerleğini çevirin.
 
@@ -37,9 +37,9 @@ Altı biçim, tek görüntüleyici.
 
 <table>
   <tr>
-    <td width="33%"><img alt="GLB biçiminde A Beautiful Game: cam ve metal taşlarıyla mermer bir satranç tahtası" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="Verileri gömülü glTF biçiminde Corset: işlemeli kumaş ve tokalar" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="STL biçiminde 3DBenchy: 3D yazıcıların test edildiği küçük tekne, dosyada kayıtlı turuncu renkle" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="GLB biçiminde A Beautiful Game: cam ve metal taşlarıyla mermer bir satranç tahtası" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="Verileri gömülü glTF biçiminde Corset: işlemeli kumaş ve tokalar" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="STL biçiminde 3DBenchy: 3D yazıcıların test edildiği küçük tekne, dosyada kayıtlı turuncu renkle" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@ Altı biçim, tek görüntüleyici.
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="PLY biçiminde Stanford Armadillo: köşelerinde kayıtlı yeşil renkle gösterilen bir 3D tarama" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="OBJ biçiminde Utah Teapot, köşelerinde kayıtlı mor renkle" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="FBX biçiminde BoomBox, düğmeleri ve hoparlör ızgaralarıyla birlikte dokusu görünüyor" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="PLY biçiminde Stanford Armadillo: köşelerinde kayıtlı yeşil renkle gösterilen bir 3D tarama" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="OBJ biçiminde Utah Teapot, köşelerinde kayıtlı mor renkle" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="FBX biçiminde BoomBox, düğmeleri ve hoparlör ızgaralarıyla birlikte dokusu görünüyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@ Draco veya Meshopt ile sıkıştırılmış glTF dosyaları ve KTX2 / Basis Univ
 
 <table>
   <tr>
-    <td width="50%"><img alt="Sol fare tuşuyla sürükleyince kamera tavşanın etrafında döner" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Önce sağ tuşla, ardından Shift basılıyken sol tuşla sürükleyince görünüm yana kayar" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="Sol fare tuşuyla sürükleyince kamera tavşanın etrafında döner" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="Önce sağ tuşla, ardından Shift basılıyken sol tuşla sürükleyince görünüm yana kayar" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Döndürme</b>: sürükleyin</td>
     <td align="center"><b>Kaydırma</b>: sağ tuşla veya <kbd>Shift</kbd> basılıyken sürükleyin</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="Fare tekerleği çevrildikçe görünüm tavşana yaklaşıyor ve yeniden uzaklaşıyor" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="Baş aşağı dönmüş görünüm, sıfırlama düğmesiyle başlangıçtaki hâline dönüyor" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="Fare tekerleği çevrildikçe görünüm tavşana yaklaşıyor ve yeniden uzaklaşıyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="Baş aşağı dönmüş görünüm, sıfırlama düğmesiyle başlangıçtaki hâline dönüyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Yakınlaştırma</b>: fare tekerleği</td>
@@ -96,26 +96,26 @@ Draco veya Meshopt ile sıkıştırılmış glTF dosyaları ve KTX2 / Basis Univ
 Zemin ızgarası, X / Y / Z eksenleri ve modelin genişlik × yükseklik × derinlik ölçüleri sayesinde yanlış birimle
 hazırlanmış bir model hemen göze çarpar. Örneğin Stanford Bunny'nin genişliği 15,6 cm çıkar.
 
-<img alt="10 mm'lik ızgaranın üzerindeki tavşan; durum çubuğunda önce 156 × 154 × 121 mm, ardından Izgara 10 mm yazıyor" src="../images/features/size.gif" width="600">
+<img alt="10 mm'lik ızgaranın üzerindeki tavşan; durum çubuğunda önce 156 × 154 × 121 mm, ardından Izgara 10 mm yazıyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### Tel kafes, ızgara ve eksenler
 
 Örgüyü (mesh) yalnızca çizgilerle gösterebilir, ızgarayı ve eksenleri gizleyebilirsiniz. Köşe ve üçgen sayıları
 durum çubuğunda yazar.
 
-<img alt="Tel kafes düğmesi tavşanın örgüsünü gösteriyor, ardından Izgara ve eksenler düğmesi zemin ızgarasını gizliyor" src="../images/features/inspect.gif" width="600">
+<img alt="Tel kafes düğmesi tavşanın örgüsünü gösteriyor, ardından Izgara ve eksenler düğmesi zemin ızgarasını gizliyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### Animasyonlar
 
 Animasyonu oynatıp duraklatabilir, modelde birden fazla klip varsa istediğinizi seçebilirsiniz.
 
-<img alt="Tilki Survey klibini oynatıyor, klip menüsünden Run klibine geçiliyor, ardından animasyon duraklatılıp yeniden oynatılıyor" src="../images/features/animations.gif" width="600">
+<img alt="Tilki Survey klibini oynatıyor, klip menüsünden Run klibine geçiliyor, ardından animasyon duraklatılıp yeniden oynatılıyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### Her zaman güncel
 
 Dosyayı kaydettiğinizde görünüm, kamera açısını bozmadan yeni sürümü gösterir.
 
-<img alt="Dosya Ctrl + S ile her kaydedildiğinde tavşan yerinden oynamadan renk değiştiriyor" src="../images/features/live.gif" width="600">
+<img alt="Dosya Ctrl + S ile her kaydedildiğinde tavşan yerinden oynamadan renk değiştiriyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### Açık veya koyu tema
 
@@ -123,7 +123,7 @@ Görüntüleyici açık temayla açılır; araç çubuğundaki ay düğmesiyle k
 seçtiğiniz tema, tel kafes ve ızgara ayarları Orca yeniden başlatıldıktan sonra da korunur (Orca 1.4.250 ve
 sonrası).
 
-<img alt="Araç çubuğundaki ay düğmesine tıklayınca görüntüleyici koyu temaya, yeniden tıklayınca açık temaya geçiyor" src="../images/features/theme.gif" width="600">
+<img alt="Araç çubuğundaki ay düğmesine tıklayınca görüntüleyici koyu temaya, yeniden tıklayınca açık temaya geçiyor" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### On bir dil
 
@@ -137,7 +137,7 @@ görüntüleyicinin sürümü, tarayıcınız ve grafik donanımınız, son yük
 hatalar. **Kopyala** ile alıp bir issue'ya yapıştırmanız, ne olduğunu anlatmaya yeter. Bir hata mesajında
 aktarılanlar dışında özette hiçbir model verisi bulunmaz.
 
-<img alt="Ayrıntılar paneli: görüntüleyicinin sürümü, tarayıcı, yükleme geçmişi ve bir dosyanın neden reddedildiği; altta Kopyala ve Kapat düğmeleri" src="../images/details.png" width="600">
+<img alt="Ayrıntılar paneli: görüntüleyicinin sürümü, tarayıcı, yükleme geçmişi ve bir dosyanın neden reddedildiği; altta Kopyala ve Kapat düğmeleri" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## Kurulum
 
@@ -145,7 +145,7 @@ aktarılanlar dışında özette hiçbir model verisi bulunmaz.
 2. **Git URL'si** sekmesinde **#ref içeren repository URL'si** alanına şu adresi yapıştırın:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. **Devam**'a, ardından **Yükle**'ye tıklayın. Açılan onay penceresinde **Eklentiyi etkinleştir**'i seçin; siz

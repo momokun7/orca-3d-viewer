@@ -19,13 +19,13 @@ Gire ao redor do modelo, reproduza as animações e confira num piscar de olhos 
 [Solução de problemas](#solução-de-problemas) · [Segurança](#segurança) · [Desenvolvimento](#desenvolvimento) ·
 [Relatar um bug](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="O Stanford Bunny no 3D Viewer dentro do Orca, sobre uma grade no chão, com as dimensões 156 × 154 × 121 mm na barra de status" src="../images/hero.png" width="800">
+<img alt="O Stanford Bunny no 3D Viewer dentro do Orca, sobre uma grade no chão, com as dimensões 156 × 154 × 121 mm na barra de status" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## Início rápido
 
-1. No Orca, abra **Configurações → Plugins → Instalar plugin** e, na aba **URL do Git**, cole `https://github.com/momokun7/orca-3d-viewer#v1.0.0` em **URL do repositório**. Clique em **Continuar**, depois em **Instalar** e, na janela seguinte, em **Ativar plugin**.
+1. No Orca, abra **Configurações → Plugins → Instalar plugin** e, na aba **URL do Git**, cole `https://github.com/momokun7/orca-3d-viewer#v1.0.1` em **URL do repositório**. Clique em **Continuar**, depois em **Instalar** e, na janela seguinte, em **Ativar plugin**.
 2. Abra um arquivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Arraste para girar e use a roda do mouse para aproximar ou afastar.
 
@@ -37,9 +37,9 @@ Seis formatos em um só visualizador.
 
 <table>
   <tr>
-    <td width="33%"><img alt="A Beautiful Game em GLB: um tabuleiro de xadrez de mármore com peças de vidro e metal" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="Corset em glTF com os dados incorporados: tecido bordado e fivelas" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="3DBenchy em STL: o barquinho usado para testar impressoras 3D, com a cor laranja gravada no arquivo" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="A Beautiful Game em GLB: um tabuleiro de xadrez de mármore com peças de vidro e metal" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="Corset em glTF com os dados incorporados: tecido bordado e fivelas" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="3DBenchy em STL: o barquinho usado para testar impressoras 3D, com a cor laranja gravada no arquivo" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@ Seis formatos em um só visualizador.
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="O Stanford Armadillo em PLY: um escaneamento 3D com a cor verde gravada nos vértices" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="O Utah Teapot em OBJ, com a cor roxa gravada nos vértices" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="BoomBox em FBX, com a textura dos botões e das telas dos alto-falantes" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="O Stanford Armadillo em PLY: um escaneamento 3D com a cor verde gravada nos vértices" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="O Utah Teapot em OBJ, com a cor roxa gravada nos vértices" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="BoomBox em FBX, com a textura dos botões e das telas dos alto-falantes" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@ Também abrem glTF comprimido com Draco ou Meshopt e texturas KTX2 / Basis Unive
 
 <table>
   <tr>
-    <td width="50%"><img alt="Arrastar com o botão esquerdo do mouse gira a câmera ao redor do coelho" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Arrastar com o botão direito e, depois, com Shift e o botão esquerdo desloca a vista para o lado" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="Arrastar com o botão esquerdo do mouse gira a câmera ao redor do coelho" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="Arrastar com o botão direito e, depois, com Shift e o botão esquerdo desloca a vista para o lado" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Girar</b>: arrastar</td>
     <td align="center"><b>Deslocar</b>: arrastar com o botão direito ou <kbd>Shift</kbd> + arrastar</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="Girar a roda do mouse aproxima e afasta o coelho" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="Uma vista de cabeça para baixo volta à posição inicial com o botão Redefinir exibição" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="Girar a roda do mouse aproxima e afasta o coelho" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="Uma vista de cabeça para baixo volta à posição inicial com o botão Redefinir exibição" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Zoom</b>: roda do mouse</td>
@@ -96,26 +96,26 @@ Também abrem glTF comprimido com Draco ou Meshopt e texturas KTX2 / Basis Unive
 Uma grade no chão, os eixos X / Y / Z e as dimensões do modelo (largura × altura × profundidade): se ele foi criado
 na unidade errada, você percebe na hora. O Stanford Bunny, por exemplo, mede 15,6 cm de largura.
 
-<img alt="O coelho sobre uma grade de 10 mm; a barra de status mostra 156 × 154 × 121 mm e, em seguida, Grade 10 mm" src="../images/features/size.gif" width="600">
+<img alt="O coelho sobre uma grade de 10 mm; a barra de status mostra 156 × 154 × 121 mm e, em seguida, Grade 10 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### Wireframe, grade e eixos
 
 Veja a malha só com as arestas ou oculte a grade e os eixos. O número de vértices e triângulos aparece na barra de
 status.
 
-<img alt="O botão Wireframe mostra a malha do coelho e, em seguida, o botão Grade e eixos oculta a grade do chão" src="../images/features/inspect.gif" width="600">
+<img alt="O botão Wireframe mostra a malha do coelho e, em seguida, o botão Grade e eixos oculta a grade do chão" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### Animações
 
 Reproduza, pause e, se o modelo tiver mais de um clipe, escolha qual quer ver.
 
-<img alt="Uma raposa reproduz o clipe Survey, troca para Run pelo menu de clipes, pausa e volta a reproduzir" src="../images/features/animations.gif" width="600">
+<img alt="Uma raposa reproduz o clipe Survey, troca para Run pelo menu de clipes, pausa e volta a reproduzir" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### Sempre atualizado
 
 Salvou o arquivo, a visualização já mostra a nova versão, e a câmera continua onde estava.
 
-<img alt="A cada Ctrl + S no arquivo, o coelho muda de cor sem sair do lugar" src="../images/features/live.gif" width="600">
+<img alt="A cada Ctrl + S no arquivo, o coelho muda de cor sem sair do lugar" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### Claro ou escuro
 
@@ -123,7 +123,7 @@ O visualizador abre no tema claro, e o botão da lua na barra de ferramentas alt
 última escolha de tema, wireframe e grade fica salva, mesmo depois de reiniciar o Orca (Orca 1.4.250 ou mais
 recente).
 
-<img alt="Um clique no botão da lua da barra de ferramentas escurece o visualizador, e outro clique o deixa claro de novo" src="../images/features/theme.gif" width="600">
+<img alt="Um clique no botão da lua da barra de ferramentas escurece o visualizador, e outro clique o deixa claro de novo" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### Onze idiomas
 
@@ -137,7 +137,7 @@ resumo com a versão do visualizador, o navegador e a placa de vídeo, os últim
 levou, além dos erros que ocorreram. Clique em **Copiar**, cole em uma issue e pronto: está tudo ali. O resumo não
 inclui dados do modelo, exceto trechos citados em mensagens de erro.
 
-<img alt="O painel Detalhes: a versão do visualizador, o navegador, o histórico de carregamentos e o motivo pelo qual um arquivo foi recusado, com os botões Copiar e Fechar" src="../images/details.png" width="600">
+<img alt="O painel Detalhes: a versão do visualizador, o navegador, o histórico de carregamentos e o motivo pelo qual um arquivo foi recusado, com os botões Copiar e Fechar" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## Instalação
 
@@ -145,7 +145,7 @@ inclui dados do modelo, exceto trechos citados em mensagens de erro.
 2. Na aba **URL do Git**, cole este endereço em **URL do repositório**:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. Clique em **Continuar** e depois em **Instalar**. Na janela que aparece em seguida, clique em **Ativar plugin**;

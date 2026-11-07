@@ -19,13 +19,13 @@ Faites tourner le modèle, lisez ses animations et vérifiez d’un coup d’œi
 [Dépannage](#dépannage) · [Sécurité](#sécurité) · [Développement](#développement) ·
 [Signaler un bug](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="Le Stanford Bunny ouvert dans 3D Viewer, dans Orca, posé sur une grille au sol ; la barre d’état indique sa taille : 156 × 154 × 121 mm" src="../images/hero.png" width="800">
+<img alt="Le Stanford Bunny ouvert dans 3D Viewer, dans Orca, posé sur une grille au sol ; la barre d’état indique sa taille : 156 × 154 × 121 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## Démarrage rapide
 
-1. Dans Orca, ouvrez **Paramètres → Plugins → Installer le plugin**, puis, dans l’onglet **URL Git**, collez `https://github.com/momokun7/orca-3d-viewer#v1.0.0` dans **URL du dépôt**. Cliquez sur **Continuer**, puis sur **Installer**, et enfin sur **Activer le plugin** dans la fenêtre qui s’affiche.
+1. Dans Orca, ouvrez **Paramètres → Plugins → Installer le plugin**, puis, dans l’onglet **URL Git**, collez `https://github.com/momokun7/orca-3d-viewer#v1.0.1` dans **URL du dépôt**. Cliquez sur **Continuer**, puis sur **Installer**, et enfin sur **Activer le plugin** dans la fenêtre qui s’affiche.
 2. Ouvrez un fichier `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Faites glisser la souris pour tourner autour du modèle, et zoomez avec la molette.
 
@@ -37,9 +37,9 @@ Une seule visionneuse pour six formats.
 
 <table>
   <tr>
-    <td width="33%"><img alt="A Beautiful Game au format GLB : un échiquier en marbre aux pièces de verre et de métal" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="Corset au format glTF, données intégrées : tissu brodé et boucles" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="3DBenchy au format STL : le petit bateau qui sert à tester les imprimantes 3D, en orange grâce à une couleur enregistrée dans le fichier" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="A Beautiful Game au format GLB : un échiquier en marbre aux pièces de verre et de métal" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="Corset au format glTF, données intégrées : tissu brodé et boucles" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="3DBenchy au format STL : le petit bateau qui sert à tester les imprimantes 3D, en orange grâce à une couleur enregistrée dans le fichier" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b> : A Beautiful Game</td>
@@ -47,9 +47,9 @@ Une seule visionneuse pour six formats.
     <td align="center"><b>STL</b> : 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="Le Stanford Armadillo au format PLY : un scan 3D, en vert grâce aux couleurs enregistrées dans ses sommets" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="La théière de l’Utah au format OBJ, en violet grâce aux couleurs enregistrées dans ses sommets" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="BoomBox au format FBX, avec la texture de ses boutons et de ses grilles de haut-parleurs" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="Le Stanford Armadillo au format PLY : un scan 3D, en vert grâce aux couleurs enregistrées dans ses sommets" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="La théière de l’Utah au format OBJ, en violet grâce aux couleurs enregistrées dans ses sommets" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="BoomBox au format FBX, avec la texture de ses boutons et de ses grilles de haut-parleurs" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b> : Stanford Armadillo</td>
@@ -74,16 +74,16 @@ Les fichiers glTF compressés avec Draco ou Meshopt, ainsi que les textures KTX2
 
 <table>
   <tr>
-    <td width="50%"><img alt="Un glisser avec le bouton gauche de la souris fait tourner la caméra autour du lapin" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Un glisser avec le bouton droit, puis avec Maj et le bouton gauche, décale la vue latéralement" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="Un glisser avec le bouton gauche de la souris fait tourner la caméra autour du lapin" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="Un glisser avec le bouton droit, puis avec Maj et le bouton gauche, décale la vue latéralement" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Orbite</b> : faire glisser</td>
     <td align="center"><b>Panoramique</b> : faire glisser avec le bouton droit, ou <kbd>Shift</kbd> + glisser</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="La molette de la souris rapproche le lapin, puis l’éloigne" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="Une vue mise à l’envers revient à son point de départ grâce au bouton de réinitialisation" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="La molette de la souris rapproche le lapin, puis l’éloigne" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="Une vue mise à l’envers revient à son point de départ grâce au bouton de réinitialisation" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Zoom</b> : molette</td>
@@ -96,25 +96,25 @@ Les fichiers glTF compressés avec Draco ou Meshopt, ainsi que les textures KTX2
 Grille au sol, axes X / Y / Z et dimensions du modèle (largeur × hauteur × profondeur) : un modèle créé dans la
 mauvaise unité saute aux yeux. Le Stanford Bunny mesure ainsi 15,6 cm de large.
 
-<img alt="Le lapin sur une grille de 10 mm ; la barre d’état indique 156 × 154 × 121 mm, puis Grille 10 mm" src="../images/features/size.gif" width="600">
+<img alt="Le lapin sur une grille de 10 mm ; la barre d’état indique 156 × 154 × 121 mm, puis Grille 10 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### Filaire, grille et axes
 
 Affichez le maillage seul, sous forme de lignes, ou masquez la grille et les axes. La barre d’état indique le nombre de sommets et de triangles.
 
-<img alt="Le bouton Filaire fait apparaître le maillage du lapin, puis le bouton Grille et axes masque la grille au sol" src="../images/features/inspect.gif" width="600">
+<img alt="Le bouton Filaire fait apparaître le maillage du lapin, puis le bouton Grille et axes masque la grille au sol" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### Animations
 
 Lancez ou mettez en pause l’animation et, si le modèle en contient plusieurs, choisissez le clip à lire.
 
-<img alt="Un renard joue son clip Survey, passe au clip Run depuis le menu des clips, puis se met en pause et repart" src="../images/features/animations.gif" width="600">
+<img alt="Un renard joue son clip Survey, passe au clip Run depuis le menu des clips, puis se met en pause et repart" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### Toujours à jour
 
 Dès que vous enregistrez le fichier, la vue affiche la nouvelle version, sans toucher à la position de la caméra.
 
-<img alt="À chaque enregistrement avec Ctrl + S, le lapin change de couleur sans bouger" src="../images/features/live.gif" width="600">
+<img alt="À chaque enregistrement avec Ctrl + S, le lapin change de couleur sans bouger" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### Clair ou sombre
 
@@ -122,7 +122,7 @@ La visionneuse s’ouvre en thème clair ; le bouton en forme de lune de la bar
 Le thème, le mode filaire et l’affichage de la grille choisis en dernier sont conservés, même après un redémarrage d’Orca
 (Orca 1.4.250 et versions ultérieures).
 
-<img alt="Un clic sur le bouton en forme de lune de la barre d’outils passe la visionneuse en thème sombre, un second clic la ramène en thème clair" src="../images/features/theme.gif" width="600">
+<img alt="Un clic sur le bouton en forme de lune de la barre d’outils passe la visionneuse en thème sombre, un second clic la ramène en thème clair" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### Onze langues
 
@@ -135,7 +135,7 @@ Le bouton **i** de la barre d’outils (ou, sur un écran d’erreur, le bouton 
 version de la visionneuse, navigateur et configuration graphique, derniers chargements avec leur durée, et erreurs rencontrées.
 Cliquez sur **Copier** et collez-le dans une issue : il décrit ce qui s’est passé. Il ne contient aucune donnée du modèle, hormis ce que cite un message d’erreur.
 
-<img alt="Le panneau Détails : version de la visionneuse, navigateur, historique des chargements et motif du refus d’un fichier, avec les boutons Copier et Fermer" src="../images/details.png" width="600">
+<img alt="Le panneau Détails : version de la visionneuse, navigateur, historique des chargements et motif du refus d’un fichier, avec les boutons Copier et Fermer" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## Installation
 
@@ -143,7 +143,7 @@ Cliquez sur **Copier** et collez-le dans une issue : il décrit ce qui s’est 
 2. Dans l’onglet **URL Git**, collez dans **URL du dépôt** :
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. Cliquez sur **Continuer**, puis sur **Installer**. Dans la fenêtre qui s’affiche ensuite, cliquez sur **Activer le plugin** : rien ne s’exécute tant que vous ne l’avez pas activé. La visionneuse ne demande aucune autorisation : vous n’avez rien d’autre à accorder.
