@@ -4,76 +4,76 @@ import type { Messages } from '../messages.ts'
 export const TR: Messages = {
   loading: '3D model yükleniyor…',
   contextLost:
-    '3D görünüm grafik sürücüsü tarafından sıfırlandı. Sürücü düzeldiğinde geri gelir; gelmezse dosyayı yeniden açın.',
+    '3D görünüm grafik sürücüsü tarafından sıfırlandı. Sürücü toparlandığında görünüm geri gelir; gelmezse dosyayı yeniden açın.',
   parseFailed:
-    'Bu 3D model görüntülenemiyor. Bozuk olabilir veya görüntüleyicinin desteklemediği bir özellik kullanıyor olabilir.',
+    'Bu 3D model görüntülenemiyor. Model bozuk olabilir veya görüntüleyicinin desteklemediği bir özellik kullanıyor olabilir.',
   corrupt: 'Bu model bozuk: {{path}} {{reason}}.',
   corruptFile: 'Bu {{format}} dosyası bozuk: {{reason}}.',
-  parseTimeout: 'Bu 3D modelin yüklenmesi çok uzun sürdü, bu yüzden yükleme durduruldu.',
+  parseTimeout: 'Bu 3D modelin yüklenmesi çok uzun sürdüğü için yükleme durduruldu.',
   webglUnavailable:
-    'Bu 3D görünüm için WebGL gerekiyor, ancak şu anda kullanılamıyor. Grafik hızlandırma kapalı olabilir veya GPU yanıt vermeyi bırakmış olabilir.',
+    '3D görünüm için WebGL gerekiyor, ancak WebGL şu anda kullanılamıyor. Grafik hızlandırma kapalı olabilir veya GPU yanıt vermiyor olabilir.',
   renderFailed: 'Model okundu, ancak çizilemedi.',
   truncated:
-    'Bu GLB dosyası eksik: başlığında bildirilen {{declared}} bayttan yalnızca {{actual}} bayt var. Hâlâ indiriliyor veya kopyalanıyor olabilir ya da aktarım yarıda kesilmiş olabilir.',
+    'Bu GLB dosyası eksik: başlığa göre {{declared}} bayt olması gerekirken yalnızca {{actual}} bayt var. Dosya hâlâ indiriliyor ya da kopyalanıyor olabilir; aktarım yarıda da kesilmiş olabilir.',
   unsupportedExtensions: 'Bu model, görüntüleyicinin desteklemediği glTF uzantıları gerektiriyor: {{extensions}}.',
   tooLargeGeometry:
-    'Bu model güvenle görüntülenemeyecek kadar büyük: açıldığında köşe ve animasyon verisi {{value}} yer kaplayacak (sınır: {{limit}}).',
+    'Bu model güvenle görüntülenemeyecek kadar büyük: kodu çözüldüğünde köşe ve animasyon verileri {{value}} yer kaplayacak (sınır: {{limit}}).',
   tooLargeGpu:
-    'Bu model güvenle görüntülenemeyecek kadar büyük: dokuları ve morph hedefleri {{value}} GPU belleği kullanacak (sınır: {{limit}}).',
-  tooManyNodes: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} düğümü var (sınır: {{limit}}).',
+    'Bu model güvenle görüntülenemeyecek kadar büyük: dokuları ve morph hedefleri {{value}} GPU belleği kaplayacak (sınır: {{limit}}).',
+  tooManyNodes: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} düğüm içeriyor (sınır: {{limit}}).',
   tooManyDrawCalls:
     'Bu model güvenle görüntülenemeyecek kadar büyük: kare başına {{value}} çizim çağrısı gerektirecek (sınır: {{limit}}).',
-  tooManyImages: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} görseli var (sınır: {{limit}}).',
+  tooManyImages: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} görsel içeriyor (sınır: {{limit}}).',
   tooManyDrawnVertices:
     'Bu model güvenle görüntülenemeyecek kadar büyük: kare başına {{value}} köşe çizecek (sınır: {{limit}}).',
-  tooManyMaterials: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} malzemesi var (sınır: {{limit}}).',
+  tooManyMaterials: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} malzeme içeriyor (sınır: {{limit}}).',
   tooManyChannels:
     'Bu model güvenle görüntülenemeyecek kadar büyük: animasyonlarında {{value}} kanal var (sınır: {{limit}}).',
-  tooComplex: 'Bu model, yüklenmeden önce denetlenemeyecek kadar karmaşık, bu yüzden açılmadı.',
+  tooComplex: 'Bu model, yüklenmeden önce denetlenemeyecek kadar karmaşık olduğu için açılmadı.',
   tooManyTracks:
-    'Bu model güvenle görüntülenemeyecek kadar büyük: animasyonları {{value}} iz oluşturuyor (sınır: {{limit}}).',
+    'Bu model güvenle görüntülenemeyecek kadar büyük: animasyonlarından {{value}} iz (track) oluşuyor (sınır: {{limit}}).',
   tooLargeTotal:
-    'Bu model güvenle görüntülenemeyecek kadar büyük: toplamda {{value}} bellek kullanacak (sınır: {{limit}}).',
-  tooLargeLoaded: 'Bu model, dosyasında bildirilenden büyük çıktı ({{what}}), bu yüzden gösterilmiyor.',
-  loadingNewer: 'Son kayıt yükleniyor…',
-  tooManyTextures: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} dokusu var (sınır: {{limit}}).',
+    'Bu model güvenle görüntülenemeyecek kadar büyük: toplamda {{value}} bellek kaplayacak (sınır: {{limit}}).',
+  tooLargeLoaded: 'Bu model, dosyasında bildirilenden büyük çıktığı için ({{what}}) gösterilmiyor.',
+  loadingNewer: 'Son kaydedilen sürüm yükleniyor…',
+  tooManyTextures: 'Bu model güvenle görüntülenemeyecek kadar büyük: {{value}} doku içeriyor (sınır: {{limit}}).',
   tooManyJoints:
-    'Bu model güvenle görüntülenemeyecek kadar büyük: bir skin içinde {{value}} eklem var (sınır: {{limit}}).',
+    'Bu model güvenle görüntülenemeyecek kadar büyük: bir skin içinde {{value}} kemik (joint) var (sınır: {{limit}}).',
   imageTooLarge:
     'Bu model güvenle görüntülenemeyecek kadar büyük: bir görsel {{width}} × {{height}} piksel (sınır: kenar başına {{limit}}).',
   unreadableImage:
-    'Görsel {{index}}, kodu çözülmeden önce boyutu denetlenebilen bir PNG, JPEG, WebP, AVIF veya KTX2 görseli değil, bu yüzden model açılmadı.',
+    'Görsel {{index}}, boyutu kodu çözülmeden önce denetlenebilen biçimlerden (PNG, JPEG, WebP, AVIF, KTX2) birinde olmadığı için model açılmadı.',
   unreadableDraco:
-    'Örgü {{index}}, kodu çözülmeden önce boyutu denetlenemeyen Draco verisi içeriyor, bu yüzden model açılmadı.',
+    'Örgü {{index}}, kodu çözülmeden önce boyutu denetlenemeyen Draco verisi içerdiği için model açılmadı.',
   externalBuffers:
-    'Bu model geometrisini ayrı dosyalarda ({{files}}) tutuyor ve Orca eklentileri bu dosyaları okuyamaz. Bir .glb veya verileri gömülü bir .gltf açın.',
+    'Bu model geometrisini ayrı dosyalarda ({{files}}) tutuyor ve Orca eklentileri bu dosyaları okuyamaz. Bir .glb dosyası veya verileri gömülü bir .gltf dosyası açın.',
   externalImages:
-    'Ayrı dosyalardaki dokular ({{files}}) gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz. Görmek için bir .glb kullanın.',
+    'Ayrı dosyalardaki dokular ({{files}}) gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz. Dokuları görmek için .glb kullanın.',
   externalTextures:
-    'Ayrı dosyalardaki dokular ({{files}}) gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz. Görmek için onları dosyaya gömün.',
+    'Ayrı dosyalardaki dokular ({{files}}) gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz. Görmek için dokuları dosyaya gömün.',
   objMaterials: 'Ayrı bir .mtl dosyasındaki malzemeler gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz.',
-  assumedMeters: 'Bu biçimde birim yok, bu yüzden boyutlar metre olarak gösteriliyor.',
-  fbxText: 'Bu bir metin (ASCII) FBX dosyası ve görüntüleyici bunu okumaz. İkili FBX olarak dışa aktarın.',
+  assumedMeters: 'Bu biçim birim bilgisi içermediği için boyutlar metre olarak gösteriliyor.',
+  fbxText: 'Bu, metin (ASCII) biçiminde bir FBX dosyası; görüntüleyici bu biçimi okuyamaz. Dosyayı ikili FBX olarak dışa aktarın.',
   fbxVersion:
-    'Bu FBX dosyasının sürümü: {{version}}. Görüntüleyici FBX 7.0 (2011) ve sonrasını okur. Güncel bir araçla yeniden dışa aktarın.',
-  laterSaveFailed: 'Son kayıt gösterilemedi, bu yüzden önceki kayıt ekranda kalıyor: {{reason}}',
-  moreFiles: '{{list}} ve {{count}} tane daha',
+    'Bu FBX dosyasının sürümü {{version}}; görüntüleyici FBX 7.0 (2011) ve sonrasını okur. Dosyayı güncel bir araçla yeniden dışa aktarın.',
+  laterSaveFailed: 'Son kaydedilen sürüm gösterilemediği için önceki sürüm ekranda kalıyor: {{reason}}',
+  moreFiles: '{{list}} ve {{count}} dosya daha',
   otherScenes: {
-    one: 'Bu dosyada {{count}} sahne daha var; varsayılan sahne gösteriliyor.',
+    one: 'Bu dosyada bir sahne daha var; varsayılan sahne gösteriliyor.',
     other: 'Bu dosyada {{count}} sahne daha var; varsayılan sahne gösteriliyor.'
   },
   resetView: 'Görünümü sıfırla',
   wireframe: 'Tel kafes',
-  wireframeTooLarge: 'Bu kadar büyük bir model için tel kafes kullanılamaz',
+  wireframeTooLarge: 'Bu kadar büyük bir modelde tel kafes kullanılamaz',
   guides: 'Izgara ve eksenler',
   darkTheme: 'Koyu tema',
   details: 'Ayrıntılar',
   detailsTitle: 'Sorun bildirimi için ayrıntılar',
   detailsNote:
-    'Görüntüleyici ve tarayıcı sürümleri, grafik bilgileriniz, son yüklemeler ve hatalar. Bir hata mesajında alıntılananlar dışında model verisi yok.',
+    'Görüntüleyici ve tarayıcı sürümleri, grafik bilgileriniz, son yüklemeler ve hatalar. Hata mesajlarında geçenler dışında model verisi içermez.',
   copyDetails: 'Kopyala',
   copied: 'Kopyalandı',
-  copyByHand: 'Burada kopyalanamadı. Metni seçip kopyalayın.',
+  copyByHand: 'Buradan kopyalanamadı. Metni seçip elle kopyalayın.',
   close: 'Kapat',
   playAnimation: 'Animasyonu oynat',
   pauseAnimation: 'Animasyonu duraklat',

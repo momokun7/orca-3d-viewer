@@ -2,84 +2,84 @@
 import type { Messages } from '../messages.ts'
 
 export const ES: Messages = {
-  loading: 'Cargando modelo 3D…',
+  loading: 'Cargando el modelo 3D…',
   contextLost:
-    'El controlador gráfico restableció la vista 3D. Volverá cuando el controlador se recupere; si no, vuelve a abrir el archivo.',
-  parseFailed: 'No se puede mostrar este modelo 3D. Puede estar dañado o usar una función que el visor no admite.',
-  corrupt: 'Este modelo está dañado: {{path}} {{reason}}.',
-  corruptFile: 'Este archivo {{format}} está dañado: {{reason}}.',
-  parseTimeout: 'Este modelo 3D tardó demasiado en cargarse, así que se detuvo la carga.',
+    'El controlador gráfico reinició la vista 3D. Volverá a verse cuando el controlador se recupere; si no, vuelve a abrir el archivo.',
+  parseFailed: 'No se puede mostrar este modelo 3D. Puede que esté dañado o que use una función que el visor no admite.',
+  corrupt: 'El modelo está dañado: {{path}} {{reason}}.',
+  corruptFile: 'El archivo {{format}} está dañado: {{reason}}.',
+  parseTimeout: 'La carga de este modelo 3D tardaba demasiado y se detuvo.',
   webglUnavailable:
-    'Esta vista 3D necesita WebGL, que no está disponible ahora. Puede que la aceleración gráfica esté desactivada o que la GPU haya dejado de responder.',
+    'La vista 3D necesita WebGL, que no está disponible en este momento. Puede que la aceleración por hardware esté desactivada o que la GPU haya dejado de responder.',
   renderFailed: 'El modelo se leyó, pero no se pudo dibujar.',
   truncated:
-    'Este archivo GLB está incompleto: tiene {{actual}} de los {{declared}} bytes que declara su encabezado. Puede que aún se esté descargando o copiando, o que se haya interrumpido la transferencia.',
-  unsupportedExtensions: 'Este modelo requiere extensiones de glTF que el visor no admite: {{extensions}}.',
+    'El archivo GLB está incompleto: tiene {{actual}} de los {{declared}} bytes que indica su encabezado. Puede que todavía se esté descargando o copiando, o que la transferencia se haya interrumpido.',
+  unsupportedExtensions: 'El modelo requiere extensiones de glTF que el visor no admite: {{extensions}}.',
   tooLargeGeometry:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: al decodificarse ocuparía {{value}} de datos de vértices y animación (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: una vez decodificado, ocuparía {{value}} de datos de vértices y animación (el límite es {{limit}}).',
   tooLargeGpu:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: sus texturas y morph targets ocuparían {{value}} de memoria de GPU (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: sus texturas y morph targets ocuparían {{value}} de memoria de GPU (el límite es {{limit}}).',
   tooManyNodes:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: tiene {{value}} nodos (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: tiene {{value}} nodos (el límite es {{limit}}).',
   tooManyDrawCalls:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: requeriría {{value}} llamadas de dibujo por fotograma (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: necesitaría {{value}} llamadas de dibujo por fotograma (el límite es {{limit}}).',
   tooManyImages:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: tiene {{value}} imágenes (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: tiene {{value}} imágenes (el límite es {{limit}}).',
   tooManyDrawnVertices:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: dibujaría {{value}} vértices por fotograma (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: dibujaría {{value}} vértices por fotograma (el límite es {{limit}}).',
   tooManyMaterials:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: tiene {{value}} materiales (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: tiene {{value}} materiales (el límite es {{limit}}).',
   tooManyChannels:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: sus animaciones tienen {{value}} canales (el límite es {{limit}}).',
-  tooComplex: 'Este modelo es demasiado complejo para comprobarlo antes de cargarlo, así que no se abrió.',
+    'El modelo es demasiado grande para mostrarlo con seguridad: sus animaciones tienen {{value}} canales (el límite es {{limit}}).',
+  tooComplex: 'El modelo es demasiado complejo para comprobarlo antes de cargarlo, así que no se abrió.',
   tooManyTracks:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: sus animaciones generan {{value}} pistas (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: sus animaciones generan {{value}} pistas (el límite es {{limit}}).',
   tooLargeTotal:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: ocuparía {{value}} de memoria en total (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: ocuparía {{value}} de memoria en total (el límite es {{limit}}).',
   tooLargeLoaded:
-    'Este modelo resultó ser más grande de lo que declaraba su archivo ({{what}}), así que no se muestra.',
-  loadingNewer: 'Cargando el último guardado…',
+    'El modelo resultó ser más grande de lo que indicaba su archivo ({{what}}), así que no se muestra.',
+  loadingNewer: 'Cargando la última versión guardada…',
   tooManyTextures:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: tiene {{value}} texturas (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: tiene {{value}} texturas (el límite es {{limit}}).',
   tooManyJoints:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: un skin tiene {{value}} articulaciones (el límite es {{limit}}).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: un skin tiene {{value}} articulaciones (el límite es {{limit}}).',
   imageTooLarge:
-    'Este modelo es demasiado grande para mostrarlo de forma segura: una imagen mide {{width}} × {{height}} píxeles (el límite es {{limit}} por lado).',
+    'El modelo es demasiado grande para mostrarlo con seguridad: una imagen mide {{width}} × {{height}} píxeles (el límite es {{limit}} por lado).',
   unreadableImage:
-    'La imagen {{index}} no es una imagen PNG, JPEG, WebP, AVIF o KTX2 cuyo tamaño se pueda comprobar antes de decodificarla, así que no se abrió el modelo.',
+    'No se abrió el modelo: la imagen {{index}} no es un PNG, JPEG, WebP, AVIF o KTX2 cuyo tamaño pueda comprobarse antes de decodificarla.',
   unreadableDraco:
-    'La malla {{index}} contiene datos Draco cuyo tamaño no se puede comprobar antes de decodificarlos, así que no se abrió el modelo.',
+    'No se abrió el modelo: la malla {{index}} contiene datos Draco cuyo tamaño no puede comprobarse antes de decodificarlos.',
   externalBuffers:
-    'Este modelo guarda su geometría en archivos aparte ({{files}}), que los plugins de Orca no pueden leer. Abre un .glb o un .gltf con los datos incrustados.',
+    'El modelo guarda su geometría en archivos aparte ({{files}}) y los plugins de Orca no pueden leerlos. Abre un .glb o un .gltf con los datos incrustados.',
   externalImages:
-    'Las texturas en archivos aparte ({{files}}) no se muestran: los plugins de Orca no pueden leer archivos junto al modelo. Usa un .glb para verlas.',
+    'No se muestran las texturas guardadas en archivos aparte ({{files}}), porque los plugins de Orca no pueden leer otros archivos de la carpeta. Usa un .glb para verlas.',
   externalTextures:
-    'Las texturas en archivos aparte ({{files}}) no se muestran: los plugins de Orca no pueden leer archivos junto al modelo. Incrústalas en el archivo para verlas.',
+    'No se muestran las texturas guardadas en archivos aparte ({{files}}), porque los plugins de Orca no pueden leer otros archivos de la carpeta. Incrústalas en el archivo para verlas.',
   objMaterials:
-    'Los materiales de un archivo .mtl aparte no se muestran: los plugins de Orca no pueden leer archivos junto al modelo.',
-  assumedMeters: 'Este formato no tiene unidades, así que los tamaños se muestran en metros.',
-  fbxText: 'Este es un archivo FBX de texto (ASCII), que el visor no lee. Expórtalo como FBX binario.',
+    'No se muestran los materiales del archivo .mtl, porque los plugins de Orca no pueden leer otros archivos de la carpeta.',
+  assumedMeters: 'Este formato no guarda unidades, así que las medidas se muestran en metros.',
+  fbxText: 'Es un archivo FBX de texto (ASCII) y el visor no puede leerlo. Vuelve a exportarlo como FBX binario.',
   fbxVersion:
-    'Este archivo FBX es de la versión {{version}}; el visor lee FBX 7.0 (2011) y posteriores. Vuelve a exportarlo con una herramienta reciente.',
-  laterSaveFailed: 'No se pudo mostrar el último guardado, así que se mantiene el anterior: {{reason}}',
+    'El archivo es FBX {{version}} y el visor solo lee FBX 7.0 (2011) o posterior. Vuelve a exportarlo con una herramienta reciente.',
+  laterSaveFailed: 'No se pudo mostrar la última versión guardada; se mantiene la anterior: {{reason}}',
   moreFiles: '{{list}} y {{count}} más',
   otherScenes: {
-    one: 'Este archivo tiene 1 escena más; se muestra la escena predeterminada.',
-    many: 'Este archivo tiene {{count}} de escenas más; se muestra la escena predeterminada.',
-    other: 'Este archivo tiene {{count}} escenas más; se muestra la escena predeterminada.'
+    one: 'El archivo tiene 1 escena más; se muestra la escena predeterminada.',
+    many: 'El archivo tiene {{count}} de escenas más; se muestra la escena predeterminada.',
+    other: 'El archivo tiene {{count}} escenas más; se muestra la escena predeterminada.'
   },
   resetView: 'Restablecer vista',
   wireframe: 'Alambre',
-  wireframeTooLarge: 'El modo alambre no está disponible para un modelo tan grande',
+  wireframeTooLarge: 'El modo alambre no está disponible en modelos tan grandes',
   guides: 'Cuadrícula y ejes',
   darkTheme: 'Tema oscuro',
   details: 'Detalles',
   detailsTitle: 'Detalles para informar de un problema',
   detailsNote:
-    'Las versiones del visor y del navegador, tus gráficos, las cargas recientes y los errores. No incluye datos del modelo, salvo lo que cite un mensaje de error.',
+    'Versiones del visor y del navegador, tu GPU, las últimas cargas y los errores. No incluye datos del modelo, salvo lo que cite algún mensaje de error.',
   copyDetails: 'Copiar',
   copied: 'Copiado',
-  copyByHand: 'No se pudo copiar aquí. Selecciona el texto y cópialo.',
+  copyByHand: 'No se pudo copiar automáticamente. Selecciona el texto y cópialo a mano.',
   close: 'Cerrar',
   playAnimation: 'Reproducir animación',
   pauseAnimation: 'Pausar animación',

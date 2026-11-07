@@ -7,8 +7,6 @@
 
 # 3D Viewer for Orca
 
-**エディターを離れずに、3D モデルを見る。**
-
 [Orca](https://github.com/stablyai/orca) の中で、GLB・glTF・STL・PLY・OBJ・FBX を開ける読み取り専用のビューアーです。
 モデルを回して眺め、アニメーションを再生し、思ったとおりの大きさかをひと目で確かめられます。
 

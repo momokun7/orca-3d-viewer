@@ -7,10 +7,8 @@
 
 # 3D Viewer for Orca
 
-**Mira modelos 3D sin salir del editor.**
-
-Un visor de solo lectura para [Orca](https://github.com/stablyai/orca) que abre GLB, glTF, STL, PLY, OBJ y FBX.
-Gira alrededor de un modelo, reproduce sus animaciones y comprueba de un vistazo si tiene el tamaño que crees.
+Un visor de solo lectura para [Orca](https://github.com/stablyai/orca) compatible con GLB, glTF, STL, PLY, OBJ y FBX.
+Gira la cámara alrededor del modelo, reproduce sus animaciones y comprueba de un vistazo si sus medidas son las que esperas.
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](../../LICENSE)
@@ -21,27 +19,27 @@ Gira alrededor de un modelo, reproduce sus animaciones y comprueba de un vistazo
 [Solución de problemas](#solución-de-problemas) · [Seguridad](#seguridad) · [Desarrollo](#desarrollo) ·
 [Informar de un error](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="El Stanford Bunny en 3D Viewer dentro de Orca, sobre una cuadrícula de suelo, con su tamaño, 156 × 154 × 121 mm, en la barra de estado" src="../images/hero.png" width="800">
+<img alt="El Stanford Bunny en 3D Viewer dentro de Orca, sobre una cuadrícula, con sus medidas (156 × 154 × 121 mm) en la barra de estado" src="../images/hero.png" width="800">
 
 </div>
 
 ## Inicio rápido
 
-1. En Orca, abre **Ajustes → Plugins → Instalar plugin**, escribe `https://github.com/momokun7/orca-3d-viewer#v1.0.0` en la pestaña **Git URL** y elige **Instalar**.
-2. Abre un archivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` u `.fbx`.
-3. Arrastra para girar y usa la rueda para acercarte.
+1. En Orca, abre **Ajustes → Plugins → Instalar plugin**, introduce `https://github.com/momokun7/orca-3d-viewer#v1.0.0` en la pestaña **Git URL** y elige **Instalar**.
+2. Abre un archivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` o `.fbx`.
+3. Arrastra para girar el modelo y usa la rueda del ratón para acercarlo o alejarlo.
 
-No pide ningún permiso. Consulta [Instalación](#instalación) y [Uso](#uso) para más detalles.
+No requiere ningún permiso. Encontrarás más información en [Instalación](#instalación) y [Uso](#uso).
 
 ## Formatos
 
-Un visor, seis formatos.
+Un solo visor para seis formatos.
 
 <table>
   <tr>
     <td width="33%"><img alt="A Beautiful Game en GLB: un tablero de ajedrez de mármol con piezas de vidrio y metal" src="../images/formats/glb.png"></td>
     <td width="33%"><img alt="Corset en glTF con los datos incrustados: tela bordada y hebillas" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="3DBenchy en STL: el barquito que se usa para probar impresoras 3D, en un naranja guardado en el archivo" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="3DBenchy en STL: el pequeño barco que se usa para probar impresoras 3D, en el color naranja guardado en el archivo" src="../images/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -49,9 +47,9 @@ Un visor, seis formatos.
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="El Stanford Armadillo en PLY: un escaneo 3D, en un verde guardado en sus vértices" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="La tetera de Utah en OBJ, en un morado guardado en sus vértices" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="BoomBox en FBX, con la textura de sus botones y rejillas de altavoz" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="El Stanford Armadillo en PLY: un escaneo 3D, en el color verde guardado en sus vértices" src="../images/formats/ply.png"></td>
+    <td width="33%"><img alt="La tetera de Utah en OBJ, en el color morado guardado en sus vértices" src="../images/formats/obj.png"></td>
+    <td width="33%"><img alt="BoomBox en FBX, con la textura de los botones y de las rejillas de los altavoces" src="../images/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -60,15 +58,15 @@ Un visor, seis formatos.
   </tr>
 </table>
 
-| Formato | Extensiones | Colores y texturas | Animación | Unidad de tamaño | Notas |
+| Formato | Extensiones | Colores y texturas | Animación | Unidad de medida | Notas |
 | --- | --- | --- | --- | --- | --- |
-| glTF 2.0 | `.glb` `.gltf` | Sí | Sí | Metros (como define glTF) | Un `.gltf` debe incrustar sus datos |
-| STL | `.stl` | Colores guardados en el archivo; si no, uno predeterminado | No | Milímetros (la convención de la impresión 3D), Z hacia arriba | Binario y texto |
-| PLY | `.ply` | Colores de vértice; si no, uno predeterminado | No | Se muestra en metros | Binario y texto |
-| OBJ | `.obj` | Colores de vértice (el `.mtl` no se puede leer) | No | Se muestra en metros | |
-| FBX | `.fbx` | Solo texturas incrustadas | Sí | La unidad que indica el archivo | FBX binario 7.0 (2011) y posteriores |
+| glTF 2.0 | `.glb` `.gltf` | Sí | Sí | Metros (según la especificación de glTF) | Un `.gltf` debe llevar los datos incrustados |
+| STL | `.stl` | Los colores guardados en el archivo o, si no hay, uno predeterminado | No | Milímetros (lo habitual en impresión 3D), con Z hacia arriba | Binario y texto |
+| PLY | `.ply` | Colores de vértice o, si no hay, uno predeterminado | No | Se interpreta en metros | Binario y texto |
+| OBJ | `.obj` | Colores de vértice (el `.mtl` no se puede leer) | No | Se interpreta en metros | |
+| FBX | `.fbx` | Solo texturas incrustadas | Sí | La que indica el archivo | FBX binario 7.0 (2011) o posterior |
 
-También se abren los glTF comprimidos con Draco o Meshopt y las texturas KTX2 / Basis Universal.
+También admite glTF comprimido con Draco o Meshopt y texturas KTX2 / Basis Universal.
 
 ## Funciones
 
@@ -76,16 +74,16 @@ También se abren los glTF comprimidos con Draco o Meshopt y las texturas KTX2 /
 
 <table>
   <tr>
-    <td width="50%"><img alt="Arrastrar con el botón izquierdo del ratón hace girar la cámara alrededor del conejo" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Arrastrar con el botón derecho, y luego Shift más arrastrar con el izquierdo, desplaza la vista hacia los lados" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="Al arrastrar con el botón izquierdo del ratón, la cámara gira alrededor del conejo" src="../images/features/orbit.gif"></td>
+    <td width="50%"><img alt="Al arrastrar con el botón derecho, y después con el izquierdo mientras se mantiene Shift, la vista se desplaza lateralmente" src="../images/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Girar</b>: arrastrar</td>
     <td align="center"><b>Desplazar</b>: arrastrar con el botón derecho, o <kbd>Shift</kbd> + arrastrar</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="La rueda del ratón acerca el conejo y lo vuelve a alejar" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="Una vista puesta del revés vuelve a la vista inicial con el botón de restablecer" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="Con la rueda del ratón, la vista se acerca al conejo y luego vuelve a alejarse" src="../images/features/zoom.gif"></td>
+    <td width="50%"><img alt="Una vista girada boca abajo vuelve a la posición inicial con el botón Restablecer vista" src="../images/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Zoom</b>: rueda del ratón</td>
@@ -95,67 +93,67 @@ También se abren los glTF comprimidos con Draco o Meshopt y las texturas KTX2 /
 
 ### Tamaño real
 
-Una cuadrícula de suelo, los ejes X / Y / Z y el ancho × alto × profundidad del modelo, para que un modelo creado en la
-unidad equivocada se note enseguida. El Stanford Bunny mide 15,6 cm de ancho.
+Una cuadrícula, los ejes X / Y / Z y las medidas del modelo (ancho × alto × profundidad) hacen que salte a la vista
+cualquier modelo creado con la unidad equivocada. El Stanford Bunny, por ejemplo, mide 15,6 cm de ancho.
 
-<img alt="El conejo sobre una cuadrícula de 10 mm; la barra de estado indica 156 × 154 × 121 mm y luego Cuadrícula 10 mm" src="../images/features/size.gif" width="600">
+<img alt="El conejo sobre una cuadrícula de 10 mm; la barra de estado muestra 156 × 154 × 121 mm y, a continuación, Cuadrícula 10 mm" src="../images/features/size.gif" width="600">
 
 ### Alambre, cuadrícula y ejes
 
-Muestra la malla solo con líneas, u oculta la cuadrícula y los ejes. El número de vértices y triángulos aparece en la barra de estado.
+Muestra la malla solo con sus aristas, u oculta la cuadrícula y los ejes. La barra de estado indica cuántos vértices y triángulos tiene el modelo.
 
-<img alt="El botón Alambre muestra la malla del conejo y luego el botón Cuadrícula y ejes oculta la cuadrícula del suelo" src="../images/features/inspect.gif" width="600">
+<img alt="El botón Alambre muestra la malla del conejo y, después, el botón Cuadrícula y ejes oculta la cuadrícula" src="../images/features/inspect.gif" width="600">
 
 ### Animaciones
 
-Reproduce y pausa, y elige un clip cuando el modelo tiene varios.
+Reproduce o pausa la animación y, si el modelo tiene varios clips, elige cuál ver.
 
-<img alt="Un zorro reproduce su clip Survey, cambia a Run desde el menú de clips, luego se pausa y vuelve a reproducirse" src="../images/features/animations.gif" width="600">
+<img alt="Un zorro reproduce el clip Survey, pasa a Run desde el menú de clips, se pausa y vuelve a reproducirse" src="../images/features/animations.gif" width="600">
 
 ### Siempre al día
 
-Guarda el archivo y la vista muestra la nueva versión, con la cámara donde estaba.
+Cada vez que guardas el archivo, la vista se actualiza con la nueva versión sin mover la cámara.
 
-<img alt="Cada vez que se guarda el archivo con Ctrl + S, el conejo cambia de color sin moverse" src="../images/features/live.gif" width="600">
+<img alt="Cada vez que se guarda el archivo con Ctrl + S, el conejo cambia de color sin moverse de su sitio" src="../images/features/live.gif" width="600">
 
 ### Claro u oscuro
 
-El visor se abre en claro; el botón de la luna en la barra de herramientas activa el **Tema oscuro** y lo desactiva. Recuerda
-el tema, el modo alambre y la cuadrícula que elegiste por última vez, incluso después de reiniciar Orca (Orca 1.4.250 y posteriores).
+El visor se abre con el tema claro; el botón de la luna de la barra de herramientas activa y desactiva el **Tema oscuro**.
+Recuerda el tema, el modo alambre y la cuadrícula que elegiste la última vez, incluso al reiniciar Orca (requiere Orca 1.4.250 o posterior).
 
-<img alt="Al hacer clic en el botón de la luna de la barra de herramientas, el visor pasa a oscuro, y al volver a hacer clic pasa a claro" src="../images/features/theme.gif" width="600">
+<img alt="Al hacer clic en el botón de la luna de la barra de herramientas, el visor cambia al tema oscuro; con otro clic, vuelve al claro" src="../images/features/theme.gif" width="600">
 
 ### Once idiomas
 
-El texto del visor sigue el idioma de Orca: English, 日本語, Deutsch, Español, Français, 한국어, Português,
+El visor se muestra en el mismo idioma que Orca: English, 日本語, Deutsch, Español, Français, 한국어, Português,
 Русский, Türkçe, 简体中文 y 繁體中文.
 
-### Detalles para pegar en un issue
+### Detalles para adjuntar a un issue
 
-El botón **i** de la barra de herramientas (en una pantalla de error, el botón **Detalles** bajo el mensaje) abre un resumen:
-la versión del visor, tu navegador y tus gráficos, las cargas recientes con lo que tardaron y los errores encontrados.
-Usa **Copiar** para pegarlo en un issue y explicará lo que pasó. No contiene datos del modelo.
+El botón **i** de la barra de herramientas (o, en una pantalla de error, el botón **Detalles** que aparece bajo el mensaje) abre un resumen
+con la versión del visor, tu navegador y tu GPU, las últimas cargas y lo que tardó cada una, y los errores que se hayan producido.
+Pulsa **Copiar** y pégalo en un issue: con eso basta para saber qué pasó. No incluye datos del modelo.
 
 <img alt="El panel Detalles: la versión del visor, el navegador, el historial de cargas y el motivo por el que se rechazó un archivo, con los botones Copiar y Cerrar" src="../images/details.png" width="600">
 
 ## Instalación
 
 1. En Orca, abre **Ajustes → Plugins** y elige **Instalar plugin**.
-2. En la pestaña **Git URL**, escribe:
+2. En la pestaña **Git URL**, introduce:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
-3. Elige **Instalar**. El visor no pide ningún permiso, así que no hay nada más que conceder.
+3. Elige **Instalar**. Como el visor no pide ningún permiso, no tendrás que conceder nada más.
 
 > [!IMPORTANT]
 > Requiere la aplicación de escritorio de Orca, versión 1.4.248 o posterior.
 
 ## Uso
 
-Abre un archivo en cualquiera de estos formatos y se mostrará en 3D. `.gltf` y `.obj` son archivos de texto, así que la
-pestaña del editor cambia entre **Código fuente** (el texto) y **3D**.
+Abre un archivo en cualquiera de estos formatos y se mostrará en 3D. Como `.gltf` y `.obj` son archivos de texto, la
+pestaña del editor te deja alternar entre **Código fuente** (el texto) y **3D**.
 
 | Acción | Cómo |
 | --- | --- |
@@ -163,60 +161,60 @@ pestaña del editor cambia entre **Código fuente** (el texto) y **3D**.
 | Desplazar | Arrastrar con el botón derecho, <kbd>Shift</kbd> + arrastrar, o las teclas de flecha |
 | Zoom | Rueda del ratón |
 | Restablecer vista | El primer botón de la barra de herramientas |
-| Alambre, cuadrícula y ejes | Los botones de al lado |
+| Alambre, cuadrícula y ejes | Los botones que le siguen |
 | Claro u oscuro | El botón de la luna |
 | Detalles | El botón **i** |
-| Animaciones | El botón de reproducir y el menú de clips, cuando el modelo tiene alguno |
+| Animaciones | El botón de reproducción y el menú de clips, si el modelo tiene animaciones |
 
 ## Límites
 
 > [!NOTE]
-> Los plugins de Orca solo leen el archivo abierto, nunca los demás archivos de su carpeta, así que los datos guardados en
-> archivos aparte no se pueden mostrar. Un `.gltf` cuya geometría está en un `.bin` aparte no se abre, y las texturas en archivos
-> de imagen aparte y el `.mtl` de un OBJ se omiten. Un `.glb`, un `.gltf` con los datos incrustados o un FBX con las texturas
-> incrustadas lo muestra todo.
+> Los plugins de Orca solo pueden leer el archivo abierto, no el resto de archivos de la carpeta, así que no es posible
+> mostrar datos que estén en archivos aparte. Un `.gltf` con la geometría en un `.bin` independiente no se abre, y las
+> texturas en archivos de imagen independientes y el `.mtl` de un OBJ se ignoran. En cambio, un `.glb`, un `.gltf` con los
+> datos incrustados o un FBX con las texturas incrustadas se muestran por completo.
 
-- **Solo en la aplicación de escritorio.** En Orca en un navegador, el archivo se abre en Código fuente.
-- **Hasta 64 MiB**, el límite de Orca para editores personalizados. Un modelo que al decodificarse ocuparía mucho más de lo que es seguro mantener,
-  o que usa algo que el visor no puede leer, se rechaza con un mensaje que explica el motivo.
-- **Nada de FBX antiguo ni de texto.** Vuelve a exportarlo como FBX binario 7.0 o posterior.
+- **Solo en la aplicación de escritorio.** Si usas Orca desde un navegador, el archivo se abre en Código fuente.
+- **Hasta 64 MiB**, el límite de Orca para editores personalizados. Si un modelo ocuparía, una vez decodificado, mucho más de
+  lo que se puede manejar con seguridad, o usa algo que el visor no sabe leer, se rechaza con un mensaje que explica el motivo.
+- **No admite FBX antiguos ni de texto.** Vuelve a exportarlos como FBX binario 7.0 o posterior.
 
-Se probaron los 152 modelos GLB y glTF incrustados de los
-[glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets) de Khronos: todos se abren, salvo
-tres que necesitan una extensión que three.js no implementa.
+Se han probado los 152 modelos GLB y glTF con datos incrustados de los
+[glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets) de Khronos: se abren todos menos
+tres, que necesitan una extensión que three.js no implementa.
 
 ## Solución de problemas
 
 <details>
-<summary>El archivo se abre como texto en lugar de en 3D</summary>
+<summary>El archivo se abre como texto y no en 3D</summary>
 
-`.gltf` y `.obj` son archivos de texto, así que pueden abrirse en Código fuente (el texto). Elige **3D** en la pestaña del editor. En
-Orca en un navegador, el 3D no está disponible.
+Como `.gltf` y `.obj` son archivos de texto, pueden abrirse en Código fuente (el texto). Elige **3D** en la pestaña del editor. Si
+usas Orca desde un navegador, la vista 3D no está disponible.
 
 </details>
 
 <details>
 <summary>Faltan texturas o colores</summary>
 
-Un plugin no puede leer texturas en archivos de imagen aparte; la barra de estado indica los archivos que no pudo leer.
-Para glTF, usa un `.glb`; para FBX, exporta con las texturas incrustadas. El `.mtl` de un OBJ no se puede leer, así que se muestra
-con sus colores de vértice si los tiene y, si no, con un color predeterminado.
+Los plugins no pueden leer texturas guardadas en archivos de imagen independientes; la barra de estado indica qué archivos no se pudieron leer.
+En glTF, usa un `.glb`; en FBX, exporta con las texturas incrustadas. Como el `.mtl` de un OBJ no se puede leer, el modelo se muestra
+con sus colores de vértice si los tiene, o con un color predeterminado si no.
 
 </details>
 
 <details>
-<summary>El tamaño parece incorrecto</summary>
+<summary>El tamaño no parece correcto</summary>
 
-STL se muestra en milímetros, y PLY y OBJ en metros, ya que ninguno de esos formatos guarda una unidad. FBX y glTF usan la
-unidad que indica el archivo. Si el tamaño difiere en un factor de 1000 o 100, comprueba la unidad con la que se exportó el modelo.
+STL se muestra en milímetros, y PLY y OBJ en metros, porque ninguno de estos formatos guarda la unidad. FBX y glTF usan la
+unidad que indica el archivo. Si el tamaño no cuadra por un factor de 1000 o de 100, revisa la unidad con la que se exportó el modelo.
 
 </details>
 
 <details>
-<summary>Dice que el modelo no se puede abrir</summary>
+<summary>Aparece un mensaje de que el modelo no se puede abrir</summary>
 
-El mensaje explica el motivo. Los modelos demasiado grandes, los archivos dañados y las funciones que el visor no
-admite se rechazan antes de abrirse. Si el motivo no está claro, copia los **Detalles** en un issue.
+El propio mensaje explica el motivo. Los modelos demasiado grandes, los archivos dañados y los que usan funciones que el visor no
+admite se rechazan antes de abrirlos. Si el motivo no queda claro, copia los **Detalles** en un issue.
 
 </details>
 
@@ -224,29 +222,29 @@ admite se rechazan antes de abrirse. Si el motivo no está claro, copia los **De
 <summary>Informar de un error</summary>
 
 Usa la plantilla de [informe de error](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
-y pega el texto de **Detalles**. Si puedes compartir el modelo, indica de dónde viene. Un problema de seguridad va
-en un [informe privado](https://github.com/momokun7/orca-3d-viewer/security/advisories/new), no en un issue.
+y pega el texto de **Detalles**. Si puedes compartir el modelo, indica de dónde lo sacaste. Los problemas de seguridad se comunican
+mediante un [informe privado](https://github.com/momokun7/orca-3d-viewer/security/advisories/new), no en un issue.
 
 </details>
 
 ## Seguridad
 
-Un modelo es una entrada no fiable, así que el visor está hecho para ser un objetivo aburrido de atacar.
+Un modelo es una entrada que no es de fiar, así que el visor está pensado para ofrecer al atacante lo menos posible.
 
-- **Aislado**: se ejecuta en el marco aislado de plugins de Orca, con una Content-Security-Policy estricta y sin red.
-- **Sin permisos**: el manifiesto no pide ninguna capacidad: ni worker, ni comandos, ni acceso a archivos.
-- **Solo lectura**: nunca edita ni guarda el documento, y las URI dentro de un modelo nunca llegan a un cargador.
-- **Comprobado antes**: cada formato se comprueba contra límites de tamaño en un hilo aparte antes de decodificar
-  nada. Los arrays comprimidos de FBX se descomprimen en pasos pequeños y se detienen en cuanto superan su tamaño declarado.
-- **Probado**: la CI ejecuta el visor bajo la política de marcos de Orca con modelos hostiles y generados por fuzzing, y comprueba que el
-  bundle incluido en el repositorio se puede reproducir desde el código fuente.
+- **Aislado**: se ejecuta en el marco aislado que Orca reserva a los plugins, con una Content-Security-Policy estricta y sin acceso a la red.
+- **Sin permisos**: el manifiesto no solicita ninguna capacidad; ni workers, ni comandos, ni acceso a archivos.
+- **Solo lectura**: nunca modifica ni guarda el documento, y las URI que contenga un modelo nunca llegan a ningún cargador.
+- **Comprobación previa**: antes de decodificar nada, cada formato se contrasta con unos límites de tamaño en un hilo
+  aparte. Los arrays comprimidos de FBX se descomprimen poco a poco, y el proceso se detiene en cuanto superan el tamaño declarado.
+- **Probado**: la CI ejecuta el visor con la política de marcos de Orca frente a modelos maliciosos y generados mediante fuzzing, y comprueba
+  que el bundle incluido en el repositorio se puede reproducir a partir del código fuente.
 
-Consulta [SECURITY.md](../../SECURITY.md) para ver los detalles.
+Encontrarás todos los detalles en [SECURITY.md](../../SECURITY.md).
 
 ## Desarrollo
 
 El código del plugin está en `build/src`. `build/build.mjs` lo empaqueta en `editor/`, que se incluye en el repositorio para que Orca
-pueda cargar el plugin sin un paso de compilación.
+pueda cargar el plugin sin necesidad de compilarlo.
 
 ```sh
 cd build
@@ -256,32 +254,32 @@ npm run typecheck
 npm run build
 ```
 
-Con [mise](https://mise.jdx.dev), `mise run check` ejecuta todo lo que ejecuta la CI, y `mise tasks` muestra el resto.
+Con [mise](https://mise.jdx.dev), `mise run check` ejecuta todo lo que ejecuta la CI, y `mise tasks` muestra el resto de tareas.
 
-Para probar tus cambios en Orca, ejecuta `orca plugin dev watch .` desde la raíz del repositorio, o añade la carpeta en
+Para probar tus cambios en Orca, ejecuta `orca plugin dev watch .` desde la raíz del repositorio o añade la carpeta en
 **Ajustes → Plugins → Desarrollo**.
 
 ## Contribuir
 
-Los issues, las etiquetas, el tablero del proyecto, los hitos y los pull requests se describen en
-[CONTRIBUTING.md](../../CONTRIBUTING.md). Las traducciones distintas del inglés y el japonés se redactaron a máquina;
-las correcciones de hablantes nativos son muy bienvenidas.
+En [CONTRIBUTING.md](../../CONTRIBUTING.md) se explica cómo funcionan los issues, las etiquetas, el tablero del proyecto,
+los hitos y los pull requests. Todas las traducciones, salvo la inglesa y la japonesa, se hicieron con traducción automática;
+agradeceremos mucho las correcciones de hablantes nativos.
 
 ## Licencia y créditos
 
-[MIT](../../LICENSE). three.js, meshoptimizer, fflate y Lucide (MIT / ISC) y el decodificador Draco
-(Apache-2.0), incluidos en el paquete, conservan sus propias licencias; consulta [THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt).
+[MIT](../../LICENSE). Los componentes incluidos en el paquete (three.js, meshoptimizer, fflate y Lucide, con licencia MIT / ISC,
+y el decodificador Draco, con licencia Apache-2.0) mantienen sus propias licencias; consulta [THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt).
 
-Los modelos de las imágenes y los GIF proceden de las fuentes de abajo. En cada copia, la conversión de formato, los colores
-(los de 3DBenchy, el Armadillo y la tetera los escribimos nosotros en el archivo) y la orientación son edición nuestra.
+Los modelos que aparecen en las imágenes y los GIF proceden de las fuentes que se indican abajo. En todos ellos, la conversión de formato,
+los colores (los de 3DBenchy, el Armadillo y la tetera los añadimos nosotros al archivo) y la orientación son modificaciones nuestras.
 
-| Modelo | Usado en | Fuente | Licencia |
+| Modelo | Dónde aparece | Fuente | Licencia |
 | --- | --- | --- | --- |
-| Stanford Bunny | Imagen principal, GIF de funciones | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | Libre para uso no comercial con atribución |
-| Stanford Armadillo | PLY | Igual que arriba | Igual que arriba |
-| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). Modelo original del MaterialX Project, conversión a glTF de Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Stanford Bunny | Imagen principal, GIF de funciones | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | Uso no comercial libre, citando la fuente |
+| Stanford Armadillo | PLY | Igual que el anterior | Igual que el anterior |
+| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). Modelo original del MaterialX Project, convertido a glTF por Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Corset | glTF | Khronos glTF Sample Assets, Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | BoomBox | FBX | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell (1975), Kenzie Lamar | CC0 |
-| Fox | GIF de animación | Khronos glTF Sample Assets. Modelo de PixelMannen (CC0 1.0), rigging y animación de tomkranis, conversión a glTF de @AsoboStudio y @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | GIF de animación | Khronos glTF Sample Assets. Modelo de PixelMannen (CC0 1.0), rigging y animación de tomkranis, convertido a glTF por @AsoboStudio y @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
