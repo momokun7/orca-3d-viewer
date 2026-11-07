@@ -1,7 +1,18 @@
-// UI text in English and Japanese. A message may be a string, or plural forms keyed by
-// Intl.PluralRules categories ('one', 'other', …) and chosen by the `count` value.
+// UI text in English and Japanese here, and in the other languages Orca offers under locales/. A
+// message may be a string, or plural forms keyed by Intl.PluralRules categories ('one', 'few',
+// 'other', …) and chosen by the `count` value.
+import { DE } from './locales/de.ts'
+import { ES } from './locales/es.ts'
+import { FR } from './locales/fr.ts'
+import { KO } from './locales/ko.ts'
+import { PT } from './locales/pt.ts'
+import { RU } from './locales/ru.ts'
+import { TR } from './locales/tr.ts'
+import { ZH_HANS } from './locales/zh-hans.ts'
+import { ZH_HANT } from './locales/zh-hant.ts'
 
-type Message = string | { one?: string; other: string }
+export type Message = string | { zero?: string; one?: string; two?: string; few?: string; many?: string; other: string }
+export type Messages = Record<MessageKey, Message>
 
 const EN = {
   loading: 'Loading 3D model…',
@@ -83,7 +94,7 @@ const EN = {
 
 export type MessageKey = keyof typeof EN
 
-const JA: Record<MessageKey, Message> = {
+const JA: Messages = {
   loading: '3D モデルを読み込み中…',
   contextLost:
     'グラフィックスドライバーが 3D 表示をリセットしました。ドライバーが回復すると元に戻ります。戻らないときは、ファイルを開き直してください。',
@@ -168,8 +179,18 @@ export type Translate = (key: MessageKey, values?: MessageValues, count?: number
  * A translator for `locale`. `count` picks a plural form; give the formatted number as the `count`
  * value too when the text shows it.
  */
+const BY_LANGUAGE: Record<string, Messages> = { ja: JA, de: DE, es: ES, fr: FR, ko: KO, pt: PT, ru: RU, tr: TR }
+
+/** The table for `locale`: by its language, and for Chinese by its script or region. */
+export function messagesFor(locale: string): Messages {
+  const tag = locale.toLowerCase()
+  const language = tag.split('-')[0]
+  if (language === 'zh') return /-(hant|tw|hk|mo)(-|$)/.test(tag) ? ZH_HANT : ZH_HANS
+  return Object.hasOwn(BY_LANGUAGE, language) ? BY_LANGUAGE[language] : EN
+}
+
 export function createTranslate(locale: string): Translate {
-  const table: Record<MessageKey, Message> = locale.toLowerCase().startsWith('ja') ? JA : EN
+  const table = messagesFor(locale)
   const plurals = new Intl.PluralRules(locale)
   return (key, values = {}, count) => {
     const message = table[key]
