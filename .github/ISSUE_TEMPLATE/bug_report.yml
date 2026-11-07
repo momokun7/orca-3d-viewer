@@ -1,0 +1,41 @@
+name: Bug report
+description: A model does not open, looks wrong, or the viewer misbehaves.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. A security problem belongs in a [private report](https://github.com/momokun7/orca-3d-viewer/security/advisories/new), not here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: |
+        In the viewer, choose **Details** (the i button in the toolbar, or the button on the error screen), then **Copy**, and paste it here. It holds no model data, except what an error message quotes.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: File format
+      options: [GLB, glTF, STL, PLY, OBJ, FBX]
+    validations:
+      required: true
+  - type: textarea
+    id: model
+    attributes:
+      label: Model
+      description: Where the model came from (the tool that exported it, or a public link). Attach it only if you are free to share it.
+  - type: input
+    id: orca
+    attributes:
+      label: Orca version
+      placeholder: 1.4.250
