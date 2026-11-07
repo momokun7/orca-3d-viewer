@@ -208,3 +208,62 @@ export function fbxTriangle({
     version
   )
 }
+
+/** A unit square on the XY plane whose material shows `png` through an embedded texture. */
+export function fbxTexturedSquare(png: Uint8Array): Uint8Array {
+  const I = (value: number): FbxProperty => ({ type: 'I', value })
+  const corners = [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0]
+  return fbx([
+    {
+      name: 'Objects',
+      children: [
+        {
+          name: 'Geometry',
+          properties: [L(1), S('Square\0\x01Geometry'), S('Mesh')],
+          children: [
+            { name: 'Vertices', properties: [{ type: 'd', value: corners }] },
+            { name: 'PolygonVertexIndex', properties: [{ type: 'i', value: [0, 1, 2, -4] }] },
+            {
+              name: 'LayerElementUV',
+              properties: [I(0)],
+              children: [
+                { name: 'MappingInformationType', properties: [S('ByPolygonVertex')] },
+                { name: 'ReferenceInformationType', properties: [S('IndexToDirect')] },
+                { name: 'UV', properties: [{ type: 'd', value: [0, 0, 1, 0, 1, 1, 0, 1] }] },
+                { name: 'UVIndex', properties: [{ type: 'i', value: [0, 1, 2, 3] }] }
+              ]
+            }
+          ]
+        },
+        { name: 'Model', properties: [L(2), S('Square\0\x01Model'), S('Mesh')], children: [{ name: 'Version', properties: [I(232)] }] },
+        { name: 'Material', properties: [L(3), S('Paint\0\x01Material'), S('')], children: [{ name: 'ShadingModel', properties: [S('phong')] }] },
+        {
+          name: 'Texture',
+          properties: [L(4), S('Paint\0\x01Texture'), S('')],
+          children: [
+            { name: 'FileName', properties: [S('paint.png')] },
+            { name: 'RelativeFilename', properties: [S('paint.png')] }
+          ]
+        },
+        {
+          name: 'Video',
+          properties: [L(5), S('Paint\0\x01Video'), S('Clip')],
+          children: [
+            { name: 'RelativeFilename', properties: [S('paint.png')] },
+            { name: 'Content', properties: [{ type: 'R', value: png }] }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'Connections',
+      children: [
+        { name: 'C', properties: [S('OO'), L(1), L(2)] },
+        { name: 'C', properties: [S('OO'), L(2), L(0)] },
+        { name: 'C', properties: [S('OO'), L(3), L(2)] },
+        { name: 'C', properties: [S('OP'), L(4), L(3), S('DiffuseColor')] },
+        { name: 'C', properties: [S('OO'), L(5), L(4)] }
+      ]
+    }
+  ])
+}
