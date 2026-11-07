@@ -8,8 +8,8 @@ export type Finding = { kind: string; match: string; line: number }
 type Rule = { kind: string; pattern: RegExp; allow?: (match: string) => boolean }
 
 const ALLOWED_EMAIL_DOMAINS = /@(users\.noreply\.github\.com|example\.(com|org|net)|[\w-]+\.(test|invalid|example))$/i
-// GitHub commits squash merges and branch updates as this address.
-const GITHUB_COMMITTER = /^noreply@github\.com$/i
+// GitHub commits squash merges and branch updates as noreply@, and Dependabot signs off as support@.
+const GITHUB_COMMITTER = /^(noreply|support)@github\.com$/i
 const PLACEHOLDER_USERS = /^(<[^>]*>|\{[^}]*\}|%[^%]*%|\$\w+|you|me|user|username|name|victim|runner|public|default)$/i
 
 const RULES: Rule[] = [
