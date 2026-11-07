@@ -164,7 +164,7 @@ describe('localization', () => {
     const japanese = await openFrame({ locale: 'ja' })
     try {
       const state = await japanese.open({ bytes: glb(triangleGltf()) })
-      assert.equal(state.kind === 'model' && state.figures[0], '3 頂点 · 1 三角形')
+      assert.equal(state.kind === 'model' && state.figures[0], '頂点 3 · 三角形 1')
       assert.equal(await japanese.page.evaluate(() => document.documentElement.lang), 'ja')
     } finally {
       await japanese.close()
