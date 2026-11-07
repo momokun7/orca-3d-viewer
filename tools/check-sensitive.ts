@@ -5,7 +5,7 @@
 //   node tools/check-sensitive.ts env <NAME>...         text in environment variables (PR title and body)
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import { findSensitive, formatFindings, privateWords } from './sensitive-text.ts'
+import { findSensitive, formatFindings, privateWords, scannableText } from './sensitive-text.ts'
 
 const git = (...args: string[]): string => execFileSync('git', args, { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 })
 const gitDir = (() => {
@@ -43,7 +43,7 @@ switch (mode) {
   }
   case 'files':
     for (const file of git('ls-files', '-z').split('\0').filter(Boolean)) {
-      if (!SKIPPED_FILES.test(file)) scan(file, readFileSync(file, 'utf8'))
+      if (!SKIPPED_FILES.test(file)) scan(file, scannableText(readFileSync(file)))
     }
     break
   case 'env':

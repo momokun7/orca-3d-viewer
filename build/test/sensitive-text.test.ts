@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { findSensitive } from '../../tools/sensitive-text.ts'
+import { findSensitive, scannableText } from '../../tools/sensitive-text.ts'
 
 const kinds = (text: string, words?: string[]): string[] => findSensitive(text, words).map((finding) => finding.kind)
 
@@ -60,5 +60,18 @@ describe('findSensitive', () => {
 
   it('passes ordinary commit messages', () => {
     assert.deepEqual(kinds('Fix the grid size for models authored in centimeters\n\nRefs #12'), [])
+  })
+})
+
+describe('scannableText', () => {
+  const bytes = (text: string): Uint8Array => Uint8Array.from(text, (char) => char.charCodeAt(0))
+
+  it('keeps a text file whole', () => {
+    assert.equal(scannableText(new TextEncoder().encode('mail me at jane@company.co.jp')), 'mail me at jane@company.co.jp')
+  })
+
+  it('drops short look-alikes from binary data but keeps embedded metadata', () => {
+    const image = bytes('GIF89a\0\x01\x02Mx@y.dm\0\x03<x:xmpmeta author="jane@company.co.jp"/>\0')
+    assert.deepEqual(findSensitive(scannableText(image)).map((finding) => finding.match), ['jane@company.co.jp'])
   })
 })

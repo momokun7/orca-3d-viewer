@@ -68,6 +68,16 @@ export function findSensitive(text: string, words: string[] = []): Finding[] {
   return findings
 }
 
+/**
+ * The text of a file to scan. A binary file (one with a NUL byte), such as an image, yields only its
+ * runs of 16 or more printable ASCII characters, like `strings -n 16`: embedded metadata stays
+ * covered, while compressed pixels, which form short look-alikes by chance, do not.
+ */
+export function scannableText(bytes: Uint8Array): string {
+  if (!bytes.includes(0)) return new TextDecoder().decode(bytes)
+  return (new TextDecoder('latin1').decode(bytes).match(/[\x20-\x7e\t]{16,}/g) ?? []).join('\n')
+}
+
 export function formatFindings(source: string, findings: Finding[]): string {
   return findings.map(({ kind, match, line }) => `${source}:${line}: ${kind}: ${match}`).join('\n')
 }
