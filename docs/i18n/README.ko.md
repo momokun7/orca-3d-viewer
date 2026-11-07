@@ -25,7 +25,7 @@
 
 ## 빠른 시작
 
-1. Orca에서 **설정 → 플러그인 → 플러그인 설치**를 열고, **Git URL** 탭의 **저장소 URL**에 `https://github.com/momokun7/orca-3d-viewer#v1.0.1`을 붙여 넣고 **계속** → **설치**를 선택한 뒤, 이어서 나오는 대화 상자에서 **플러그인 활성화**를 선택합니다.
+1. Orca에서 **설정 → 플러그인 → 플러그인 설치**를 열고, **Git URL** 탭의 **저장소 URL**에 `https://github.com/momokun7/orca-3d-viewer#v1.0.2`을 붙여 넣고 **계속** → **설치**를 선택한 뒤, 이어서 나오는 대화 상자에서 **플러그인 활성화**를 선택합니다.
 2. `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx` 파일을 엽니다.
 3. 드래그하면 회전하고, 스크롤하면 확대/축소됩니다.
 
@@ -142,7 +142,7 @@ Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 �
 2. **Git URL** 탭을 열고 **저장소 URL**에 다음 주소를 붙여 넣습니다.
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. **계속**과 **설치**를 차례로 선택합니다. 이어서 나오는 대화 상자에서 **플러그인 활성화**를 선택합니다.

@@ -25,7 +25,7 @@ Modeli her açıdan inceleyin, animasyonlarını oynatın ve beklediğiniz boyut
 
 ## Hızlı başlangıç
 
-1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.1` adresini yapıştırın, **Devam**'a ve **Yükle**'ye tıklayın, ardından **Eklentiyi etkinleştir**'i seçin.
+1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.2` adresini yapıştırın, **Devam**'a ve **Yükle**'ye tıklayın, ardından **Eklentiyi etkinleştir**'i seçin.
 2. Bir `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` veya `.fbx` dosyası açın.
 3. Döndürmek için sürükleyin, yakınlaştırmak için fare tekerleğini çevirin.
 
@@ -145,7 +145,7 @@ aktarılanlar dışında özette hiçbir model verisi bulunmaz.
 2. **Git URL'si** sekmesinde **#ref içeren repository URL'si** alanına şu adresi yapıştırın:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. **Devam**'a, ardından **Yükle**'ye tıklayın. Açılan onay penceresinde **Eklentiyi etkinleştir**'i seçin; siz

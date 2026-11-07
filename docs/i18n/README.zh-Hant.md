@@ -25,7 +25,7 @@
 
 ## 快速開始
 
-1. 在 Orca 中開啟 **設定 → 外掛 → 安裝外掛**，在 **Git URL** 分頁中輸入 `https://github.com/momokun7/orca-3d-viewer#v1.0.1`，依序按下 **繼續** 和 **安裝**，再於接著出現的對話框中按下 **啟用外掛**。
+1. 在 Orca 中開啟 **設定 → 外掛 → 安裝外掛**，在 **Git URL** 分頁中輸入 `https://github.com/momokun7/orca-3d-viewer#v1.0.2`，依序按下 **繼續** 和 **安裝**，再於接著出現的對話框中按下 **啟用外掛**。
 2. 開啟任一個 `.glb`、`.gltf`、`.stl`、`.ply`、`.obj` 或 `.fbx` 檔案。
 3. 拖曳滑鼠即可旋轉視角，捲動滾輪即可縮放。
 
@@ -142,7 +142,7 @@
 2. 在 **Git URL** 分頁的 **帶 #ref 的存放庫 URL** 欄位中貼上：
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. 按下 **繼續**，再按下 **安裝**，然後在接著出現的對話框中按下 **啟用外掛**。啟用之前，外掛不會執行。

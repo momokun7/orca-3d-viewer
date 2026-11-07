@@ -25,7 +25,7 @@
 
 ## すぐに使う
 
-1. Orca で **設定 → プラグイン → プラグインをインストール** を開き、**Git URL** のタブの **リポジトリ URL** に `https://github.com/momokun7/orca-3d-viewer#v1.0.1` を貼り付けて、**続行**、**インストール** の順に押す。続けて出る確認で **プラグインを有効にする** を押す。
+1. Orca で **設定 → プラグイン → プラグインをインストール** を開き、**Git URL** のタブの **リポジトリ URL** に `https://github.com/momokun7/orca-3d-viewer#v1.0.2` を貼り付けて、**続行**、**インストール** の順に押す。続けて出る確認で **プラグインを有効にする** を押す。
 2. `.glb`・`.gltf`・`.stl`・`.ply`・`.obj`・`.fbx` のどれかを開く。
 3. ドラッグで回し、ホイールで近づく。
 
@@ -138,7 +138,7 @@ Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 
 2. **Git URL** のタブを選び、**リポジトリ URL** に次を貼り付ける。
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.1
+   https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
 3. **続行**、**インストール** の順に押し、続けて出る確認で **プラグインを有効にする** を押す。このプラグインは権限を何も求めません。
