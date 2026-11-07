@@ -39,6 +39,15 @@ describe('STL, PLY, OBJ and FBX', () => {
     })
   }
 
+  it('shows the colours a file stores as they are, not mixed with the default surface', async () => {
+    const square = ['v 0 0 0 1 0 0', 'v 1 0 0 1 0 0', 'v 1 1 0 1 0 0', 'v 0 1 0 1 0 0', 'f 1 2 3', 'f 1 3 4'].join('\n')
+    assert.equal((await frame.open({ text: square, fileType: '.obj' })).kind, 'model')
+    const box = await frame.page.locator('.viewport canvas').boundingBox()
+    assert.ok(box)
+    const [red, green, blue] = await frame.pixel(Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2))
+    assert.ok(red > 200 && green < 150 && blue < 150, `expected red, got ${red}, ${green}, ${blue}`)
+  })
+
   it('says an OBJ material file is not shown', async () => {
     const state = await frame.open({ text: `mtllib chair.mtl\nusemtl Fabric\n${obj()}`, fileType: '.obj' })
     assert.equal(state.kind, 'model')
