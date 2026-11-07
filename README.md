@@ -70,7 +70,8 @@ Save the file and the view shows the new version, keeping your camera where it w
 
 ### Light or dark
 
-The viewer opens light; the moon button in the toolbar switches it to dark and back. Its text
+The viewer opens light; the moon button in the toolbar switches it to dark and back. It
+remembers the theme, wireframe and grid you last chose, even after Orca restarts. Its text
 follows Orca's language (English and Japanese).
 
 <img alt="Clicking the moon button in the toolbar turns the viewer dark, and clicking it again turns it light" src="docs/images/features/theme.gif" width="600">

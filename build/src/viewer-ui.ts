@@ -3,6 +3,7 @@ import { cleanName, formatCount, lengthFormat } from './display-format.ts'
 import type { Translate } from './messages.ts'
 import type { ModelSummary } from './model-scene.ts'
 import { ALL_CLIPS } from './scene-animation.ts'
+import { loadPreferences, savePreferences } from './viewer-preferences.ts'
 
 export type ViewerActions = {
   resetView: () => void
@@ -75,8 +76,11 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   root.replaceChildren(element('div', { className: 'stage' }, [viewport, overlay]), notice, toolbar)
 
   let actions: ViewerActions | null = null
-  let wireframeOn = false
-  let guidesOn = true
+  const saved = loadPreferences()
+  let dark = saved.dark
+  let wireframeOn = saved.wireframe
+  let guidesOn = saved.guides
+  const save = (): void => savePreferences({ dark, wireframe: wireframeOn, guides: guidesOn })
   let paused = false
 
   const setPressed = (button: HTMLButtonElement, pressed: boolean): void => {
@@ -97,17 +101,24 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
     wireframeOn = !wireframeOn
     setPressed(wireframe, wireframeOn)
     actions?.setWireframe(wireframeOn)
+    save()
   })
   guides.addEventListener('click', () => {
     guidesOn = !guidesOn
     setPressed(guides, guidesOn)
     gridCell.hidden = !guidesOn
     actions?.setGuidesVisible(guidesOn)
+    save()
   })
-  setPressed(theme, false)
-  theme.addEventListener('click', () => {
-    const dark = document.documentElement.classList.toggle('dark')
+  const applyTheme = (): void => {
+    document.documentElement.classList.toggle('dark', dark)
     setPressed(theme, dark)
+  }
+  applyTheme()
+  theme.addEventListener('click', () => {
+    dark = !dark
+    applyTheme()
+    save()
   })
   play.addEventListener('click', () => {
     paused = !paused
@@ -156,8 +167,9 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
       clearFigures()
       actions = modelActions
       if (!keepToggles) {
-        wireframeOn = false
-        guidesOn = true
+        const last = loadPreferences()
+        wireframeOn = last.wireframe
+        guidesOn = last.guides
       }
       paused = false
       setPressed(wireframe, wireframeOn)
