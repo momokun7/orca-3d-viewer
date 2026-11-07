@@ -18,7 +18,7 @@
     "@gltf-transform/extensions": "4.5.1",
     "@gltf-transform/functions": "4.5.1",
     "@types/draco3dgltf": "1.4.3",
-    "@types/node": "24.19.2",
+    "@types/node": "26.6.5",
     "@types/three": "0.186.0",
     "draco3dgltf": "1.5.9",
     "esbuild": "0.28.2",
