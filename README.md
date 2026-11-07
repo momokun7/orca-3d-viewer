@@ -15,7 +15,7 @@ at a glance whether a model is the size you think it is.
 [Features](#features) · [Install](#install) · [Usage](#usage) · [Limits](#limits) ·
 [Security](#security) · [Development](#development)
 
-<img alt="A sofa chair shown in GLB Viewer inside Orca, standing on a floor grid with its size, 827 × 686 × 570 mm, in the status bar" src="docs/images/hero.png" width="800">
+<img alt="The Stanford Bunny shown in GLB Viewer inside Orca, sitting on a floor grid with its size, 156 × 154 × 121 mm, in the status bar" src="docs/images/hero.png" width="800">
 
 </div>
 
@@ -25,16 +25,16 @@ at a glance whether a model is the size you think it is.
 
 <table>
   <tr>
-    <td width="50%"><img alt="Dragging with the left mouse button orbits the camera around a sofa chair" src="docs/images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Right-dragging, then Shift plus left-dragging, slides the view across the chair" src="docs/images/features/pan.gif"></td>
+    <td width="50%"><img alt="Dragging with the left mouse button orbits the camera around the Stanford Bunny" src="docs/images/features/orbit.gif"></td>
+    <td width="50%"><img alt="Right-dragging, then Shift plus left-dragging, slides the view across the bunny" src="docs/images/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Orbit</b>: drag</td>
     <td align="center"><b>Pan</b>: right-drag, or Shift + drag</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="Scrolling the mouse wheel zooms in on the chair and back out" src="docs/images/features/zoom.gif"></td>
-    <td width="50%"><img alt="After the view is turned upside down, clicking the reset button brings the chair back to the starting view" src="docs/images/features/reset.gif"></td>
+    <td width="50%"><img alt="Scrolling the mouse wheel zooms in on the bunny and back out" src="docs/images/features/zoom.gif"></td>
+    <td width="50%"><img alt="After the view is turned upside down, clicking the reset button brings the bunny back to the starting view" src="docs/images/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Zoom</b>: scroll</td>
@@ -45,16 +45,16 @@ at a glance whether a model is the size you think it is.
 ### Real-world size
 
 A floor grid, X / Y / Z axes and the model's width × height × depth, so a model authored in the
-wrong unit stands out at once. This boom box is 2 cm wide.
+wrong unit stands out at once. The Stanford Bunny comes out 15.6 cm wide.
 
-<img alt="A boom box on a 10 mm grid; the status bar reads 19.8 × 19.5 × 20.2 mm, then Grid 10 mm" src="docs/images/features/size.gif" width="600">
+<img alt="The bunny on a 10 mm grid; the status bar reads 156 × 154 × 121 mm, then Grid 10 mm" src="docs/images/features/size.gif" width="600">
 
 ### Wireframe, grid and axes
 
 Show the mesh as a wireframe, or hide the grid and axes. Vertex and triangle counts sit in the
 status bar.
 
-<img alt="Clicking the wireframe button shows the chair's mesh, then the grid and axes button hides the floor grid" src="docs/images/features/inspect.gif" width="600">
+<img alt="Clicking the wireframe button shows the bunny's mesh, then the grid and axes button hides the floor grid" src="docs/images/features/inspect.gif" width="600">
 
 ### Animations
 
@@ -66,7 +66,7 @@ Play and pause, and pick a clip when the model has several.
 
 Save the file and the view shows the new version, keeping your camera where it was.
 
-<img alt="Each time the file is saved with Ctrl + S, the chair's fabric changes color in place" src="docs/images/features/live.gif" width="600">
+<img alt="Each time the file is saved with Ctrl + S, the bunny changes color in place" src="docs/images/features/live.gif" width="600">
 
 ### Light or dark
 
@@ -161,9 +161,13 @@ folder under **Settings → Plugins → Development folders**.
 [MIT](LICENSE). The bundled three.js, meshoptimizer and Lucide (MIT / ISC) and the Draco decoder
 (Apache-2.0) keep their own licenses; see [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt).
 
-The models in the screenshots come from Khronos'
-[glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). SheenChair and BoomBox
-are released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/); the copy of
-SheenChair with blue fabric is our edit. Fox: model by PixelMannen (CC0 1.0), rigging and animation
+The Stanford Bunny is from the
+[Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford
+University Computer Graphics Laboratory. Its colors and the conversion to GLB are our edit;
+the wireframe shot uses the repository's lower-resolution reconstruction.
+
+The fox comes from Khronos'
+[glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets): model by PixelMannen
+([CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)), rigging and animation
 by tomkranis, and conversion to glTF by @AsoboStudio and @scurest, both under
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
