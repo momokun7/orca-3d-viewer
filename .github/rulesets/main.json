@@ -27,13 +27,8 @@
         "strict_required_status_checks_policy": false,
         "do_not_enforce_on_create": false,
         "required_status_checks": [
-          { "context": "Test (ubuntu-latest)" },
-          { "context": "Test (macos-latest)" },
-          { "context": "Test (windows-latest)" },
-          { "context": "Browser security tests" },
-          { "context": "Orca plugin validation" },
+          { "context": "CI result" },
           { "context": "Security audit" },
-          { "context": "Workflow audit" },
           { "context": "Analyze (javascript-typescript)" },
           { "context": "Analyze (actions)" }
         ]
