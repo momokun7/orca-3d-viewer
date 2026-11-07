@@ -2,6 +2,7 @@
 // the resources each model leaves behind.
 import assert from 'node:assert/strict'
 import { after, afterEach, beforeEach, describe, it } from 'node:test'
+import { CHECK_TIMEOUT_MS } from '../../src/model-check.ts'
 import { dracoGlb, glb, triangleGltf } from '../fixtures/models.ts'
 import { assertContained } from './frame-assertions.ts'
 import { closeBrowser, type Frame, openFrame } from './harness.ts'
@@ -165,11 +166,14 @@ describe('model checks', () => {
         }
       }
     })
+    // Why a fake clock: the viewer waits its real 15-second limit, which the test skips ahead through.
+    await frame.page.clock.install()
     await frame.send({ bytes: glb(triangleGltf()) }, 1)
     await frame.page.waitForTimeout(500)
     const started = Date.now()
     await frame.page.evaluate(() => document.title)
     assert.ok(Date.now() - started < 1000, 'the page answers while the check spins')
+    await frame.page.clock.fastForward(CHECK_TIMEOUT_MS)
     const state = await frame.settled(1)
     assert.match(state.kind === 'error' ? state.message : '', /took too long/)
     assert.equal(await frame.page.evaluate(() => Reflect.get(window, '__checksEnded').count), 1)
