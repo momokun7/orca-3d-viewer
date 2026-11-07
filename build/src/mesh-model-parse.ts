@@ -77,9 +77,26 @@ function scaled(content: Object3D, metersPerUnit: number, zUp = false): Group {
   return root
 }
 
-export function parseMeshModel(format: MeshFormat, data: ArrayBuffer | string, metersPerUnit: number): MeshModel {
+// How long a model waits for the textures its loader fetches after parsing, before it shows without them.
+export const TEXTURE_WAIT_MS = 15_000
+
+export async function parseMeshModel(format: MeshFormat, data: ArrayBuffer | string, metersPerUnit: number): Promise<MeshModel> {
   const blockedFiles: string[] = []
-  const manager = new LoadingManager()
+  // Why wait: FBXLoader returns before its textures load, and the view draws only when something
+  // changes, so a texture that arrives after the first frame would never be shown.
+  let loading = false
+  let settle = (): void => {}
+  const settled = new Promise<void>((resolve) => (settle = resolve))
+  const manager = new LoadingManager(() => settle())
+  manager.onStart = () => {
+    loading = true
+  }
+  const texturesLoaded = async (): Promise<void> => {
+    if (!loading) return
+    let timer: ReturnType<typeof setTimeout> | undefined
+    await Promise.race([settled, new Promise<void>((resolve) => (timer = setTimeout(resolve, TEXTURE_WAIT_MS)))])
+    clearTimeout(timer)
+  }
   manager.setURLModifier((url) => {
     const resolved = resolveOwnUrl(url)
     if (resolved === BLOCKED_RESOURCE_URL) blockedFiles.push(url.split(/[\\/]/).at(-1) ?? url)
@@ -105,6 +122,7 @@ export function parseMeshModel(format: MeshFormat, data: ArrayBuffer | string, m
       const untrack = trackBlobUrls()
       try {
         const group = new FBXLoader(manager).parse(bytes(), '')
+        await texturesLoaded()
         return { scene: scaled(group, metersPerUnit), animations: group.animations, otherSceneCount: 0, blockedFiles }
       } finally {
         untrack()
