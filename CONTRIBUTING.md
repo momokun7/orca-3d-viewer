@@ -27,7 +27,7 @@ The labels live in [.github/labels.json](.github/labels.json) and are applied wi
 ## Project board
 
 Open issues and pull requests sit on the
-[project board](https://github.com/users/momokun7/projects) in one of four columns: Inbox (new,
+[project board](https://github.com/users/momokun7/projects/4) in one of four columns: Inbox (new,
 not triaged), Todo, In progress, and Done.
 
 ## Milestones
