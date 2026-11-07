@@ -30,12 +30,9 @@ const SURFACE_COLOR = 0x4d617a
 export const ASSUMED_METERS_PER_UNIT: Record<'stl' | 'ply' | 'obj', number> = { stl: 0.001, ply: 1, obj: 1 }
 
 function surface(geometry: BufferGeometry): MeshStandardMaterial {
-  return new MeshStandardMaterial({
-    color: SURFACE_COLOR,
-    roughness: 0.6,
-    metalness: 0,
-    vertexColors: geometry.hasAttribute('color')
-  })
+  const colored = geometry.hasAttribute('color')
+  // Why white under the file's own colours: three.js multiplies them by the material colour.
+  return new MeshStandardMaterial({ color: colored ? 0xffffff : SURFACE_COLOR, roughness: 0.6, metalness: 0, vertexColors: colored })
 }
 
 function meshOf(geometry: BufferGeometry): Mesh {
