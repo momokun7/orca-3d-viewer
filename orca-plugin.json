@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/stablyai/orca/main/docs/schemas/plugins/orca-plugin.v2.schema.json",
   "manifestVersion": 2,
-  "id": "glb-viewer",
-  "name": "GLB Viewer",
+  "id": "3d-viewer",
+  "name": "3D Viewer",
   "version": "1.0.0",
   "execution": "sandboxed-ui",
   "description": "Preview GLB 3D models in Orca's editor (and .gltf files with their data embedded): orbit, zoom and pan, play animations, and check the model's real-world size in meters on a floor grid. Read-only.",
   "license": "MIT",
-  "repository": "https://github.com/momokun7/orca-glb-viewer",
+  "repository": "https://github.com/momokun7/orca-3d-viewer",
   "engines": {
     "orca": ">=1.4.248"
   },

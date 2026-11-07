@@ -1,13 +1,13 @@
 <div align="center">
 
-# GLB Viewer for Orca
+# 3D Viewer for Orca
 
 **Look at 3D models without leaving your editor.**
 
-A read-only GLB viewer for [Orca](https://github.com/stablyai/orca): orbit, play animations, and see
+A read-only 3D model viewer for [Orca](https://github.com/stablyai/orca): orbit, play animations, and see
 at a glance whether a model is the size you think it is.
 
-[![CI](https://github.com/momokun7/orca-glb-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-glb-viewer/actions/workflows/ci.yml)
+[![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
 [![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#security)
@@ -15,7 +15,7 @@ at a glance whether a model is the size you think it is.
 [Features](#features) · [Install](#install) · [Usage](#usage) · [Limits](#limits) ·
 [Security](#security) · [Development](#development)
 
-<img alt="The Stanford Bunny shown in GLB Viewer inside Orca, sitting on a floor grid with its size, 156 × 154 × 121 mm, in the status bar" src="docs/images/hero.png" width="800">
+<img alt="The Stanford Bunny shown in 3D Viewer inside Orca, sitting on a floor grid with its size, 156 × 154 × 121 mm, in the status bar" src="docs/images/hero.png" width="800">
 
 </div>
 
@@ -88,7 +88,7 @@ follows Orca's language (English and Japanese).
 2. On the **Git URL** tab, enter:
 
    ```text
-   https://github.com/momokun7/orca-glb-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.0
    ```
 
 3. Choose **Install**. The viewer asks for no permissions, so there is nothing else to grant.
