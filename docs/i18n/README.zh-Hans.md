@@ -17,13 +17,21 @@
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
 [![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#安全性)
 
-[支持的格式](#支持的格式) · [功能](#功能) · [安装](#安装) · [使用方法](#使用方法) ·
+[快速开始](#快速开始) · [支持的格式](#支持的格式) · [功能](#功能) · [安装](#安装) · [使用方法](#使用方法) ·
 [故障排除](#故障排除) · [安全性](#安全性) · [开发](#开发) ·
 [报告错误](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
 <img alt="Orca 中的 3D Viewer 显示坐在地面网格上的 Stanford Bunny，状态栏显示其尺寸 156 × 154 × 121 mm" src="../images/hero.png" width="800">
 
 </div>
+
+## 快速开始
+
+1. 在 Orca 中打开 **设置 → 插件 → 安装插件**，在 **Git URL** 选项卡中输入 `https://github.com/momokun7/orca-3d-viewer#v1.0.0`，然后选择 **安装**。
+2. 打开 `.glb`、`.gltf`、`.stl`、`.ply`、`.obj`、`.fbx` 中任意一种文件。
+3. 拖动以旋转，滚动滚轮以缩放。
+
+不需要任何权限。详情请参阅 [安装](#安装) 和 [使用方法](#使用方法)。
 
 ## 支持的格式
 
