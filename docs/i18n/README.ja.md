@@ -245,15 +245,15 @@ Issue・ラベル・プロジェクトボード・マイルストーン・PR の
 
 [MIT](../../LICENSE)。同梱している three.js、meshoptimizer、fflate、Lucide(MIT / ISC)と Draco のデコーダー(Apache-2.0)は、それぞれのライセンスに従います。[THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt) を見てください。
 
-画像と GIF に使ったモデルは、次のところからお借りしています。どのモデルも、形式の変換・色付け(3DBenchy・アルマジロ・ティーポットの色は、私たちがファイルに書き込んだもの)・向きの調整は、私たちが行いました。
+画像と GIF、プラグインのアイコン、Orca のプラグインのページの画像に使ったモデルは、次のところからお借りしています。どのモデルも、形式の変換・色付け(3DBenchy・アルマジロ・ティーポットの色は、私たちがファイルに書き込んだもの)・向きの調整は、私たちが行いました。
 
 | モデル | 使った場所 | 出典 | ライセンス |
 | --- | --- | --- | --- |
-| Stanford Bunny | 一番上の画像、機能の GIF | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/)。Source: Stanford University Computer Graphics Laboratory | 出典を書いて、商用以外で使える |
+| Stanford Bunny | 一番上の画像、機能の GIF、プラグインのアイコン、プラグインのページ | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/)。Source: Stanford University Computer Graphics Laboratory | 出典を書いて、商用以外で使える |
 | Stanford Armadillo | PLY | 同上 | 同上 |
-| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)。元のモデルは MaterialX Project、glTF への変換は Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| A Beautiful Game | GLB、プラグインのページ | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)。元のモデルは MaterialX Project、glTF への変換は Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Corset | glTF | Khronos glTF Sample Assets、Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| BoomBox | FBX | Khronos glTF Sample Assets、Microsoft | CC0 1.0 |
+| BoomBox | FBX、プラグインのページ | Khronos glTF Sample Assets、Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/)、Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data)、Martin Newell(1975)、Kenzie Lamar | CC0 |
-| Fox | アニメーションの GIF | Khronos glTF Sample Assets。モデルは PixelMannen(CC0 1.0)、骨組みと動きは tomkranis、glTF への変換は @AsoboStudio と @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | アニメーションの GIF、プラグインのページ | Khronos glTF Sample Assets。モデルは PixelMannen(CC0 1.0)、骨組みと動きは tomkranis、glTF への変換は @AsoboStudio と @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

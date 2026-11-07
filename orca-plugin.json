@@ -8,6 +8,29 @@
   "description": "Preview 3D models in Orca's editor: GLB and glTF, STL, PLY, OBJ and FBX. Orbit, zoom and pan, play animations, and check the model's real-world size on a floor grid. Read-only.",
   "license": "MIT",
   "repository": "https://github.com/momokun7/orca-3d-viewer",
+  "icon": "assets/icon.png",
+  "screenshots": [
+    {
+      "path": "docs/images/plugin-page/bunny.png",
+      "alt": "The Stanford Bunny on a floor grid, with the status bar reading 156 × 154 × 121 mm and Grid 10 mm",
+      "caption": "Real-world size on a floor grid"
+    },
+    {
+      "path": "docs/images/plugin-page/chess.png",
+      "alt": "A textured chess set on a marble board, opened from a GLB file",
+      "caption": "Textures and materials from glTF"
+    },
+    {
+      "path": "docs/images/plugin-page/fox.png",
+      "alt": "A low-poly fox with its Survey animation chosen in the clip menu",
+      "caption": "Animations with a clip menu"
+    },
+    {
+      "path": "docs/images/plugin-page/dark.png",
+      "alt": "A boombox opened from an FBX file, shown with the dark theme",
+      "caption": "FBX, STL, PLY and OBJ too, in light or dark"
+    }
+  ],
   "engines": {
     "orca": ">=1.4.248"
   },

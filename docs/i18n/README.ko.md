@@ -270,16 +270,16 @@ npm run build
 [MIT](../../LICENSE). 번들에 포함된 three.js, meshoptimizer, fflate, Lucide(MIT / ISC)와 Draco 디코더
 (Apache-2.0)는 각각의 라이선스를 따릅니다. [THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt)를 참고하세요.
 
-이미지와 GIF에 나오는 모델의 출처는 아래와 같습니다. 모든 사본은 형식 변환, 색상, 방향을 저희가 손보았습니다
+이미지와 GIF, 플러그인 아이콘, Orca 플러그인 페이지의 이미지에 나오는 모델의 출처는 아래와 같습니다. 모든 사본은 형식 변환, 색상, 방향을 저희가 손보았습니다
 (3DBenchy, Armadillo, Teapot의 색상은 저희가 파일에 직접 기록한 것입니다).
 
 | 모델 | 사용한 곳 | 출처 | 라이선스 |
 | --- | --- | --- | --- |
-| Stanford Bunny | 대표 이미지, 기능 GIF | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | 출처를 밝히면 비상업적 용도로 무료 사용 가능 |
+| Stanford Bunny | 대표 이미지, 기능 GIF, 플러그인 아이콘, 플러그인 페이지 | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | 출처를 밝히면 비상업적 용도로 무료 사용 가능 |
 | Stanford Armadillo | PLY | 위와 같음 | 위와 같음 |
-| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). 원본 모델은 MaterialX Project, glTF 변환은 Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| A Beautiful Game | GLB, 플러그인 페이지 | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). 원본 모델은 MaterialX Project, glTF 변환은 Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Corset | glTF | Khronos glTF Sample Assets, Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| BoomBox | FBX | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
+| BoomBox | FBX, 플러그인 페이지 | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell(1975), Kenzie Lamar | CC0 |
-| Fox | 애니메이션 GIF | Khronos glTF Sample Assets. 모델은 PixelMannen(CC0 1.0), 리깅과 애니메이션은 tomkranis, glTF 변환은 @AsoboStudio와 @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | 애니메이션 GIF, 플러그인 페이지 | Khronos glTF Sample Assets. 모델은 PixelMannen(CC0 1.0), 리깅과 애니메이션은 tomkranis, glTF 변환은 @AsoboStudio와 @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

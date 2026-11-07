@@ -284,16 +284,16 @@ taslağı makineyle hazırlandı; anadili bu dillerden biri olanların düzeltme
 [MIT](../../LICENSE). Pakete dahil edilen three.js, meshoptimizer, fflate ve Lucide (MIT / ISC) ile Draco kod
 çözücüsü (Apache-2.0) kendi lisanslarına tabidir; bkz. [THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt).
 
-Görsellerdeki ve GIF'lerdeki modeller aşağıdaki kaynaklardan alınmıştır. Tüm kopyalarda biçim dönüştürme, renkler
+Görsellerdeki ve GIF'lerdeki, eklenti simgesindeki ve Orca'daki eklenti sayfasının görsellerindeki modeller aşağıdaki kaynaklardan alınmıştır. Tüm kopyalarda biçim dönüştürme, renkler
 (3DBenchy, Armadillo ve Teapot'un renklerini dosyaya biz yazdık) ve yönlendirme bize aittir.
 
 | Model | Kullanıldığı yer | Kaynak | Lisans |
 | --- | --- | --- | --- |
-| Stanford Bunny | Ana görsel, özellik GIF'leri | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | Kaynak gösterilmek koşuluyla ticari olmayan kullanım için ücretsiz |
+| Stanford Bunny | Ana görsel, özellik GIF'leri, eklenti simgesi, eklenti sayfası | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | Kaynak gösterilmek koşuluyla ticari olmayan kullanım için ücretsiz |
 | Stanford Armadillo | PLY | Yukarıdakiyle aynı | Yukarıdakiyle aynı |
-| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). Özgün model: MaterialX Project, glTF'e dönüştürme: Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| A Beautiful Game | GLB, eklenti sayfası | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). Özgün model: MaterialX Project, glTF'e dönüştürme: Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Corset | glTF | Khronos glTF Sample Assets, Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| BoomBox | FBX | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
+| BoomBox | FBX, eklenti sayfası | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell (1975), Kenzie Lamar | CC0 |
-| Fox | Animasyon GIF'i | Khronos glTF Sample Assets. Model: PixelMannen (CC0 1.0), rig ve animasyon: tomkranis, glTF'e dönüştürme: @AsoboStudio ve @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | Animasyon GIF'i, eklenti sayfası | Khronos glTF Sample Assets. Model: PixelMannen (CC0 1.0), rig ve animasyon: tomkranis, glTF'e dönüştürme: @AsoboStudio ve @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

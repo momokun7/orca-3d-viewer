@@ -268,16 +268,16 @@ npm run build
 [MIT](../../LICENSE)。隨附的 three.js、meshoptimizer、fflate、Lucide（MIT / ISC）以及 Draco 解碼器
 （Apache-2.0）各自沿用原本的授權條款，詳見 [THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt)。
 
-圖片與 GIF 中使用的模型來源如下。所有副本的格式轉換、顏色（3DBenchy、Armadillo 與 Teapot 的顏色是我們寫入檔案的）
+圖片與 GIF、外掛圖示以及 Orca 外掛頁面圖片中使用的模型來源如下。所有副本的格式轉換、顏色（3DBenchy、Armadillo 與 Teapot 的顏色是我們寫入檔案的）
 以及方向，皆經過我們修改。
 
 | 模型 | 用於 | 來源 | 授權 |
 | --- | --- | --- | --- |
-| Stanford Bunny | 主視覺圖、功能示範 GIF | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/)。Source: Stanford University Computer Graphics Laboratory | 註明出處即可免費用於非商業用途 |
+| Stanford Bunny | 主視覺圖、功能示範 GIF、外掛圖示、外掛頁面 | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/)。Source: Stanford University Computer Graphics Laboratory | 註明出處即可免費用於非商業用途 |
 | Stanford Armadillo | PLY | 同上 | 同上 |
-| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)。原始模型由 MaterialX Project 製作，Ed Mackey 轉換為 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| A Beautiful Game | GLB、外掛頁面 | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)。原始模型由 MaterialX Project 製作，Ed Mackey 轉換為 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Corset | glTF | Khronos glTF Sample Assets，Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| BoomBox | FBX | Khronos glTF Sample Assets，Microsoft | CC0 1.0 |
+| BoomBox | FBX、外掛頁面 | Khronos glTF Sample Assets，Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/)，Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data)，Martin Newell（1975），Kenzie Lamar | CC0 |
-| Fox | 動畫 GIF | Khronos glTF Sample Assets。模型由 PixelMannen 製作（CC0 1.0），骨架綁定與動畫由 tomkranis 製作，@AsoboStudio 與 @scurest 轉換為 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | 動畫 GIF、外掛頁面 | Khronos glTF Sample Assets。模型由 PixelMannen 製作（CC0 1.0），骨架綁定與動畫由 tomkranis 製作，@AsoboStudio 與 @scurest 轉換為 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
