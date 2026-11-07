@@ -43,3 +43,7 @@ run = [
 [tasks.rulesets]
 description = "Apply .github/rulesets to GitHub (needs a public repository or GitHub Pro)"
 run = "node tools/apply-rulesets.ts"
+
+[tasks.labels]
+description = "Apply .github/labels.json to GitHub's labels (creates and updates; never deletes)"
+run = "node tools/apply-labels.ts"
