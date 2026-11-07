@@ -12,6 +12,7 @@ import { createTranslate } from './messages.ts'
 import { modelFormat } from './model-format.ts'
 import { createModelStage, type ModelStage, type ModelSummary } from './model-scene.ts'
 import { editorFrame, type OrcaDocument } from './orca-editor-host.ts'
+import { beginLoad, diagnosticsReport, endStep, finishLoad, type LoadRecord, noteError, noteMessage } from './viewer-diagnostics.ts'
 import { createViewerUi } from './viewer-ui.ts'
 
 // Console prefixes the tests tell apart: a file the viewer refused, and a failure of the viewer itself.
@@ -26,7 +27,19 @@ const root = document.getElementById('app')
 if (!root) {
   throw new Error('index.html has no #app element')
 }
-const ui = createViewerUi(root, t, locale)
+const ui = createViewerUi(root, t, locale, () => diagnosticsReport({ locale, ...graphicsInfo() }))
+
+/** The GPU and its texture limit, for the Details panel; null until the 3D view has started. */
+function graphicsInfo(): { graphics: string | null; maxTextureSize: number | null } {
+  if (!stage) return { graphics: null, maxTextureSize: null }
+  const gl = stage.renderer.getContext()
+  const info = gl.getExtension('WEBGL_debug_renderer_info')
+  const graphics = String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER))
+  return { graphics, maxTextureSize: Number(gl.getParameter(gl.MAX_TEXTURE_SIZE)) || null }
+}
+
+addEventListener('error', (event) => noteError('uncaught', event.error ?? event.message))
+addEventListener('unhandledrejection', (event) => noteError('uncaught', event.reason))
 
 let stage: ModelStage | null = null
 let shownVersion: number | null = null
@@ -110,7 +123,10 @@ function refusalMessage(refusal: Refusal): string {
 
 function stageFor(): ModelStage {
   stage ??= createModelStage(ui.viewport, {
-    onContextLost: () => ui.showError(t('contextLost')),
+    onContextLost: () => {
+      noteError('graphics', 'the WebGL context was lost')
+      ui.showError(t('contextLost'))
+    },
     onContextRestored: () => {
       if (stage && lastShown) showModel(lastShown.summary, stage, shownNotices, true)
     }
@@ -120,7 +136,14 @@ function stageFor(): ModelStage {
 
 /** Shows why `version` failed: over the last good model when there is one, else in its place. */
 function fail(message: string, log: string | null, error: unknown): void {
-  if (log) console.error(log, error)
+  if (log) {
+    console.error(log, error)
+    noteError(log === PARSE_FAILURE_LOG ? 'parse' : 'render', error)
+  }
+  if (currentLoad) {
+    finishLoad(currentLoad, 'failed')
+    noteMessage(currentLoad, message)
+  }
   if (stage && lastShown) {
     showModel(lastShown.summary, stage, [t('laterSaveFailed', { reason: message }), ...lastShown.notices], true)
     return
@@ -137,16 +160,20 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
 
   const data = modelData(orcaDocument.content)
   const format = modelFormat(orcaDocument.fileType, data)
+  const record = beginLoad(orcaDocument.version, format, typeof data === 'string' ? data.length : data.byteLength)
+  currentLoad = record
   abortLoad = new AbortController()
   let checked: Awaited<ReturnType<typeof checkModelOffThread>>
   try {
     checked = await checkModelOffThread(format, data, { signal: abortLoad.signal })
+    endStep(record, 'check')
   } catch (error) {
-    if (error instanceof ParseAbortedError) return
+    if (error instanceof ParseAbortedError) return finishLoad(record, REPLACED)
     fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
     return
   }
   if (checked.refusal) {
+    finishLoad(record, `refused ${JSON.stringify(checked.refusal)}`)
     fail(refusalMessage(checked.refusal), null, null)
     return
   }
@@ -181,7 +208,7 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
     }
   } catch (error) {
     // Why silent: a newer document is already waiting to load.
-    if (error instanceof ParseAbortedError) return
+    if (error instanceof ParseAbortedError) return finishLoad(record, REPLACED)
     fail(t(error instanceof ParseTimeoutError ? 'parseTimeout' : 'parseFailed'), PARSE_FAILURE_LOG, error)
     return
   } finally {
@@ -190,8 +217,10 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
     if (decodedBytes() > LARGE_DECODE_BYTES) stopDecoders()
   }
 
+  endStep(record, 'parse')
   const excess = loadedModelExcess(model.scene, model.animations)
   if (excess) {
+    finishLoad(record, `refused after loading: ${excess.what} ${excess.value} > ${excess.limit}`)
     disposeObjectTree(model.scene)
     fail(t('tooLargeLoaded', { what: `${excess.what} ${count(excess.value)} > ${count(excess.limit)}` }), null, null)
     return
@@ -203,6 +232,15 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
       notices.push(t('otherScenes', { count: count(summary.otherSceneCount) }, summary.otherSceneCount))
     }
     showModel(summary, target, notices, replacing)
+    endStep(record, 'show')
+    const { stats, dimensions } = summary
+    const extensions = Array.isArray(gltf?.extensionsUsed) ? gltf.extensionsUsed.filter((name) => typeof name === 'string').slice(0, 12) : []
+    finishLoad(
+      record,
+      `shown: ${stats.vertices} vertices, ${stats.triangles} triangles, ${stats.drawCalls} draw calls, ` +
+        `${summary.animationNames.length} clips, ${[dimensions.width, dimensions.height, dimensions.depth].map((m) => m.toPrecision(3)).join(' x ')} m` +
+        (extensions.length > 0 ? `, extensions ${extensions.join(' ')}` : '')
+    )
     // Why autoplay: a still frame cannot show whether the clips were exported at all.
     target.playAnimation(0)
     lastShown = { summary, notices }
@@ -215,6 +253,8 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
 let loading = false
 let pending: OrcaDocument | null = null
 let abortLoad: AbortController | null = null
+let currentLoad: LoadRecord | null = null
+const REPLACED = 'replaced by a newer save'
 // Decoding more than this in one parse restarts the decoder workers afterwards, to give the memory back.
 const LARGE_DECODE_BYTES = 64 * 1024 * 1024
 

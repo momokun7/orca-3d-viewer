@@ -1,0 +1,16 @@
+name: Feature request
+description: A format, a tool or a behaviour you would like the viewer to have.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What you want to do
+      description: The task you have in mind, and what gets in the way today.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How it could work
+      description: Optional. Keep in mind that the viewer is read-only and asks Orca for no permissions.

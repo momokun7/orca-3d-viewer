@@ -23,9 +23,9 @@ describe('STL, PLY, OBJ and FBX', () => {
   for (const [name, content, size, notice] of [
     ['a binary STL, in millimetres and Z-up', bytes('.stl', binaryStl()), '1 × 0 × 1 mm', null],
     ['a text STL', bytes('.stl', asciiStl()), '1 × 0 × 1 mm', null],
-    ['a text PLY, in meters', bytes('.ply', asciiPly()), '1 × 1 × 0 m', /no unit/],
-    ['a binary PLY', bytes('.ply', binaryPly()), '1 × 1 × 0 m', /no unit/],
-    ['an OBJ', { text: obj(), fileType: '.obj' }, '1 × 1 × 0 m', /no unit/],
+    ['a text PLY, in meters', bytes('.ply', asciiPly()), '1 × 1 × 0 m', /no units/],
+    ['a binary PLY', bytes('.ply', binaryPly()), '1 × 1 × 0 m', /no units/],
+    ['an OBJ', { text: obj(), fileType: '.obj' }, '1 × 1 × 0 m', /no units/],
     ['an FBX in its own unit, centimetres', bytes('.fbx', fbxTriangle({ compress: true })), '10 × 10 × 0 mm', null],
     ['an FBX in meters', bytes('.fbx', fbxTriangle({ unitScale: 100, version: 7500 })), '1 × 1 × 0 m', null]
   ] as const) {
@@ -40,6 +40,7 @@ describe('STL, PLY, OBJ and FBX', () => {
     })
   }
 
+<<<<<<< HEAD
   it('shows an FBX texture that finishes loading after the parse', async () => {
     // Why large: a big image decodes after FBXLoader returns, which is what left textures blank.
     const state = await frame.open(bytes('.fbx', fbxTexturedSquare(solidPng(2048, 2048, [0, 160, 0]))))
@@ -49,6 +50,15 @@ describe('STL, PLY, OBJ and FBX', () => {
     const [red, green, blue] = await frame.pixel(Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2))
     assert.ok(green > 100 && red < 100 && blue < 100, `expected green, got ${red}, ${green}, ${blue}`)
     assertContained(await frame.report())
+=======
+  it('shows the colours a file stores as they are, not mixed with the default surface', async () => {
+    const square = ['v 0 0 0 1 0 0', 'v 1 0 0 1 0 0', 'v 1 1 0 1 0 0', 'v 0 1 0 1 0 0', 'f 1 2 3', 'f 1 3 4'].join('\n')
+    assert.equal((await frame.open({ text: square, fileType: '.obj' })).kind, 'model')
+    const box = await frame.page.locator('.viewport canvas').boundingBox()
+    assert.ok(box)
+    const [red, green, blue] = await frame.pixel(Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2))
+    assert.ok(red > 200 && green < 150 && blue < 150, `expected red, got ${red}, ${green}, ${blue}`)
+>>>>>>> origin/main
   })
 
   it('says an OBJ material file is not shown', async () => {
