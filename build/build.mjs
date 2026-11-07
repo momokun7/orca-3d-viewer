@@ -39,7 +39,10 @@ const workerSource = Buffer.from(worker.outputFiles[0].contents).toString()
 
 const result = await build({
   entryPoints: { main: path.join(HERE, 'src', 'main.ts') },
-  define: { MODEL_CHECK_WORKER_SOURCE: JSON.stringify(workerSource) },
+  define: {
+    MODEL_CHECK_WORKER_SOURCE: JSON.stringify(workerSource),
+    VIEWER_VERSION: JSON.stringify(JSON.parse(readFileSync(path.join(PLUGIN, 'orca-plugin.json'), 'utf8')).version)
+  },
   bundle: true,
   splitting: true,
   write: false,

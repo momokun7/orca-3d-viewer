@@ -1,4 +1,4 @@
-import { Axis3d, Box, createElement, Grid3x3, type IconNode, Moon, Pause, Play, RotateCcw } from 'lucide'
+import { Axis3d, Box, createElement, Grid3x3, type IconNode, Info, Moon, Pause, Play, RotateCcw } from 'lucide'
 import { cleanName, formatCount, lengthFormat } from './display-format.ts'
 import type { Translate } from './messages.ts'
 import type { ModelSummary } from './model-scene.ts'
@@ -41,7 +41,8 @@ function toolButton(iconNode: IconNode, title: string): HTMLButtonElement {
   return element('button', { type: 'button', className: 'tool', title, ariaLabel: title }, [icon(iconNode)])
 }
 
-export function createViewerUi(root: HTMLElement, t: Translate, locale: string): ViewerUi {
+/** `report` builds the Details panel's text when the panel opens. */
+export function createViewerUi(root: HTMLElement, t: Translate, locale: string, report: () => string): ViewerUi {
   const animationLabel = (name: string | undefined, index: number): string =>
     cleanName(name ?? '') || t('animationFallback', { index: index + 1 })
 
@@ -49,7 +50,8 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   const viewport = element('div', { className: 'viewport', role: 'group', ariaLabel: t('loading') })
   const overlayIcon = element('span', { className: 'overlay-icon' })
   const overlayText = element('p')
-  const overlay = element('div', { className: 'overlay' }, [overlayIcon, overlayText])
+  const overlayDetails = element('button', { type: 'button', className: 'text-button', textContent: t('details'), hidden: true })
+  const overlay = element('div', { className: 'overlay' }, [overlayIcon, overlayText, overlayDetails])
   // Why a status region: a later save that failed must be announced, not only shown.
   const notice = element('div', { className: 'notice', role: 'status', hidden: true })
 
@@ -57,6 +59,7 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   const wireframe = toolButton(Grid3x3, t('wireframe'))
   const guides = toolButton(Axis3d, t('guides'))
   const theme = toolButton(Moon, t('darkTheme'))
+  const detailsButton = toolButton(Info, t('details'))
   const play = element('button', { type: 'button', className: 'tool' })
   const animationSelect = element('select', { className: 'select', ariaLabel: t('animation') })
   const animationName = element('span', { className: 'clip-name' })
@@ -66,14 +69,52 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
   const gridCell = element('span', { className: 'figure' })
   const pending = element('span', { className: 'pending', role: 'status', hidden: true })
   const toolbar = element('footer', { className: 'toolbar' }, [
-    element('div', { className: 'group' }, [reset, wireframe, guides, theme]),
+    element('div', { className: 'group' }, [reset, wireframe, guides, theme, detailsButton]),
     animationGroup,
     stats,
     dimensions,
     gridCell,
     pending
   ])
-  root.replaceChildren(element('div', { className: 'stage' }, [viewport, overlay]), notice, toolbar)
+  const detailsText = element('textarea', { className: 'details-text', readOnly: true, spellcheck: false, ariaLabel: t('detailsTitle') })
+  const copyButton = element('button', { type: 'button', className: 'text-button', textContent: t('copyDetails') })
+  const closeButton = element('button', { type: 'button', className: 'text-button', textContent: t('close') })
+  const copyStatus = element('span', { className: 'copy-status', role: 'status' })
+  const details = element('div', { className: 'details', role: 'dialog', ariaLabel: t('detailsTitle'), hidden: true }, [
+    element('strong', { textContent: t('detailsTitle') }),
+    element('p', { textContent: t('detailsNote') }),
+    detailsText,
+    element('div', { className: 'details-actions' }, [copyStatus, copyButton, closeButton])
+  ])
+  root.replaceChildren(element('div', { className: 'stage' }, [viewport, overlay, details]), notice, toolbar)
+
+  const openDetails = (): void => {
+    detailsText.value = report()
+    copyStatus.textContent = ''
+    details.hidden = false
+    detailsText.focus()
+  }
+  const closeDetails = (): void => {
+    details.hidden = true
+  }
+  detailsButton.addEventListener('click', () => (details.hidden ? openDetails() : closeDetails()))
+  overlayDetails.addEventListener('click', openDetails)
+  closeButton.addEventListener('click', closeDetails)
+  details.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeDetails()
+  })
+  copyButton.addEventListener('click', () => {
+    detailsText.focus()
+    detailsText.select()
+    // Why execCommand: Orca's frames refuse navigator.clipboard, and allow a copy inside a click.
+    let copied = false
+    try {
+      copied = document.execCommand('copy')
+    } catch {
+      copied = false
+    }
+    copyStatus.textContent = copied ? t('copied') : t('copyByHand')
+  })
 
   let actions: ViewerActions | null = null
   const saved = loadPreferences()
@@ -153,6 +194,7 @@ export function createViewerUi(root: HTMLElement, t: Translate, locale: string):
     overlay.classList.toggle('error', isError)
     overlayText.textContent = text
     overlayIcon.replaceChildren(...(isError ? [icon(Box, 40)] : []))
+    overlayDetails.hidden = !isError
     viewport.hidden = isError
     viewport.ariaLabel = text
   }

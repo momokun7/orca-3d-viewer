@@ -56,8 +56,22 @@ button, select { font: inherit; color: inherit; }
 .clip-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
 .figure { flex: none; font-variant-numeric: tabular-nums; }
 .pending { margin-left: auto; font-style: italic; }
+
+.text-button { padding: 3px 10px; border: 1px solid var(--input); border-radius: var(--radius); background: var(--bg); cursor: default; }
+.text-button:hover { background: var(--accent); color: var(--accent-fg); }
+.text-button:focus-visible { outline: 1px solid var(--ring); outline-offset: 1px; }
+.details { position: absolute; right: 12px; bottom: 12px; left: 12px; max-width: 640px; margin-left: auto; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); box-shadow: 0 4px 16px rgb(0 0 0 / 0.12); }
+.details p { margin: 0; color: var(--muted-fg); }
+.details-text { height: 200px; resize: vertical; padding: 8px; border: 1px solid var(--input); border-radius: var(--radius); background: var(--muted); color: var(--fg); font: 11px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre; }
+.details-text:focus { outline: none; border-color: var(--ring); }
+.details-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.copy-status { margin-right: auto; color: var(--muted-fg); }
 </style>
+<<<<<<< HEAD
 <script type="module" src="./assets/main-V23A2KVW.js"></script>
+=======
+<script type="module" src="./assets/main-IDE3BIXD.js"></script>
+>>>>>>> origin/main
 </head>
 <body>
 <div id="app"></div>

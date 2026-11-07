@@ -44,11 +44,16 @@ const CONTROL_CHARACTERS = /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu
 export const MAX_NAME_CHARACTERS = 80
 export const MAX_LISTED_NAMES = 3
 
+/** Text from the model, stripped of control characters and cut to `maxCharacters`. */
+export function cleanText(text: string, maxCharacters: number): string {
+  const clean = text.replace(CONTROL_CHARACTERS, '').trim()
+  const characters = [...clean]
+  return characters.length > maxCharacters ? `${characters.slice(0, maxCharacters - 1).join('')}…` : clean
+}
+
 /** A name from the model, stripped of control characters and cut to a readable length. */
 export function cleanName(name: string): string {
-  const clean = name.replace(CONTROL_CHARACTERS, '').trim()
-  const characters = [...clean]
-  return characters.length > MAX_NAME_CHARACTERS ? `${characters.slice(0, MAX_NAME_CHARACTERS - 1).join('')}…` : clean
+  return cleanText(name, MAX_NAME_CHARACTERS)
 }
 
 /** A cleaned name, quoted so it reads as the model's text rather than the viewer's. */

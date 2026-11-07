@@ -22,9 +22,9 @@ describe('STL, PLY, OBJ and FBX', () => {
   for (const [name, content, size, notice] of [
     ['a binary STL, in millimetres and Z-up', bytes('.stl', binaryStl()), '1 × 0 × 1 mm', null],
     ['a text STL', bytes('.stl', asciiStl()), '1 × 0 × 1 mm', null],
-    ['a text PLY, in meters', bytes('.ply', asciiPly()), '1 × 1 × 0 m', /no unit/],
-    ['a binary PLY', bytes('.ply', binaryPly()), '1 × 1 × 0 m', /no unit/],
-    ['an OBJ', { text: obj(), fileType: '.obj' }, '1 × 1 × 0 m', /no unit/],
+    ['a text PLY, in meters', bytes('.ply', asciiPly()), '1 × 1 × 0 m', /no units/],
+    ['a binary PLY', bytes('.ply', binaryPly()), '1 × 1 × 0 m', /no units/],
+    ['an OBJ', { text: obj(), fileType: '.obj' }, '1 × 1 × 0 m', /no units/],
     ['an FBX in its own unit, centimetres', bytes('.fbx', fbxTriangle({ compress: true })), '10 × 10 × 0 mm', null],
     ['an FBX in meters', bytes('.fbx', fbxTriangle({ unitScale: 100, version: 7500 })), '1 × 1 × 0 m', null]
   ] as const) {
