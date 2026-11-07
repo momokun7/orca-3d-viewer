@@ -268,16 +268,16 @@ npm run build
 [MIT](../../LICENSE)。随附打包的 three.js、meshoptimizer、fflate、Lucide（MIT / ISC）以及 Draco 解码器
 （Apache-2.0）各自沿用其原有许可证，详见 [THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt)。
 
-图片和 GIF 中使用的模型来源如下。所有副本的格式转换、颜色（3DBenchy、Armadillo 和 Teapot 的颜色是我们写入文件的）
+图片和 GIF、插件图标以及 Orca 插件页面图片中使用的模型来源如下。所有副本的格式转换、颜色（3DBenchy、Armadillo 和 Teapot 的颜色是我们写入文件的）
 以及朝向均经过我们的修改。
 
 | 模型 | 用于 | 来源 | 许可证 |
 | --- | --- | --- | --- |
-| Stanford Bunny | 头图、功能演示 GIF | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/)。Source: Stanford University Computer Graphics Laboratory | 注明出处即可免费用于非商业用途 |
+| Stanford Bunny | 头图、功能演示 GIF、插件图标、插件页面 | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/)。Source: Stanford University Computer Graphics Laboratory | 注明出处即可免费用于非商业用途 |
 | Stanford Armadillo | PLY | 同上 | 同上 |
-| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)。原始模型由 MaterialX Project 制作，Ed Mackey 转换为 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| A Beautiful Game | GLB、插件页面 | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)。原始模型由 MaterialX Project 制作，Ed Mackey 转换为 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Corset | glTF | Khronos glTF Sample Assets，Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| BoomBox | FBX | Khronos glTF Sample Assets，Microsoft | CC0 1.0 |
+| BoomBox | FBX、插件页面 | Khronos glTF Sample Assets，Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/)，Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data)，Martin Newell（1975），Kenzie Lamar | CC0 |
-| Fox | 动画 GIF | Khronos glTF Sample Assets。模型由 PixelMannen 制作（CC0 1.0），骨骼绑定和动画由 tomkranis 制作，@AsoboStudio 和 @scurest 转换为 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | 动画 GIF、插件页面 | Khronos glTF Sample Assets。模型由 PixelMannen 制作（CC0 1.0），骨骼绑定和动画由 tomkranis 制作，@AsoboStudio 和 @scurest 转换为 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

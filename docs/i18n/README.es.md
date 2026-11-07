@@ -271,16 +271,16 @@ agradeceremos mucho las correcciones de hablantes nativos.
 [MIT](../../LICENSE). Los componentes incluidos en el paquete (three.js, meshoptimizer, fflate y Lucide, con licencia MIT / ISC,
 y el decodificador Draco, con licencia Apache-2.0) mantienen sus propias licencias; consulta [THIRD_PARTY_NOTICES.txt](../../THIRD_PARTY_NOTICES.txt).
 
-Los modelos que aparecen en las imágenes y los GIF proceden de las fuentes que se indican abajo. En todos ellos, la conversión de formato,
+Los modelos que aparecen en las imágenes y los GIF, en el icono del plugin y en las imágenes de la página del plugin en Orca proceden de las fuentes que se indican abajo. En todos ellos, la conversión de formato,
 los colores (los de 3DBenchy, el Armadillo y la tetera los añadimos nosotros al archivo) y la orientación son modificaciones nuestras.
 
 | Modelo | Dónde aparece | Fuente | Licencia |
 | --- | --- | --- | --- |
-| Stanford Bunny | Imagen principal, GIF de funciones | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | Uso no comercial libre, citando la fuente |
+| Stanford Bunny | Imagen principal, GIF de funciones, icono del plugin, página del plugin | [Stanford 3D Scanning Repository](https://graphics.stanford.edu/data/3Dscanrep/). Source: Stanford University Computer Graphics Laboratory | Uso no comercial libre, citando la fuente |
 | Stanford Armadillo | PLY | Igual que el anterior | Igual que el anterior |
-| A Beautiful Game | GLB | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). Modelo original del MaterialX Project, convertido a glTF por Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| A Beautiful Game | GLB, página del plugin | Khronos [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). Modelo original del MaterialX Project, convertido a glTF por Ed Mackey | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | Corset | glTF | Khronos glTF Sample Assets, Microsoft | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| BoomBox | FBX | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
+| BoomBox | FBX, página del plugin | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell (1975), Kenzie Lamar | CC0 |
-| Fox | GIF de animación | Khronos glTF Sample Assets. Modelo de PixelMannen (CC0 1.0), rigging y animación de tomkranis, convertido a glTF por @AsoboStudio y @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Fox | GIF de animación, página del plugin | Khronos glTF Sample Assets. Modelo de PixelMannen (CC0 1.0), rigging y animación de tomkranis, convertido a glTF por @AsoboStudio y @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
