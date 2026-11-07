@@ -24,27 +24,64 @@ at a glance whether a model is the size you think it is.
 
 ## Features
 
-|     |     |
-| --- | --- |
-| **Look around** | Orbit, zoom and pan; reset the view in one click. |
-| **Real-world size** | A floor grid, X / Y / Z axes and the width × height × depth, so a model authored in the wrong unit stands out at once. |
-| **Animations** | Play and pause, and pick a clip when the model has several. |
-| **Inspect** | Wireframe view, with vertex and triangle counts. |
-| **Compressed models** | Draco and Meshopt geometry, KTX2 / Basis Universal textures. |
-| **Stays current** | Shows the latest save as the file changes. |
-| **Feels native** | Follows Orca's light and dark themes, in English and Japanese. |
-| **Hands off** | Read-only and sandboxed: it never changes the file, and asks Orca for no permissions. |
+### Look around
 
 <table>
   <tr>
-    <td width="50%"><img alt="A toy car on a draped cloth, 73.4 × 28.8 × 74 mm on a 10 mm grid" src="docs/images/toy-car.png"></td>
-    <td width="50%"><img alt="A boom box in the dark theme: 19.8 × 19.5 × 20.2 mm, far smaller than a real one" src="docs/images/boom-box.png"></td>
+    <td width="50%"><img alt="Dragging with the left mouse button orbits the camera around a sofa chair" src="docs/images/features/orbit.gif"></td>
+    <td width="50%"><img alt="Right-dragging, then Shift plus left-dragging, slides the view across the chair" src="docs/images/features/pan.gif"></td>
   </tr>
   <tr>
-    <td align="center"><sub>A toy car, measured in millimeters</sub></td>
-    <td align="center"><sub>A 2 cm boom box: the unit slip shows right away</sub></td>
+    <td align="center"><b>Orbit</b>: drag</td>
+    <td align="center"><b>Pan</b>: right-drag, or Shift + drag</td>
+  </tr>
+  <tr>
+    <td width="50%"><img alt="Scrolling the mouse wheel zooms in on the chair and back out" src="docs/images/features/zoom.gif"></td>
+    <td width="50%"><img alt="After the view is turned upside down, clicking the reset button brings the chair back to the starting view" src="docs/images/features/reset.gif"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Zoom</b>: scroll</td>
+    <td align="center"><b>Reset the view</b>: the first toolbar button</td>
   </tr>
 </table>
+
+### Real-world size
+
+A floor grid, X / Y / Z axes and the model's width × height × depth, so a model authored in the
+wrong unit stands out at once. This boom box is 2 cm wide.
+
+<img alt="A boom box on a 10 mm grid; the status bar reads 19.8 × 19.5 × 20.2 mm, then Grid 10 mm" src="docs/images/features/size.gif" width="600">
+
+### Wireframe, grid and axes
+
+Show the mesh as a wireframe, or hide the grid and axes. Vertex and triangle counts sit in the
+status bar.
+
+<img alt="Clicking the wireframe button shows the chair's mesh, then the grid and axes button hides the floor grid" src="docs/images/features/inspect.gif" width="600">
+
+### Animations
+
+Play and pause, and pick a clip when the model has several.
+
+<img alt="A fox plays its Survey clip, switches to Run from the clip menu, then pauses and plays again" src="docs/images/features/animations.gif" width="600">
+
+### Stays current
+
+Save the file and the view shows the new version, keeping your camera where it was.
+
+<img alt="Each time the file is saved with Ctrl + S, the chair's fabric changes color in place" src="docs/images/features/live.gif" width="600">
+
+### Follows Orca's theme
+
+Light and dark, along with Orca's language (English and Japanese).
+
+<img alt="The viewer switches from Orca's dark theme to light and back" src="docs/images/features/theme.gif" width="600">
+
+### Also
+
+- **Compressed models**: Draco and Meshopt geometry, KTX2 / Basis Universal textures.
+- **Hands off**: read-only and sandboxed. It never changes the file, and asks Orca for no
+  permissions.
 
 ## Install
 
@@ -125,6 +162,9 @@ folder under **Settings → Plugins → Development folders**.
 [MIT](LICENSE). The bundled three.js, meshoptimizer and Lucide (MIT / ISC) and the Draco decoder
 (Apache-2.0) keep their own licenses; see [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt).
 
-The models in the screenshots are SheenChair, ToyCar and BoomBox from Khronos'
-[glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets), released under
-[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+The models in the screenshots come from Khronos'
+[glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). SheenChair and BoomBox
+are released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/); the copy of
+SheenChair with blue fabric is our edit. Fox: model by PixelMannen (CC0 1.0), rigging and animation
+by tomkranis, and conversion to glTF by @AsoboStudio and @scurest, both under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
