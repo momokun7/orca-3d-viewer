@@ -17,13 +17,21 @@ Gira alrededor de un modelo, reproduce sus animaciones y comprueba de un vistazo
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
 [![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#seguridad)
 
-[Formatos](#formatos) · [Funciones](#funciones) · [Instalación](#instalación) · [Uso](#uso) ·
+[Inicio rápido](#inicio-rápido) · [Formatos](#formatos) · [Funciones](#funciones) · [Instalación](#instalación) · [Uso](#uso) ·
 [Solución de problemas](#solución-de-problemas) · [Seguridad](#seguridad) · [Desarrollo](#desarrollo) ·
 [Informar de un error](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
 <img alt="El Stanford Bunny en 3D Viewer dentro de Orca, sobre una cuadrícula de suelo, con su tamaño, 156 × 154 × 121 mm, en la barra de estado" src="../images/hero.png" width="800">
 
 </div>
+
+## Inicio rápido
+
+1. En Orca, abre **Ajustes → Plugins → Instalar plugin**, escribe `https://github.com/momokun7/orca-3d-viewer#v1.0.0` en la pestaña **Git URL** y elige **Instalar**.
+2. Abre un archivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` u `.fbx`.
+3. Arrastra para girar y usa la rueda para acercarte.
+
+No pide ningún permiso. Consulta [Instalación](#instalación) y [Uso](#uso) para más detalles.
 
 ## Formatos
 

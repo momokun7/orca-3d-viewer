@@ -17,13 +17,21 @@ Orbit around a model, play its animations, and see at a glance whether it is the
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
 [![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#security)
 
-[Formats](#formats) · [Features](#features) · [Install](#install) · [Usage](#usage) ·
+[Quick start](#quick-start) · [Formats](#formats) · [Features](#features) · [Install](#install) · [Usage](#usage) ·
 [Troubleshooting](#troubleshooting) · [Security](#security) · [Development](#development) ·
 [Report a bug](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
 <img alt="The Stanford Bunny in 3D Viewer inside Orca, sitting on a floor grid, with its size, 156 × 154 × 121 mm, in the status bar" src="docs/images/hero.png" width="800">
 
 </div>
+
+## Quick start
+
+1. In Orca, open **Settings → Plugins → Install plugin**, enter `https://github.com/momokun7/orca-3d-viewer#v1.0.0` on the **Git URL** tab and choose **Install**.
+2. Open a `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` or `.fbx` file.
+3. Drag to orbit, scroll to zoom.
+
+It asks for no permissions. See [Install](#install) and [Usage](#usage) for more.
 
 ## Formats
 

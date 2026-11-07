@@ -17,13 +17,21 @@
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
 [![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#보안)
 
-[지원 형식](#지원-형식) · [기능](#기능) · [설치](#설치) · [사용법](#사용법) ·
+[빠른 시작](#빠른-시작) · [지원 형식](#지원-형식) · [기능](#기능) · [설치](#설치) · [사용법](#사용법) ·
 [문제 해결](#문제-해결) · [보안](#보안) · [개발](#개발) ·
 [버그 신고](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
 <img alt="Orca 안의 3D Viewer에서 바닥 그리드 위에 앉아 있는 Stanford Bunny. 상태 표시줄에 크기 156 × 154 × 121 mm가 표시되어 있습니다" src="../images/hero.png" width="800">
 
 </div>
+
+## 빠른 시작
+
+1. Orca에서 **설정 → 플러그인 → 플러그인 설치**를 열고, **Git URL** 탭에 `https://github.com/momokun7/orca-3d-viewer#v1.0.0`을 입력한 뒤 **설치**를 선택합니다.
+2. `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx` 파일 중 하나를 엽니다.
+3. 드래그해서 돌리고, 휠로 확대합니다.
+
+권한은 요청하지 않습니다. 자세한 내용은 [설치](#설치)와 [사용법](#사용법)을 참고하세요.
 
 ## 지원 형식
 

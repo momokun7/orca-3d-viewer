@@ -17,13 +17,21 @@ Modelin etrafında dönün, animasyonlarını oynatın ve modelin düşündüğ�
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
 [![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#güvenlik)
 
-[Biçimler](#biçimler) · [Özellikler](#özellikler) · [Kurulum](#kurulum) · [Kullanım](#kullanım) ·
+[Hızlı başlangıç](#hızlı-başlangıç) · [Biçimler](#biçimler) · [Özellikler](#özellikler) · [Kurulum](#kurulum) · [Kullanım](#kullanım) ·
 [Sorun giderme](#sorun-giderme) · [Güvenlik](#güvenlik) · [Geliştirme](#geliştirme) ·
 [Hata bildir](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
 <img alt="Orca içindeki 3D Viewer'da, zemin ızgarası üzerinde oturan Stanford Bunny; durum çubuğunda boyutu, 156 × 154 × 121 mm" src="../images/hero.png" width="800">
 
 </div>
+
+## Hızlı başlangıç
+
+1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.0` adresini girin ve **Yükle**'yi seçin.
+2. `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx` dosyalarından birini açın.
+3. Döndürmek için sürükleyin, yakınlaştırmak için tekerleği kullanın.
+
+Hiçbir izin istemez. Ayrıntılar için [Kurulum](#kurulum) ve [Kullanım](#kullanım) bölümlerine bakın.
 
 ## Biçimler
 
