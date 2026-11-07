@@ -98,10 +98,15 @@ jobs:
           fi
 
   browser:
-    name: Browser security tests
+    name: Browser security tests (${{ matrix.shard }}/3)
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
+    # Why shards: each test file starts its own Chromium, so three runners finish in a third of the time.
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
@@ -116,6 +121,11 @@ jobs:
       - name: Install dependencies
         working-directory: build
         run: npm ci --ignore-scripts
+      - name: Cache Chromium
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: chromium-${{ runner.os }}-${{ hashFiles('build/package-lock.json') }}
       - name: Install Chromium
         working-directory: build
         run: npx playwright-core install --with-deps chromium
@@ -124,7 +134,7 @@ jobs:
         working-directory: build
         env:
           FUZZ_SEED: "20261106"
-        run: npm run test:browser
+        run: node --test --test-shard=${{ matrix.shard }}/3 test/browser/*.browser.test.ts
 
   validate:
     name: Orca plugin validation
