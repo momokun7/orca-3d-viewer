@@ -15,10 +15,7 @@ at a glance whether a model is the size you think it is.
 [Features](#features) · [Install](#install) · [Usage](#usage) · [Limits](#limits) ·
 [Security](#security) · [Development](#development)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png">
-  <img alt="A sofa chair shown in GLB Viewer inside Orca, standing on a floor grid with its size, 827 × 686 × 570 mm, in the status bar" src="docs/images/hero-light.png" width="800">
-</picture>
+<img alt="A sofa chair shown in GLB Viewer inside Orca, standing on a floor grid with its size, 827 × 686 × 570 mm, in the status bar" src="docs/images/hero.png" width="800">
 
 </div>
 
@@ -71,11 +68,13 @@ Save the file and the view shows the new version, keeping your camera where it w
 
 <img alt="Each time the file is saved with Ctrl + S, the chair's fabric changes color in place" src="docs/images/features/live.gif" width="600">
 
-### Follows Orca's theme
+### Light or dark
 
-Light and dark, along with Orca's language (English and Japanese).
+The viewer opens light; the moon button in the toolbar switches it to dark and back. It
+remembers the theme, wireframe and grid you last chose, even after Orca restarts. Its text
+follows Orca's language (English and Japanese).
 
-<img alt="The viewer switches from Orca's dark theme to light and back" src="docs/images/features/theme.gif" width="600">
+<img alt="Clicking the moon button in the toolbar turns the viewer dark, and clicking it again turns it light" src="docs/images/features/theme.gif" width="600">
 
 ### Also
 

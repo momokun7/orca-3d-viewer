@@ -143,9 +143,11 @@ describe('source', () => {
     [/new\s+(Shared)?Worker\b|serviceWorker/, 'starts code beside the page']
   ]
   // The one worker the viewer starts itself, and the only messages it passes: the model in, the verdict out.
+  // And the toolbar's three on/off choices, the only thing kept between sessions.
   const ALLOWED: Record<string, RegExp> = {
     'model-check.ts': /\bnew Worker\(workerUrl\)|\bworker\.postMessage\(data\)/g,
-    'model-check-worker.ts': /\bself\.postMessage\(/g
+    'model-check-worker.ts': /\bself\.postMessage\(/g,
+    'viewer-preferences.ts': /\blocalStorage\.(getItem\(KEY\)|setItem\(KEY, JSON\.stringify\(preferences\)\))/g
   }
 
   // Why strip comments: they may name these APIs while explaining what the code does instead.

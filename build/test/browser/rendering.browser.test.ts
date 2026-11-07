@@ -38,6 +38,43 @@ describe('rendering', () => {
     assertContained(await frame.report())
   })
 
+  it('opens light whatever Orca’s theme, and the toolbar switches it to dark and back', async () => {
+    await frame.page.evaluate(() => {
+      document.head.append(Object.assign(document.createElement('style'), { textContent: ':root{--orca-background:#0a0a0a}' }))
+    })
+    await frame.open({ bytes: glb(triangleGltf()) })
+    const background = () => frame.page.evaluate(() => getComputedStyle(document.body).backgroundColor)
+    const toggle = frame.page.locator('button[aria-label="Dark theme"]')
+    assert.equal(await background(), 'rgb(255, 255, 255)')
+    await toggle.click()
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true')
+    assert.equal(await background(), 'rgb(10, 10, 10)')
+    await toggle.click()
+    assert.equal(await background(), 'rgb(255, 255, 255)')
+  })
+
+  it('reopens with the theme, wireframe and guides last chosen, ignoring a malformed record', async () => {
+    const pressed = () =>
+      frame.page.evaluate(() =>
+        ['Dark theme', 'Wireframe', 'Grid and axes'].map((label) =>
+          document.querySelector(`button[aria-label="${label}"]`)?.getAttribute('aria-pressed')
+        )
+      )
+    await frame.open({ bytes: glb(triangleGltf()) })
+    for (const label of ['Dark theme', 'Wireframe', 'Grid and axes']) {
+      await frame.page.locator(`button[aria-label="${label}"]`).click()
+    }
+    await frame.page.reload()
+    await frame.open({ bytes: glb(triangleGltf()) })
+    assert.deepEqual(await pressed(), ['true', 'true', 'false'])
+    assert.equal(await frame.page.evaluate(() => document.documentElement.classList.contains('dark')), true)
+
+    await frame.page.evaluate(() => localStorage.setItem('viewer-preferences', '{"dark":"yes","__proto__":{"wireframe":true}}'))
+    await frame.page.reload()
+    await frame.open({ bytes: glb(triangleGltf()) })
+    assert.deepEqual(await pressed(), ['false', 'false', 'true'])
+  })
+
   for (const [format, embedding] of [
     ['PNG', 'bufferView'],
     ['PNG', 'dataUri'],
