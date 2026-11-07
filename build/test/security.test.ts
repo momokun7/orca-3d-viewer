@@ -145,7 +145,7 @@ describe('source', () => {
   // The one worker the viewer starts itself, and the only messages it passes: the model in, the verdict out.
   // And the toolbar's three on/off choices, the only thing kept between sessions.
   const ALLOWED: Record<string, RegExp> = {
-    'model-check.ts': /\bnew Worker\(workerUrl\)|\bworker\.postMessage\(data\)/g,
+    'model-check.ts': /\bnew Worker\(workerUrl\)|\bworker\.postMessage\(\{ format, data \}\)/g,
     'model-check-worker.ts': /\bself\.postMessage\(/g,
     'viewer-preferences.ts': /\blocalStorage\.(getItem\(KEY\)|setItem\(KEY, JSON\.stringify\(preferences\)\))/g
   }
@@ -185,16 +185,21 @@ describe('manifest', () => {
     assert.deepEqual(Object.keys(manifest.contributes), ['customEditors'])
   })
 
-  it('opens only .glb and .gltf, in the isolated frame', () => {
+  it('opens only its 3D formats, each in the isolated frame, as bytes except for text glTF and OBJ', () => {
     assert.deepEqual(
       manifest.contributes.customEditors.map((editor: Record<string, unknown>) => ({
         extensions: editor.extensions,
         frame: editor.frame,
-        entry: editor.entry
+        entry: editor.entry,
+        contentKind: editor.contentKind
       })),
       [
-        { extensions: ['.glb'], frame: 'isolated', entry: 'editor/index.html' },
-        { extensions: ['.gltf'], frame: 'isolated', entry: 'editor/index.html' }
+        { extensions: ['.glb'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
+        { extensions: ['.gltf'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'text' },
+        { extensions: ['.stl'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
+        { extensions: ['.ply'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
+        { extensions: ['.obj'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'text' },
+        { extensions: ['.fbx'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' }
       ]
     )
   })

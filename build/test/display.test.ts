@@ -34,6 +34,10 @@ describe('lengthFormat', () => {
     assert.equal(show([0, 0, 0]), '0 × 0 × 0 m')
   })
 
+  it('shows a rounding error left by rotating a flat model as zero', () => {
+    assert.equal(show([0.001, 2.22e-19, 0.001]), '1 × 0 × 1 mm')
+  })
+
   it('uses kilometers for terrain-sized models', () => {
     assert.equal(show([25_000, 100, 12_000]), '25 × 0.1 × 12 km')
   })
