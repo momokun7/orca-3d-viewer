@@ -186,6 +186,8 @@ jobs:
         uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Why: artifacts of a public repository are public; findings show in the log instead.
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
       - name: Personal details and private words in tracked files
         env:
           SENSITIVE_WORDS: ${{ secrets.SENSITIVE_WORDS }}

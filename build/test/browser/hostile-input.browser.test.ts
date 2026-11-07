@@ -228,7 +228,7 @@ describe('values three.js does not check', () => {
 describe('prototype pollution', () => {
   it('does not let __proto__ or constructor keys reach shared prototypes', async () => {
     const text = embeddedGltfText({ animationNames: ['Walk'] })
-      .replace('{', '{"__proto__":{"polluted":1},"constructor":{"prototype":{"polluted":1}},')
+      .replace(/^\{/, '{"__proto__":{"polluted":1},"constructor":{"prototype":{"polluted":1}},')
       .replace('"nodes":[{', '"nodes":[{"__proto__":{"polluted":1},"extras":{"__proto__":{"polluted":1}},')
     const state = await frame.open({ text })
     assert.equal(state.kind, 'model')
