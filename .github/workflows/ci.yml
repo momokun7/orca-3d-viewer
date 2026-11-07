@@ -134,7 +134,8 @@ jobs:
         working-directory: build
         env:
           FUZZ_SEED: "20261106"
-        run: node --test --test-shard=${{ matrix.shard }}/3 test/browser/*.browser.test.ts
+          SHARD: ${{ matrix.shard }}
+        run: node --test --test-shard="$SHARD/3" test/browser/*.browser.test.ts
 
   validate:
     name: Orca plugin validation
