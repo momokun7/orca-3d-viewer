@@ -40,7 +40,6 @@ describe('STL, PLY, OBJ and FBX', () => {
     })
   }
 
-<<<<<<< HEAD
   it('shows an FBX texture that finishes loading after the parse', async () => {
     // Why large: a big image decodes after FBXLoader returns, which is what left textures blank.
     const state = await frame.open(bytes('.fbx', fbxTexturedSquare(solidPng(2048, 2048, [0, 160, 0]))))
@@ -50,7 +49,8 @@ describe('STL, PLY, OBJ and FBX', () => {
     const [red, green, blue] = await frame.pixel(Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2))
     assert.ok(green > 100 && red < 100 && blue < 100, `expected green, got ${red}, ${green}, ${blue}`)
     assertContained(await frame.report())
-=======
+  })
+
   it('shows the colours a file stores as they are, not mixed with the default surface', async () => {
     const square = ['v 0 0 0 1 0 0', 'v 1 0 0 1 0 0', 'v 1 1 0 1 0 0', 'v 0 1 0 1 0 0', 'f 1 2 3', 'f 1 3 4'].join('\n')
     assert.equal((await frame.open({ text: square, fileType: '.obj' })).kind, 'model')
@@ -58,7 +58,6 @@ describe('STL, PLY, OBJ and FBX', () => {
     assert.ok(box)
     const [red, green, blue] = await frame.pixel(Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2))
     assert.ok(red > 200 && green < 150 && blue < 150, `expected red, got ${red}, ${green}, ${blue}`)
->>>>>>> origin/main
   })
 
   it('says an OBJ material file is not shown', async () => {
