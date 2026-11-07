@@ -1,6 +1,9 @@
 <div align="center">
 
-[English](../../README.md) · **日本語**
+[English](../../README.md) · **日本語** · [Deutsch](README.de.md) · [Español](README.es.md) ·
+[Français](README.fr.md) · [한국어](README.ko.md) · [Português](README.pt-BR.md) ·
+[Русский](README.ru.md) · [Türkçe](README.tr.md) · [简体中文](README.zh-Hans.md) ·
+[繁體中文](README.zh-Hant.md)
 
 # 3D Viewer for Orca
 
