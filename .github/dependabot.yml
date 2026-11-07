@@ -10,6 +10,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    # Why: the typings follow the Node major the build runs on (mise.toml and CI use 24).
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       three:
         patterns: ["three", "@types/three"]
