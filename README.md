@@ -19,13 +19,13 @@ Orbit around a model, play its animations, and check at a glance that it is the 
 [Troubleshooting](#troubleshooting) · [Security](#security) · [Development](#development) ·
 [Report a bug](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="The Stanford Bunny in 3D Viewer inside Orca, sitting on a floor grid, with its size, 156 × 154 × 121 mm, in the status bar" src="docs/images/hero.png" width="800">
+<img alt="The Stanford Bunny in 3D Viewer inside Orca, sitting on a floor grid, with its size, 156 × 154 × 121 mm, in the status bar" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## Quick start
 
-1. In Orca, open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste `https://github.com/momokun7/orca-3d-viewer#v1.0.0` into **Repository URL**, choose **Continue**, then **Install**, and then **Enable plugin**.
+1. In Orca, open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste `https://github.com/momokun7/orca-3d-viewer#v1.0.1` into **Repository URL**, choose **Continue**, then **Install**, and then **Enable plugin**.
 2. Open a `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` or `.fbx` file.
 3. Drag to orbit, and scroll to zoom.
 
@@ -37,9 +37,9 @@ One viewer for six formats.
 
 <table>
   <tr>
-    <td width="33%"><img alt="A Beautiful Game as GLB: a marble chessboard with glass and metal pieces" src="docs/images/formats/glb.png"></td>
-    <td width="33%"><img alt="Corset as glTF with embedded data: embroidered fabric and buckles" src="docs/images/formats/gltf.png"></td>
-    <td width="33%"><img alt="3DBenchy as STL: the small boat used to test 3D printers, in the orange color stored in the file" src="docs/images/formats/stl.png"></td>
+    <td width="33%"><img alt="A Beautiful Game as GLB: a marble chessboard with glass and metal pieces" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="Corset as glTF with embedded data: embroidered fabric and buckles" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="3DBenchy as STL: the small boat used to test 3D printers, in the orange color stored in the file" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@ One viewer for six formats.
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="The Stanford Armadillo as PLY: a 3D scan, shown in green from its vertex colors" src="docs/images/formats/ply.png"></td>
-    <td width="33%"><img alt="The Utah Teapot as OBJ, shown in purple from its vertex colors" src="docs/images/formats/obj.png"></td>
-    <td width="33%"><img alt="BoomBox as FBX, with textured buttons and speaker grilles" src="docs/images/formats/fbx.png"></td>
+    <td width="33%"><img alt="The Stanford Armadillo as PLY: a 3D scan, shown in green from its vertex colors" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="The Utah Teapot as OBJ, shown in purple from its vertex colors" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="BoomBox as FBX, with textured buttons and speaker grilles" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@ glTF files that use Draco or Meshopt compression, or KTX2 / Basis Universal text
 
 <table>
   <tr>
-    <td width="50%"><img alt="Dragging with the left mouse button orbits the camera around the bunny" src="docs/images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Dragging with the right mouse button, then Shift-dragging with the left, moves the view sideways" src="docs/images/features/pan.gif"></td>
+    <td width="50%"><img alt="Dragging with the left mouse button orbits the camera around the bunny" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="Dragging with the right mouse button, then Shift-dragging with the left, moves the view sideways" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Orbit</b>: drag</td>
     <td align="center"><b>Pan</b>: right-drag, or <kbd>Shift</kbd> + drag</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="Scrolling the mouse wheel zooms in on the bunny and back out again" src="docs/images/features/zoom.gif"></td>
-    <td width="50%"><img alt="The reset button returns an upside-down view to the starting view" src="docs/images/features/reset.gif"></td>
+    <td width="50%"><img alt="Scrolling the mouse wheel zooms in on the bunny and back out again" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="The reset button returns an upside-down view to the starting view" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Zoom</b>: scroll</td>
@@ -96,32 +96,32 @@ glTF files that use Draco or Meshopt compression, or KTX2 / Basis Universal text
 A floor grid, X / Y / Z axes and the model's width × height × depth make a model authored in the wrong unit
 obvious at once. The Stanford Bunny measures 15.6 cm across.
 
-<img alt="The bunny on a 10 mm grid, with the status bar reading 156 × 154 × 121 mm and Grid 10 mm" src="docs/images/features/size.gif" width="600">
+<img alt="The bunny on a 10 mm grid, with the status bar reading 156 × 154 × 121 mm and Grid 10 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### Wireframe, grid and axes
 
 Show the mesh as a wireframe, or hide the grid and axes. The status bar shows the vertex and triangle counts.
 
-<img alt="The wireframe button reveals the bunny's mesh, then the grid and axes button hides the floor grid" src="docs/images/features/inspect.gif" width="600">
+<img alt="The wireframe button reveals the bunny's mesh, then the grid and axes button hides the floor grid" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### Animations
 
 Play and pause animations, and choose a clip when the model has more than one.
 
-<img alt="A fox plays its Survey clip, switches to Run from the clip menu, then pauses and resumes" src="docs/images/features/animations.gif" width="600">
+<img alt="A fox plays its Survey clip, switches to Run from the clip menu, then pauses and resumes" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### Stays current
 
 When you save the file, the view updates to the new version and the camera stays where it was.
 
-<img alt="Each time the file is saved with Ctrl + S, the bunny changes color without the view moving" src="docs/images/features/live.gif" width="600">
+<img alt="Each time the file is saved with Ctrl + S, the bunny changes color without the view moving" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### Light or dark
 
 The viewer starts in the light theme, and the moon button in the toolbar switches between light and dark. Your
 last theme, wireframe and grid settings are remembered, even after Orca restarts (Orca 1.4.250 and later).
 
-<img alt="Clicking the moon button in the toolbar switches the viewer to dark, and clicking it again switches it back to light" src="docs/images/features/theme.gif" width="600">
+<img alt="Clicking the moon button in the toolbar switches the viewer to dark, and clicking it again switches it back to light" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### Eleven languages
 
@@ -135,7 +135,7 @@ summary of the viewer's version, your browser and graphics hardware, recent load
 any errors. **Copy** it into an issue to show exactly what happened. It contains no model data, except what an
 error message quotes.
 
-<img alt="The Details panel, showing the viewer's version, the browser, the load history and why a file was refused, with Copy and Close buttons" src="docs/images/details.png" width="600">
+<img alt="The Details panel, showing the viewer's version, the browser, the load history and why a file was refused, with Copy and Close buttons" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## Install
 
@@ -143,7 +143,7 @@ error message quotes.
 2. On the **Git URL** tab, paste this into **Repository URL**:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. Choose **Continue**, then **Install**. In the dialog that follows, choose **Enable plugin**; nothing runs until

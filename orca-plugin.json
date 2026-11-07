@@ -3,12 +3,16 @@
   "manifestVersion": 2,
   "id": "3d-viewer",
   "name": "3D Viewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "execution": "sandboxed-ui",
   "description": "Preview 3D models in Orca's editor: GLB and glTF, STL, PLY, OBJ and FBX. Orbit, zoom and pan, play animations, and check the model's real-world size on a floor grid. Read-only.",
   "license": "MIT",
   "repository": "https://github.com/momokun7/orca-3d-viewer",
   "icon": "assets/icon.png",
+  "cover": {
+    "path": "docs/images/plugin-page/cover.png",
+    "alt": "The Stanford Bunny on a floor grid in 3D Viewer, with its vertex count and real-world size in the status bar"
+  },
   "screenshots": [
     {
       "path": "docs/images/plugin-page/bunny.png",

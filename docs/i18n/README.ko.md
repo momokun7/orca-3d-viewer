@@ -19,13 +19,13 @@
 [문제 해결](#문제-해결) · [보안](#보안) · [개발](#개발) ·
 [버그 신고](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="Orca에서 연 3D Viewer. 바닥 그리드 위에 Stanford Bunny가 앉아 있고, 상태 표시줄에 크기 156 × 154 × 121 mm가 나와 있습니다" src="../images/hero.png" width="800">
+<img alt="Orca에서 연 3D Viewer. 바닥 그리드 위에 Stanford Bunny가 앉아 있고, 상태 표시줄에 크기 156 × 154 × 121 mm가 나와 있습니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## 빠른 시작
 
-1. Orca에서 **설정 → 플러그인 → 플러그인 설치**를 열고, **Git URL** 탭의 **저장소 URL**에 `https://github.com/momokun7/orca-3d-viewer#v1.0.0`을 붙여 넣고 **계속** → **설치**를 선택한 뒤, 이어서 나오는 대화 상자에서 **플러그인 활성화**를 선택합니다.
+1. Orca에서 **설정 → 플러그인 → 플러그인 설치**를 열고, **Git URL** 탭의 **저장소 URL**에 `https://github.com/momokun7/orca-3d-viewer#v1.0.1`을 붙여 넣고 **계속** → **설치**를 선택한 뒤, 이어서 나오는 대화 상자에서 **플러그인 활성화**를 선택합니다.
 2. `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx` 파일을 엽니다.
 3. 드래그하면 회전하고, 스크롤하면 확대/축소됩니다.
 
@@ -37,9 +37,9 @@
 
 <table>
   <tr>
-    <td width="33%"><img alt="GLB 형식의 A Beautiful Game. 대리석 체스판과 유리·금속으로 된 체스 말" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="데이터를 내장한 glTF 형식의 Corset. 자수 놓인 천과 버클" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="STL 형식의 3DBenchy. 3D 프린터 테스트용으로 널리 쓰이는 작은 배이며, 파일에 저장된 주황색으로 표시됨" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="GLB 형식의 A Beautiful Game. 대리석 체스판과 유리·금속으로 된 체스 말" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="데이터를 내장한 glTF 형식의 Corset. 자수 놓인 천과 버클" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="STL 형식의 3DBenchy. 3D 프린터 테스트용으로 널리 쓰이는 작은 배이며, 파일에 저장된 주황색으로 표시됨" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="PLY 형식의 Stanford Armadillo. 3D 스캔 데이터이며, 정점에 저장된 초록색으로 표시됨" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="OBJ 형식의 Utah Teapot. 정점에 저장된 보라색으로 표시됨" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="FBX 형식의 BoomBox. 버튼과 스피커 그릴 텍스처까지 표시됨" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="PLY 형식의 Stanford Armadillo. 3D 스캔 데이터이며, 정점에 저장된 초록색으로 표시됨" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="OBJ 형식의 Utah Teapot. 정점에 저장된 보라색으로 표시됨" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="FBX 형식의 BoomBox. 버튼과 스피커 그릴 텍스처까지 표시됨" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@ Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 �
 
 <table>
   <tr>
-    <td width="50%"><img alt="마우스 왼쪽 버튼으로 드래그하면 카메라가 Bunny 주위를 돕니다" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="오른쪽 버튼으로 드래그하거나 Shift를 누른 채 왼쪽 버튼으로 드래그하면 화면이 옆으로 이동합니다" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="마우스 왼쪽 버튼으로 드래그하면 카메라가 Bunny 주위를 돕니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="오른쪽 버튼으로 드래그하거나 Shift를 누른 채 왼쪽 버튼으로 드래그하면 화면이 옆으로 이동합니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>회전</b>: 드래그</td>
     <td align="center"><b>이동</b>: 오른쪽 드래그 또는 <kbd>Shift</kbd> + 드래그</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="마우스 휠을 굴리면 Bunny가 확대되었다가 다시 축소됩니다" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="보기 초기화 버튼을 누르면 거꾸로 뒤집혔던 화면이 처음 시점으로 돌아갑니다" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="마우스 휠을 굴리면 Bunny가 확대되었다가 다시 축소됩니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="보기 초기화 버튼을 누르면 거꾸로 뒤집혔던 화면이 처음 시점으로 돌아갑니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>확대/축소</b>: 스크롤</td>
@@ -96,32 +96,32 @@ Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 �
 바닥 그리드와 X / Y / Z 축, 모델의 너비 × 높이 × 깊이가 표시되므로 단위를 잘못 지정해 만든 모델은 바로 눈에 띕니다.
 예를 들어 Stanford Bunny는 너비가 15.6 cm로 나옵니다.
 
-<img alt="10 mm 간격 그리드 위의 Bunny. 상태 표시줄에 156 × 154 × 121 mm와 그리드 10 mm가 차례로 표시됩니다" src="../images/features/size.gif" width="600">
+<img alt="10 mm 간격 그리드 위의 Bunny. 상태 표시줄에 156 × 154 × 121 mm와 그리드 10 mm가 차례로 표시됩니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### 와이어프레임, 그리드 및 축
 
 메시를 선으로만 표시하거나 그리드와 축을 숨길 수 있습니다. 정점 수와 삼각형 수는 상태 표시줄에서 확인할 수 있습니다.
 
-<img alt="와이어프레임 버튼을 누르면 Bunny의 메시가 드러나고, 이어서 그리드 및 축 버튼을 누르면 바닥 그리드가 사라집니다" src="../images/features/inspect.gif" width="600">
+<img alt="와이어프레임 버튼을 누르면 Bunny의 메시가 드러나고, 이어서 그리드 및 축 버튼을 누르면 바닥 그리드가 사라집니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### 애니메이션
 
 애니메이션을 재생하거나 일시 중지할 수 있습니다. 클립이 여러 개인 모델에서는 원하는 클립을 골라 볼 수 있습니다.
 
-<img alt="여우 모델의 Survey 클립을 재생하다가 클립 메뉴에서 Run으로 바꾸고, 일시 중지했다가 다시 재생합니다" src="../images/features/animations.gif" width="600">
+<img alt="여우 모델의 Survey 클립을 재생하다가 클립 메뉴에서 Run으로 바꾸고, 일시 중지했다가 다시 재생합니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### 저장하면 바로 반영
 
 파일을 저장하면 카메라 위치는 그대로 둔 채 바뀐 내용이 바로 표시됩니다.
 
-<img alt="Ctrl + S로 저장할 때마다 Bunny의 색이 그 자리에서 바뀝니다" src="../images/features/live.gif" width="600">
+<img alt="Ctrl + S로 저장할 때마다 Bunny의 색이 그 자리에서 바뀝니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### 라이트 또는 다크
 
 뷰어는 처음에 라이트 테마로 열리며, 도구 모음의 달 버튼을 누를 때마다 다크 테마와 라이트 테마가 바뀝니다. 마지막으로 고른
 테마와 와이어프레임, 그리드 설정은 Orca를 다시 시작해도 그대로 유지됩니다(Orca 1.4.250 이상).
 
-<img alt="도구 모음의 달 버튼을 누르면 뷰어가 다크 테마로 바뀌고, 한 번 더 누르면 라이트 테마로 돌아옵니다" src="../images/features/theme.gif" width="600">
+<img alt="도구 모음의 달 버튼을 누르면 뷰어가 다크 테마로 바뀌고, 한 번 더 누르면 라이트 테마로 돌아옵니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### 11개 언어
 
@@ -134,7 +134,7 @@ Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 �
 뷰어 버전, 브라우저와 그래픽 정보, 최근 로드 기록과 각각 걸린 시간, 발생한 오류를 한데 모아 보여 줍니다.
 **복사**해서 이슈에 붙여 넣기만 하면 어떤 상황이었는지 그대로 전달됩니다. 오류 메시지에 인용된 부분을 빼면 모델 데이터는 들어가지 않습니다.
 
-<img alt="세부 정보 패널. 뷰어 버전, 브라우저, 로드 기록, 파일을 열지 않은 이유가 표시되고 아래에 복사 버튼과 닫기 버튼이 있습니다" src="../images/details.png" width="600">
+<img alt="세부 정보 패널. 뷰어 버전, 브라우저, 로드 기록, 파일을 열지 않은 이유가 표시되고 아래에 복사 버튼과 닫기 버튼이 있습니다" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## 설치
 
@@ -142,7 +142,7 @@ Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 �
 2. **Git URL** 탭을 열고 **저장소 URL**에 다음 주소를 붙여 넣습니다.
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. **계속**과 **설치**를 차례로 선택합니다. 이어서 나오는 대화 상자에서 **플러그인 활성화**를 선택합니다.

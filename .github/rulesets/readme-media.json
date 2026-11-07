@@ -1,0 +1,10 @@
+{
+  "name": "readme media branch",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": { "include": ["refs/heads/readme-media"], "exclude": [] }
+  },
+  "bypass_actors": [],
+  "rules": [{ "type": "deletion" }, { "type": "non_fast_forward" }]
+}

@@ -19,13 +19,13 @@ Gira la cámara alrededor del modelo, reproduce sus animaciones y comprueba de u
 [Solución de problemas](#solución-de-problemas) · [Seguridad](#seguridad) · [Desarrollo](#desarrollo) ·
 [Informar de un error](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
-<img alt="El Stanford Bunny en 3D Viewer dentro de Orca, sobre una cuadrícula, con sus medidas (156 × 154 × 121 mm) en la barra de estado" src="../images/hero.png" width="800">
+<img alt="El Stanford Bunny en 3D Viewer dentro de Orca, sobre una cuadrícula, con sus medidas (156 × 154 × 121 mm) en la barra de estado" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/hero.png" width="800">
 
 </div>
 
 ## Inicio rápido
 
-1. En Orca, abre **Ajustes → Plugins → Instalar plugin** y, en la pestaña **Git URL**, pega `https://github.com/momokun7/orca-3d-viewer#v1.0.0`. Elige **Continuar** e **Instalar**, y después **Activar plugin**.
+1. En Orca, abre **Ajustes → Plugins → Instalar plugin** y, en la pestaña **Git URL**, pega `https://github.com/momokun7/orca-3d-viewer#v1.0.1`. Elige **Continuar** e **Instalar**, y después **Activar plugin**.
 2. Abre un archivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` o `.fbx`.
 3. Arrastra para girar el modelo y usa la rueda del ratón para acercarlo o alejarlo.
 
@@ -37,9 +37,9 @@ Un solo visor para seis formatos.
 
 <table>
   <tr>
-    <td width="33%"><img alt="A Beautiful Game en GLB: un tablero de ajedrez de mármol con piezas de vidrio y metal" src="../images/formats/glb.png"></td>
-    <td width="33%"><img alt="Corset en glTF con los datos incrustados: tela bordada y hebillas" src="../images/formats/gltf.png"></td>
-    <td width="33%"><img alt="3DBenchy en STL: el pequeño barco que se usa para probar impresoras 3D, en el color naranja guardado en el archivo" src="../images/formats/stl.png"></td>
+    <td width="33%"><img alt="A Beautiful Game en GLB: un tablero de ajedrez de mármol con piezas de vidrio y metal" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/glb.png"></td>
+    <td width="33%"><img alt="Corset en glTF con los datos incrustados: tela bordada y hebillas" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/gltf.png"></td>
+    <td width="33%"><img alt="3DBenchy en STL: el pequeño barco que se usa para probar impresoras 3D, en el color naranja guardado en el archivo" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/stl.png"></td>
   </tr>
   <tr>
     <td align="center"><b>GLB</b>: A Beautiful Game</td>
@@ -47,9 +47,9 @@ Un solo visor para seis formatos.
     <td align="center"><b>STL</b>: 3DBenchy</td>
   </tr>
   <tr>
-    <td width="33%"><img alt="El Stanford Armadillo en PLY: un escaneo 3D, en el color verde guardado en sus vértices" src="../images/formats/ply.png"></td>
-    <td width="33%"><img alt="La tetera de Utah en OBJ, en el color morado guardado en sus vértices" src="../images/formats/obj.png"></td>
-    <td width="33%"><img alt="BoomBox en FBX, con la textura de los botones y de las rejillas de los altavoces" src="../images/formats/fbx.png"></td>
+    <td width="33%"><img alt="El Stanford Armadillo en PLY: un escaneo 3D, en el color verde guardado en sus vértices" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/ply.png"></td>
+    <td width="33%"><img alt="La tetera de Utah en OBJ, en el color morado guardado en sus vértices" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/obj.png"></td>
+    <td width="33%"><img alt="BoomBox en FBX, con la textura de los botones y de las rejillas de los altavoces" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/fbx.png"></td>
   </tr>
   <tr>
     <td align="center"><b>PLY</b>: Stanford Armadillo</td>
@@ -74,16 +74,16 @@ También admite glTF comprimido con Draco o Meshopt y texturas KTX2 / Basis Univ
 
 <table>
   <tr>
-    <td width="50%"><img alt="Al arrastrar con el botón izquierdo del ratón, la cámara gira alrededor del conejo" src="../images/features/orbit.gif"></td>
-    <td width="50%"><img alt="Al arrastrar con el botón derecho, y después con el izquierdo mientras se mantiene Shift, la vista se desplaza lateralmente" src="../images/features/pan.gif"></td>
+    <td width="50%"><img alt="Al arrastrar con el botón izquierdo del ratón, la cámara gira alrededor del conejo" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/orbit.gif"></td>
+    <td width="50%"><img alt="Al arrastrar con el botón derecho, y después con el izquierdo mientras se mantiene Shift, la vista se desplaza lateralmente" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/pan.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Girar</b>: arrastrar</td>
     <td align="center"><b>Desplazar</b>: arrastrar con el botón derecho, o <kbd>Shift</kbd> + arrastrar</td>
   </tr>
   <tr>
-    <td width="50%"><img alt="Con la rueda del ratón, la vista se acerca al conejo y luego vuelve a alejarse" src="../images/features/zoom.gif"></td>
-    <td width="50%"><img alt="Una vista girada boca abajo vuelve a la posición inicial con el botón Restablecer vista" src="../images/features/reset.gif"></td>
+    <td width="50%"><img alt="Con la rueda del ratón, la vista se acerca al conejo y luego vuelve a alejarse" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/zoom.gif"></td>
+    <td width="50%"><img alt="Una vista girada boca abajo vuelve a la posición inicial con el botón Restablecer vista" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/reset.gif"></td>
   </tr>
   <tr>
     <td align="center"><b>Zoom</b>: rueda del ratón</td>
@@ -96,32 +96,32 @@ También admite glTF comprimido con Draco o Meshopt y texturas KTX2 / Basis Univ
 Una cuadrícula, los ejes X / Y / Z y las medidas del modelo (ancho × alto × profundidad) hacen que salte a la vista
 cualquier modelo creado con la unidad equivocada. El Stanford Bunny, por ejemplo, mide 15,6 cm de ancho.
 
-<img alt="El conejo sobre una cuadrícula de 10 mm; la barra de estado muestra 156 × 154 × 121 mm y, a continuación, Cuadrícula 10 mm" src="../images/features/size.gif" width="600">
+<img alt="El conejo sobre una cuadrícula de 10 mm; la barra de estado muestra 156 × 154 × 121 mm y, a continuación, Cuadrícula 10 mm" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/size.gif" width="600">
 
 ### Alambre, cuadrícula y ejes
 
 Muestra la malla solo con sus aristas, u oculta la cuadrícula y los ejes. La barra de estado indica cuántos vértices y triángulos tiene el modelo.
 
-<img alt="El botón Alambre muestra la malla del conejo y, después, el botón Cuadrícula y ejes oculta la cuadrícula" src="../images/features/inspect.gif" width="600">
+<img alt="El botón Alambre muestra la malla del conejo y, después, el botón Cuadrícula y ejes oculta la cuadrícula" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/inspect.gif" width="600">
 
 ### Animaciones
 
 Reproduce o pausa la animación y, si el modelo tiene varios clips, elige cuál ver.
 
-<img alt="Un zorro reproduce el clip Survey, pasa a Run desde el menú de clips, se pausa y vuelve a reproducirse" src="../images/features/animations.gif" width="600">
+<img alt="Un zorro reproduce el clip Survey, pasa a Run desde el menú de clips, se pausa y vuelve a reproducirse" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/animations.gif" width="600">
 
 ### Siempre al día
 
 Cada vez que guardas el archivo, la vista se actualiza con la nueva versión sin mover la cámara.
 
-<img alt="Cada vez que se guarda el archivo con Ctrl + S, el conejo cambia de color sin moverse de su sitio" src="../images/features/live.gif" width="600">
+<img alt="Cada vez que se guarda el archivo con Ctrl + S, el conejo cambia de color sin moverse de su sitio" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/live.gif" width="600">
 
 ### Claro u oscuro
 
 El visor se abre con el tema claro; el botón de la luna de la barra de herramientas activa y desactiva el **Tema oscuro**.
 Recuerda el tema, el modo alambre y la cuadrícula que elegiste la última vez, incluso al reiniciar Orca (requiere Orca 1.4.250 o posterior).
 
-<img alt="Al hacer clic en el botón de la luna de la barra de herramientas, el visor cambia al tema oscuro; con otro clic, vuelve al claro" src="../images/features/theme.gif" width="600">
+<img alt="Al hacer clic en el botón de la luna de la barra de herramientas, el visor cambia al tema oscuro; con otro clic, vuelve al claro" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/features/theme.gif" width="600">
 
 ### Once idiomas
 
@@ -134,7 +134,7 @@ El botón **i** de la barra de herramientas (o, en una pantalla de error, el bot
 con la versión del visor, tu navegador y tu GPU, las últimas cargas y lo que tardó cada una, y los errores que se hayan producido.
 Pulsa **Copiar** y pégalo en un issue: con eso basta para saber qué pasó. No incluye datos del modelo, salvo lo que cite algún mensaje de error.
 
-<img alt="El panel Detalles: la versión del visor, el navegador, el historial de cargas y el motivo por el que se rechazó un archivo, con los botones Copiar y Cerrar" src="../images/details.png" width="600">
+<img alt="El panel Detalles: la versión del visor, el navegador, el historial de cargas y el motivo por el que se rechazó un archivo, con los botones Copiar y Cerrar" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/details.png" width="600">
 
 ## Instalación
 
@@ -142,7 +142,7 @@ Pulsa **Copiar** y pégalo en un issue: con eso basta para saber qué pasó. No 
 2. En la pestaña **Git URL**, pega esta dirección en **URL del repositorio**:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.0
+   https://github.com/momokun7/orca-3d-viewer#v1.0.1
    ```
 
 3. Elige **Continuar** y luego **Instalar**. En el cuadro de diálogo que aparece, elige **Activar plugin**: hasta que no lo hagas, no se ejecuta nada.

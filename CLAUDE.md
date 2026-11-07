@@ -13,3 +13,10 @@ The README exists in eleven languages: `README.md` (English, the one GitHub show
    in line with it, in one pull request.
 
 Do not change the English or any other language before step 1 is approved, even for a small fix.
+
+## Images
+
+Orca installs every tracked file, so the README's images and GIFs live on the `readme-media`
+branch and the READMEs link them by `raw.githubusercontent.com` URL. Only what the manifest names
+(`assets/icon.png`, `docs/images/plugin-page/`) stays on `main`. Add or replace README media with
+a commit to `readme-media`; it refuses force-pushes and deletion.
