@@ -17,13 +17,21 @@
 [![Orca](https://img.shields.io/badge/Orca-%E2%89%A5%201.4.248-black.svg)](https://github.com/stablyai/orca)
 [![Permissions](https://img.shields.io/badge/permissions-none-brightgreen.svg)](#安全性)
 
-[対応形式](#対応形式) · [機能](#機能) · [インストール](#インストール) · [使い方](#使い方) ·
+[すぐに使う](#すぐに使う) · [対応形式](#対応形式) · [機能](#機能) · [インストール](#インストール) · [使い方](#使い方) ·
 [困ったとき](#困ったとき) · [安全性](#安全性) · [開発](#開発) ·
 [バグを報告](https://github.com/momokun7/orca-3d-viewer/issues/new?template=bug_report.yml)
 
 <img alt="Orca の中の 3D Viewer で、床のグリッドの上に座るスタンフォードバニー。下の欄に 156 × 154 × 121 mm と大きさが出ている" src="../images/hero.png" width="800">
 
 </div>
+
+## すぐに使う
+
+1. Orca で **設定 → プラグイン → プラグインをインストール** を開き、**Git URL** に `https://github.com/momokun7/orca-3d-viewer#v1.0.0` を入れて **インストール**。
+2. `.glb`・`.gltf`・`.stl`・`.ply`・`.obj`・`.fbx` のどれかを開く。
+3. ドラッグで回し、ホイールで近づく。
+
+権限は何も求めません。詳しくは [インストール](#インストール) と [使い方](#使い方) を見てください。
 
 ## 対応形式
 
