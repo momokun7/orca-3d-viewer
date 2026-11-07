@@ -156,7 +156,8 @@ describe('source', () => {
 
   for (const file of readdirSync(SRC).filter((name) => /\.(ts|css)$/.test(name))) {
     it(`${file} uses no API outside the viewer’s sandbox`, () => {
-      const text = code(file).replace(ALLOWED[file] ?? /$^/g, '')
+      const allowed = ALLOWED[file]
+      const text = allowed ? code(file).replace(allowed, '') : code(file)
       for (const [pattern, reason] of FORBIDDEN) {
         assert.doesNotMatch(text, pattern, `${file} ${reason}`)
       }
