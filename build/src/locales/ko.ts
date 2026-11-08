@@ -56,6 +56,7 @@ export const KO: Messages = {
   usdCompressed: '이 USDZ 패키지는 파일을 압축해 두었습니다. USDZ는 파일을 압축하지 않고 저장하므로 뷰어에서 열지 않습니다. USDZ를 지원하는 도구로 다시 내보내세요.',
   usdAssumedCentimeters: '이 USD 파일에는 단위가 없어, USD의 규칙대로 센티미터로 간주해 크기를 표시합니다.',
   usdExternalLayers: '별도 USD 파일({{files}})에 있는 부분은 표시되지 않습니다. Orca 플러그인은 모델과 같은 폴더의 다른 파일을 읽을 수 없습니다. .usdz로 묶으면 표시됩니다.',
+  usdExternalTextures: '별도 파일({{files}})로 된 텍스처는 표시되지 않습니다. Orca 플러그인은 모델과 같은 폴더의 다른 파일을 읽을 수 없습니다. 텍스처까지 보려면 .usdz로 묶으세요.',
   laterSaveFailed: '최신 저장 내용을 표시하지 못해 이전 내용을 그대로 표시합니다: {{reason}}',
   moreFiles: '{{list}} 외 {{count}}개',
   otherScenes: { other: '이 파일에는 장면이 {{count}}개 더 있습니다. 기본 장면을 표시합니다.' },

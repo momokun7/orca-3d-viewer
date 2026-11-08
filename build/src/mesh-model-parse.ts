@@ -9,7 +9,8 @@ import {
   Mesh,
   type Material,
   MeshStandardMaterial,
-  type Object3D
+  type Object3D,
+  Texture
 } from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
@@ -21,7 +22,7 @@ import { stlIsText } from './mesh-budget.ts'
 import { latin1, type MeshFormat } from './model-format.ts'
 
 export type MeshModel = GltfModel & {
-  /** Files the model names beside itself, which the frame cannot read: textures it shows blank. */
+  /** Files the model names beside itself, which the frame cannot read: textures it shows without. */
   blockedFiles: string[]
 }
 
@@ -50,6 +51,42 @@ function resurface(root: Object3D): void {
     const old: Material[] = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
     for (const material of old) material.dispose()
     mesh.material = surface(mesh.geometry)
+  })
+}
+
+// What the viewer's surface supplies once a texture slot loses the stand-in it held.
+const SURFACE_STAND_INS = new Map<string, (material: MeshStandardMaterial) => void>([
+  ['map', (material) => material.color.setHex(SURFACE_COLOR)],
+  ['roughnessMap', (material) => (material.roughness = 0.6)],
+  ['metalnessMap', (material) => (material.metalness = 0)],
+  // Why black: loaders set a full emissive colour for the map to scale, which alone glows white.
+  ['emissiveMap', (material) => material.emissive.setHex(0x000000)]
+])
+
+const isBlocked = (texture: Texture): boolean => {
+  const image: unknown = texture.image
+  return typeof image === 'object' && image !== null && 'src' in image && image.src === BLOCKED_RESOURCE_URL
+}
+
+/**
+ * Takes out the stand-in pixel of every texture the frame could not read, so a model whose textures
+ * live beside it shows the viewer's surface rather than a white, fully metallic one.
+ */
+function dropBlockedTextures(root: Object3D): void {
+  root.traverse((node) => {
+    const mesh = node as Mesh
+    if (!mesh.isMesh) return
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      // SAFETY: a material keeps its texture slots as own fields; only fields holding a texture change.
+      const fields = material as unknown as Record<string, unknown>
+      for (const [slot, value] of Object.entries(fields)) {
+        if (!(value instanceof Texture) || !isBlocked(value)) continue
+        fields[slot] = null
+        value.dispose()
+        if (material instanceof MeshStandardMaterial) SURFACE_STAND_INS.get(slot)?.(material)
+        material.needsUpdate = true
+      }
+    }
   })
 }
 
@@ -126,6 +163,7 @@ export async function parseMeshModel(format: MeshFormat, data: ArrayBuffer | str
       try {
         const group = new FBXLoader(manager).parse(bytes(), '')
         await texturesLoaded()
+        dropBlockedTextures(group)
         return { scene: scaled(group, metersPerUnit), animations: group.animations, otherSceneCount: 0, blockedFiles }
       } finally {
         untrack()
@@ -141,6 +179,7 @@ export async function parseMeshModel(format: MeshFormat, data: ArrayBuffer | str
         // Why as given: USDLoader reads text as a USDA layer and bytes as a package, crate or text.
         const group = new USDLoader(manager).parse(data, '', texturesReady, texturesReady)
         await waitAtMost(textures)
+        dropBlockedTextures(group)
         return { scene: scaled(group, metersPerUnit), animations: group.animations, otherSceneCount: 0, blockedFiles }
       } finally {
         untrack()

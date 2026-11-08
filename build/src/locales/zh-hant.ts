@@ -52,6 +52,7 @@ export const ZH_HANT: Messages = {
   usdCompressed: '此 USDZ 套件壓縮了其中的檔案。USDZ 規定檔案以不壓縮的方式儲存，因此檢視器不會開啟。請使用可寫出 USDZ 的工具重新匯出。',
   usdAssumedCentimeters: '此 USD 檔案未註明單位，因此依照 USD 的慣例以公分顯示尺寸。',
   usdExternalLayers: '位於其他 USD 檔案（{{files}}）中的部分不會顯示：Orca 外掛無法讀取模型旁邊的檔案。將它們打包成 .usdz 即可顯示。',
+  usdExternalTextures: '無法顯示獨立檔案中的紋理（{{files}}）：Orca 外掛無法讀取模型所在資料夾中的其他檔案。若要檢視紋理，請將它們打包成 .usdz。',
   laterSaveFailed: '無法顯示最新儲存的版本，目前仍顯示上一個版本：{{reason}}',
   moreFiles: '{{list}}，另有 {{count}} 個',
   otherScenes: { other: '此檔案還有另外 {{count}} 個場景，目前顯示的是預設場景。' },

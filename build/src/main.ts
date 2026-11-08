@@ -207,7 +207,9 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
       const parsed = await parseMeshModel(mesh.format, data, mesh.metersPerUnit ?? stored ?? 1)
       model = parsed
       const blocked = [...new Set([...parsed.blockedFiles, ...mesh.externalFiles])]
-      if (blocked.length > 0) notices.push(t('externalTextures', { files: nameList(blocked, more) }))
+      if (blocked.length > 0) {
+        notices.push(t(mesh.format === 'usd' ? 'usdExternalTextures' : 'externalTextures', { files: nameList(blocked, more) }))
+      }
       if (mesh.materialFiles) notices.push(t('objMaterials'))
       if (mesh.format === 'obj' || mesh.format === 'ply') notices.push(t('assumedMeters'))
       if (mesh.externalLayers.length > 0) notices.push(t('usdExternalLayers', { files: nameList(mesh.externalLayers, more) }))
