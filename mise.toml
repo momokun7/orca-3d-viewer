@@ -40,6 +40,10 @@ run = [
   "git diff --exit-code -- editor THIRD_PARTY_NOTICES.txt"
 ]
 
+[tasks.sync-main]
+description = "Merge origin/main into this branch, settling editor/ conflicts by rebuilding it"
+run = "node tools/sync-main.ts"
+
 [tasks.rulesets]
 description = "Apply .github/rulesets to GitHub (needs a public repository or GitHub Pro)"
 run = "node tools/apply-rulesets.ts"
