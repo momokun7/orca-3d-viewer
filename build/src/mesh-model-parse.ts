@@ -1,4 +1,4 @@
-// Builds a scene from STL, PLY, OBJ and FBX files, which their checks have already let through.
+// Builds a scene from STL, PLY, OBJ, FBX and USD files, which their checks have already let through.
 // These loaders parse synchronously, so the checks bound what they build; the result goes through
 // the same loaded-model limits as glTF before it is shown.
 import {
@@ -15,6 +15,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
+import { USDLoader } from 'three/examples/jsm/loaders/USDLoader.js'
 import { BLOCKED_RESOURCE_URL, type GltfModel, resolveOwnUrl, trackBlobUrls } from './gltf-model-parse.ts'
 import { stlIsText } from './mesh-budget.ts'
 import { latin1, type MeshFormat } from './model-format.ts'
@@ -91,11 +92,13 @@ export async function parseMeshModel(format: MeshFormat, data: ArrayBuffer | str
   manager.onStart = () => {
     loading = true
   }
-  const texturesLoaded = async (): Promise<void> => {
-    if (!loading) return
+  const waitAtMost = async (done: Promise<void>): Promise<void> => {
     let timer: ReturnType<typeof setTimeout> | undefined
-    await Promise.race([settled, new Promise<void>((resolve) => (timer = setTimeout(resolve, TEXTURE_WAIT_MS)))])
+    await Promise.race([done, new Promise<void>((resolve) => (timer = setTimeout(resolve, TEXTURE_WAIT_MS)))])
     clearTimeout(timer)
+  }
+  const texturesLoaded = async (): Promise<void> => {
+    if (loading) await waitAtMost(settled)
   }
   manager.setURLModifier((url) => {
     const resolved = resolveOwnUrl(url)
@@ -123,6 +126,21 @@ export async function parseMeshModel(format: MeshFormat, data: ArrayBuffer | str
       try {
         const group = new FBXLoader(manager).parse(bytes(), '')
         await texturesLoaded()
+        return { scene: scaled(group, metersPerUnit), animations: group.animations, otherSceneCount: 0, blockedFiles }
+      } finally {
+        untrack()
+      }
+    }
+    case 'usd': {
+      // Why tracked: USDComposer makes a blob URL for each image in a package when it builds a material.
+      const untrack = trackBlobUrls()
+      try {
+        // Why its own callback: USDComposer loads textures through Image, past the LoadingManager.
+        let texturesReady = (): void => {}
+        const textures = new Promise<void>((resolve) => (texturesReady = resolve))
+        // Why as given: USDLoader reads text as a USDA layer and bytes as a package, crate or text.
+        const group = new USDLoader(manager).parse(data, '', texturesReady, texturesReady)
+        await waitAtMost(textures)
         return { scene: scaled(group, metersPerUnit), animations: group.animations, otherSceneCount: 0, blockedFiles }
       } finally {
         untrack()

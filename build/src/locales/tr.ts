@@ -56,6 +56,10 @@ export const TR: Messages = {
   fbxText: 'Bu, metin (ASCII) biçiminde bir FBX dosyası; görüntüleyici bu biçimi okuyamaz. Dosyayı ikili FBX olarak dışa aktarın.',
   fbxVersion:
     'Bu FBX dosyasının sürümü {{version}}; görüntüleyici FBX 7.0 (2011) ve sonrasını okur. Dosyayı güncel bir araçla yeniden dışa aktarın.',
+  usdBinary: 'Bu USD dosyası ikili (USDC) biçimde ve görüntüleyici bu biçimi henüz okuyamıyor. Dosyayı USDA olarak ya da USDA içeren bir USDZ olarak dışa aktarın.',
+  usdCompressed: 'Bu USDZ paketi dosyalarını sıkıştırıyor. USDZ dosyaları sıkıştırmadan sakladığı için görüntüleyici paketi açmaz. Dosyayı USDZ yazabilen bir araçla yeniden dışa aktarın.',
+  usdAssumedCentimeters: 'Bu USD dosyasında birim belirtilmediği için boyutlar, USD kuralına göre santimetre cinsinden gösteriliyor.',
+  usdExternalLayers: 'Ayrı USD dosyalarındaki parçalar ({{files}}) gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz. Görmek için bunları bir .usdz içinde paketleyin.',
   laterSaveFailed: 'Son kaydedilen sürüm gösterilemediği için önceki sürüm ekranda kalıyor: {{reason}}',
   moreFiles: '{{list}} ve {{count}} dosya daha',
   otherScenes: {

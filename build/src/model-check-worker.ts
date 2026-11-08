@@ -2,7 +2,7 @@
 import type { ModelFormat } from './model-format.ts'
 import { checkModel } from './model-refusal.ts'
 
-const FORMATS = new Set<unknown>(['gltf', 'stl', 'ply', 'obj', 'fbx'] satisfies ModelFormat[])
+const FORMATS = new Set<unknown>(['gltf', 'stl', 'ply', 'obj', 'fbx', 'usd'] satisfies ModelFormat[])
 
 self.onmessage = (event: MessageEvent<{ format?: unknown; data?: unknown } | null>) => {
   try {

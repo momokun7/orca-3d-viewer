@@ -20,6 +20,7 @@ import {
   S,
   TRIANGLE
 } from './fixtures/meshes.ts'
+import { reference, triangle, usda, usdz } from './fixtures/usd.ts'
 
 const buffer = (bytes: Uint8Array): ArrayBuffer => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
 const text = (value: string): ArrayBuffer => buffer(new TextEncoder().encode(value))
@@ -144,7 +145,9 @@ describe('mesh checks on corrupted files', () => {
     ['ply', binaryPly()],
     ['obj', new TextEncoder().encode(obj())],
     ['fbx', fbxTriangle()],
-    ['fbx', fbxTriangle({ compress: true, version: 7500 })]
+    ['fbx', fbxTriangle({ compress: true, version: 7500 })],
+    ['usd', new TextEncoder().encode(usda(triangle()))],
+    ['usd', usdz([['model.usda', usda(triangle() + reference('Part', 'part.usda'))], ['part.usda', usda(triangle())]])]
   ]
 
   it('pass or refuse every corrupted file, never throwing', () => {
