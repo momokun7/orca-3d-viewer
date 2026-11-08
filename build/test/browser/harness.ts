@@ -130,7 +130,10 @@ export async function closeBrowser(): Promise<void> {
   browser = null
 }
 
-/** A document as Orca sends it; `fileType` defaults to .glb for bytes and .gltf for text. */
+/**
+ * A document as Orca sends it. Bytes carry `fileType` without its dot (".glb" by default); text
+ * carries none, as in Orca, so the viewer tells text formats apart by their content.
+ */
 export type Content = ({ bytes: Uint8Array } | { text: string }) & { fileType?: string }
 
 export type Frame = {
@@ -225,12 +228,13 @@ export async function openFrame({ locale = 'en-US', webgl = true } = {}): Promis
       ({ base64, text, version, fileType }) => {
         const document =
           base64 === null
-            ? { version, readOnly: false, content: { kind: 'text', text }, fileType: fileType ?? '.gltf' }
+            ? { version, readOnly: false, content: { kind: 'text', text } }
             : {
                 version,
                 readOnly: false,
                 content: { kind: 'bytes', bytes: Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)).buffer },
-                fileType: fileType ?? '.glb'
+                // Why no dot: Orca sends the manifest suffix that matched, such as "glb".
+                fileType: (fileType ?? '.glb').replace(/^\./, '')
               }
         window.__orcaTest.send(document)
       },

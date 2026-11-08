@@ -32,7 +32,10 @@ const kind = (check: ReturnType<typeof checkModel>): string | null => {
 
 describe('modelFormat', () => {
   it('follows the file type Orca names, and reads the bytes when there is none', () => {
+    // Orca names the suffix without its dot; a dot is accepted too.
+    assert.equal(modelFormat('usdz', new ArrayBuffer(0)), 'usd')
     assert.equal(modelFormat('.STL', new ArrayBuffer(0)), 'stl')
+    assert.equal(modelFormat(undefined, buffer(usdz([['model.usda', usda(triangle())]]))), 'usd')
     assert.equal(modelFormat(undefined, buffer(fbxTriangle())), 'fbx')
     assert.equal(modelFormat(undefined, text(asciiPly())), 'ply')
     assert.equal(modelFormat(undefined, '{"asset":{}}'), 'gltf')

@@ -214,5 +214,7 @@ export function checkObj(text: string): MeshVerdict {
         break
     }
   }
+  // Why refused: text Orca sends without a file type reaches here when it is no other format.
+  if (corners === 0) return corrupt('it holds no faces, lines or points')
   return verdict(stored + corners * OBJ_NUMBERS_PER_CORNER, corners, { materialFiles })
 }
