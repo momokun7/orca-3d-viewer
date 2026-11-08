@@ -164,7 +164,7 @@ If 3D Viewer does not show up, add the community catalog under **Add plugin → 
 1. Open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste this into **Repository URL**:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.2
+   https://github.com/momokun7/orca-3d-viewer#v1.1.0
    ```
 
 2. Choose **Continue**, then **Install**, and then **Enable plugin** in the dialog that follows.

@@ -159,7 +159,7 @@ Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 
 1. **設定 → プラグイン → プラグインをインストール** を開き、**Git URL** のタブの **リポジトリ URL** に次を貼り付ける。
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.2
+   https://github.com/momokun7/orca-3d-viewer#v1.1.0
    ```
 
 2. **続行**、**インストール** の順に押し、続けて出る確認で **プラグインを有効にする** を押す。

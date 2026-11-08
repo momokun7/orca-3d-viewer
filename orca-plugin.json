@@ -3,7 +3,7 @@
   "manifestVersion": 2,
   "id": "3d-viewer",
   "name": "3D Viewer",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "execution": "sandboxed-ui",
   "description": "Preview 3D models in Orca's editor: GLB and glTF, STL, PLY, OBJ, FBX and USD. Orbit, zoom and pan, play animations, and check the model's real-world size on a floor grid. Read-only.",
   "license": "MIT",
