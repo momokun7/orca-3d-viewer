@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { after, afterEach, beforeEach, describe, it } from 'node:test'
 import { solidPng } from '../fixtures/images.ts'
-import { reference, texturedSquare, triangle, usda, usdz } from '../fixtures/usd.ts'
+import { moving, reference, texturedSquare, triangle, usda, usdz } from '../fixtures/usd.ts'
 import { crate, triangleSpecs } from '../fixtures/usdc.ts'
 import { assertContained } from './frame-assertions.ts'
 import { closeBrowser, type Content, openFrame, type Frame } from './harness.ts'
@@ -38,6 +38,11 @@ describe('USD', () => {
       assertContained(await frame.report())
     })
   }
+
+  it('offers the animation a layer holds', async () => {
+    const state = await frame.open({ text: usda(moving(), { metersPerUnit: 1 }), fileType: '.usda' })
+    assert.deepEqual(state.kind === 'model' && state.animations, ['TransformAnimation'])
+  })
 
   it('shows the texture a package holds, and stays inside the frame', async () => {
     const files: [string, string | Uint8Array][] = [

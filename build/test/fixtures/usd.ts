@@ -12,6 +12,20 @@ export function triangle(name = 'Tri'): string {
   return `    def Mesh "${name}"\n    {\n        int[] faceVertexCounts = [3]\n        int[] faceVertexIndices = [0, 1, 2]\n        point3f[] points = [(0, 0, 0), (1, 0, 0), (0, 1, 0)]\n    }\n`
 }
 
+/** An Xform that moves along X over a second, holding one triangle. */
+export function moving(): string {
+  const samples = `        double3 xformOp:translate.timeSamples = {
+            0: (0, 0, 0),
+            24: (1, 0, 0),
+        }
+`
+  return `    def Xform "Mover"
+    {
+${samples}        uniform token[] xformOpOrder = ["xformOp:translate"]
+${triangle().replace(/^/gm, '    ')}    }
+`
+}
+
 /** A prim that references `path`, once per entry of `times`. */
 export function reference(name: string, path: string, times = 1): string {
   const arcs = Array.from({ length: times }, () => `@${path}@`).join(', ')
