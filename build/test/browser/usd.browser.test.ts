@@ -55,7 +55,8 @@ describe('USD', () => {
     assert.match(state.kind === 'model' ? (state.notice ?? '') : '', /wood\.png.*\.usdz/)
     const box = await frame.page.locator('.viewport canvas').boundingBox()
     assert.ok(box)
-    const [red, green, blue] = await frame.pixel(Math.round(box.x + box.width / 2), Math.round(box.y + box.height / 2))
+    // Why off centre: the axis lines cross at the centre, and their colour mixes in on some GPUs.
+    const [red, green, blue] = await frame.pixel(Math.round(box.x + box.width * 0.42), Math.round(box.y + box.height * 0.42))
     // Why not white: the stand-in pixel is taken out, so the viewer's blue-grey surface shows.
     assert.ok(blue > red + 20 && red < 200, `expected the blue-grey surface, got ${red}, ${green}, ${blue}`)
     assertContained(await frame.report())
