@@ -118,8 +118,6 @@ function refusalMessage(refusal: Refusal): string {
       return t('fbxText')
     case 'fbxVersion':
       return t('fbxVersion', { version: String(refusal.version) })
-    case 'usdBinary':
-      return t('usdBinary')
     case 'usdCompressed':
       return t('usdCompressed')
   }

@@ -48,7 +48,6 @@ export const ZH_HANT: Messages = {
   assumedMeters: '此格式不記錄單位，尺寸以公尺顯示。',
   fbxText: '這是文字（ASCII）格式的 FBX 檔案，檢視器無法讀取。請匯出為二進位 FBX。',
   fbxVersion: '此 FBX 檔案的版本為 {{version}}，檢視器僅支援 FBX 7.0（2011）以上版本。請用較新的工具重新匯出。',
-  usdBinary: '檢視器目前還無法讀取二進位（USDC）格式的 USD 檔案。請匯出為 USDA，或包含 USDA 的 USDZ。',
   usdCompressed: '此 USDZ 套件壓縮了其中的檔案。USDZ 規定檔案以不壓縮的方式儲存，因此檢視器不會開啟。請使用可寫出 USDZ 的工具重新匯出。',
   usdAssumedCentimeters: '此 USD 檔案未註明單位，因此依照 USD 的慣例以公分顯示尺寸。',
   usdExternalLayers: '位於其他 USD 檔案（{{files}}）中的部分不會顯示：Orca 外掛無法讀取模型旁邊的檔案。將它們打包成 .usdz 即可顯示。',

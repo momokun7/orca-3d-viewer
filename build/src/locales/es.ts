@@ -61,7 +61,6 @@ export const ES: Messages = {
   fbxText: 'Es un archivo FBX de texto (ASCII) y el visor no puede leerlo. Vuelve a exportarlo como FBX binario.',
   fbxVersion:
     'El archivo es FBX {{version}} y el visor solo lee FBX 7.0 (2011) o posterior. Vuelve a exportarlo con una herramienta reciente.',
-  usdBinary: 'Este archivo USD es binario (USDC) y el visor todavía no puede leerlo. Vuelve a exportarlo como USDA o como un USDZ que contenga USDA.',
   usdCompressed: 'Este paquete USDZ comprime sus archivos. USDZ los guarda sin comprimir, así que el visor no lo abre. Vuelve a exportarlo con una herramienta que escriba USDZ.',
   usdAssumedCentimeters: 'Este archivo USD no indica unidades, así que las medidas se muestran en centímetros, como supone USD.',
   usdExternalLayers: 'Las partes que están en archivos USD aparte ({{files}}) no se muestran: los plugins de Orca no pueden leer archivos junto al modelo. Empaquétalas en un .usdz para verlas.',

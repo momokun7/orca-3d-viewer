@@ -59,7 +59,6 @@ export const PT: Messages = {
   fbxText: 'Este é um arquivo FBX em texto (ASCII), que o visualizador não lê. Exporte-o como FBX binário.',
   fbxVersion:
     'Este arquivo FBX é da versão {{version}}, mas o visualizador lê FBX 7.0 (2011) ou mais recente. Exporte-o de novo com uma ferramenta atual.',
-  usdBinary: 'Este arquivo USD é binário (USDC), e o visualizador ainda não consegue lê-lo. Exporte-o como USDA ou como um USDZ com USDA.',
   usdCompressed: 'Este pacote USDZ compacta os arquivos. O USDZ os guarda sem compactação, então o visualizador não o abre. Exporte-o de novo com uma ferramenta que grave USDZ.',
   usdAssumedCentimeters: 'Este arquivo USD não informa unidades, então os tamanhos são mostrados em centímetros, como o USD pressupõe.',
   usdExternalLayers: 'Partes em arquivos USD separados ({{files}}) não são exibidas: plugins do Orca não conseguem ler arquivos ao lado do modelo. Junte-as em um .usdz para vê-las.',

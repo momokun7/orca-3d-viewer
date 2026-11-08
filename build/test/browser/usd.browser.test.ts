@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { after, afterEach, beforeEach, describe, it } from 'node:test'
 import { solidPng } from '../fixtures/images.ts'
 import { reference, texturedSquare, triangle, usda, usdz } from '../fixtures/usd.ts'
+import { crate, triangleSpecs } from '../fixtures/usdc.ts'
 import { assertContained } from './frame-assertions.ts'
 import { closeBrowser, type Content, openFrame, type Frame } from './harness.ts'
 
@@ -23,7 +24,9 @@ describe('USD', () => {
       bytes('.usdz', usdz([['model.usda', usda(reference('Part', 'parts/part.usda', 2), { metersPerUnit: 1 })], ['parts/part.usda', usda(triangle(), { metersPerUnit: 1 })]])),
       ['6 vertices · 2 triangles', '1 × 1 × 0 m'],
       null
-    ]
+    ],
+    ['a USDC in meters', bytes('usdc', crate(triangleSpecs({ metersPerUnit: 1 })).bytes), ['3 vertices · 1 triangle', '1 × 1 × 0 m'], null],
+    ['a USDZ that holds a USDC', bytes('usdz', usdz([['model.usdc', crate(triangleSpecs({ metersPerUnit: 1 })).bytes]])), ['3 vertices · 1 triangle', '1 × 1 × 0 m'], null]
   ] as const) {
     it(`shows ${name}`, async () => {
       const state = await frame.open(content)
@@ -64,7 +67,7 @@ describe('USD', () => {
 
   for (const [name, content, message] of [
     ['a compressed package', bytes('.usdz', usdz([['model.usda', usda(triangle()).repeat(8)]], 6)), /compresses its files/],
-    ['a binary layer', bytes('.usd', new TextEncoder().encode('PXR-USDC\0\0\0\0\0\0\0\0')), /binary \(USDC\)/],
+    ['a damaged binary layer', bytes('usd', new TextEncoder().encode('PXR-USDC\0\0\0\0\0\0\0\0')), /cannot be read as USD/],
     ['layers that reference each other in a loop', bytes('.usdz', usdz([['a.usda', usda(reference('B', 'b.usda'))], ['b.usda', usda(reference('A', 'a.usda'))]])), /loop/]
   ] as const) {
     it(`refuses ${name} with a reason`, async () => {

@@ -8,6 +8,7 @@ import { checkModel, type ModelCheck } from '../src/model-refusal.ts'
 import { readUsdzEntries, resolveAssetPath } from '../src/usd-inspection.ts'
 import { pngHeader } from './fixtures/images.ts'
 import { reference, renamed, textured, triangle, usda, usdz } from './fixtures/usd.ts'
+import { ARRAY, COMPRESSED, type CrateValue, crate, SPEC, TYPE, triangleSpecs, Writer } from './fixtures/usdc.ts'
 
 const buffer = (bytes: Uint8Array): ArrayBuffer => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
 const check = (data: Uint8Array | string): ModelCheck => checkModel('usd', typeof data === 'string' ? data : buffer(data))
@@ -34,12 +35,6 @@ describe('USD check', () => {
 
   it('refuses compressed packages, which USDZ does not allow, before anything inflates', () => {
     assert.equal(kind(check(usdz([['model.usda', usda(triangle()).repeat(20)]], 6))), 'usdCompressed')
-  })
-
-  it('refuses binary layers, in a package or alone', () => {
-    const crate = new TextEncoder().encode('PXR-USDC\0\0\0\0\0\0\0\0')
-    assert.equal(kind(check(crate)), 'usdBinary')
-    assert.equal(kind(check(usdz([['model.usdc', crate]]))), 'usdBinary')
   })
 
   it('refuses packages whose directory or names the loader would misread', () => {
@@ -130,4 +125,105 @@ describe('USD check', () => {
       assert.equal(resolveAssetPath(path, base), expected)
     }
   })
+})
+
+describe('USDC check', () => {
+  const unit = (result: ModelCheck) => result.mesh && { metersPerUnit: result.mesh.metersPerUnit, unitAssumed: result.mesh.unitAssumed }
+  const setU64 = (bytes: Uint8Array, at: number, value: number): Uint8Array => {
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+    view.setUint32(at, value % 2 ** 32, true)
+    view.setUint32(at + 4, Math.floor(value / 2 ** 32), true)
+    return bytes
+  }
+  const raw = (write: (out: Writer, at: number) => void, hi: number): CrateValue => ({
+    raw: (at) => {
+      const out = new Writer()
+      write(out, at)
+      return out.done()
+    },
+    hi
+  })
+  /** The triangle layer with one more attribute holding `value`. */
+  const withValue = (value: CrateValue): Uint8Array =>
+    crate([...triangleSpecs(), { path: '/Root/Tri.extra', type: SPEC.attribute, fields: [['default', value]] }]).bytes
+
+  it('passes a binary layer alone and in a package, and reads the unit its root states', () => {
+    assert.deepEqual(unit(check(crate(triangleSpecs({ metersPerUnit: 0.01 })).bytes)), { metersPerUnit: 1, unitAssumed: false })
+    assert.deepEqual(unit(check(crate(triangleSpecs()).bytes)), { metersPerUnit: 0.01, unitAssumed: true })
+    assert.deepEqual(unit(check(usdz([['model.usdc', crate(triangleSpecs({ metersPerUnit: 1 })).bytes]]))), { metersPerUnit: 1, unitAssumed: false })
+    assert.equal(modelFormat('usdc', new ArrayBuffer(0)), 'usd')
+  })
+
+  it('counts the faces a binary layer draws, from the typed arrays its parser makes', () => {
+    const specs = triangleSpecs().map((spec) =>
+      spec.path.endsWith('.faceVertexCounts') ? { ...spec, fields: [['typeName', { token: 'int[]' }], ['default', { ints: [BUDGET.drawnVertices] }]] satisfies [string, CrateValue][] } : spec
+    )
+    assert.equal(kind(check(crate(specs).bytes)), 'budget:drawnVertices')
+  })
+
+  const many = 500
+  const shared: CrateValue = { rep: [88, ARRAY | (TYPE.Vec3f << 16)] }
+  for (const [name, bytes, expected] of [
+    ['a version older than the parser reads compressed', () => crate(triangleSpecs(), { version: 3 }).bytes, /older than the viewer reads/],
+    ['a table of contents past the end', () => { const bytes = crate(triangleSpecs()).bytes; return setU64(bytes, 16, bytes.length) }, /table of contents runs past/],
+    ['tokens that claim to decompress to a terabyte', () => { const layer = crate(triangleSpecs()); return setU64(layer.bytes, (layer.sections.get('TOKENS') ?? 0) + 8, 2 ** 40) }, 'budget:geometryBytes'],
+    ['more tokens than their bytes hold', () => { const layer = crate(triangleSpecs()); return setU64(layer.bytes, layer.sections.get('TOKENS') ?? 0, 1e9) }, /more tokens/],
+    [
+      'compressed chunks whose sizes run past their data',
+      () => {
+        const layer = crate(triangleSpecs())
+        const at = (layer.sections.get('TOKENS') ?? 0) + 24
+        layer.bytes[at] = 1
+        new DataView(layer.bytes.buffer).setUint32(at + 1, 0xffffffff, true)
+        return layer.bytes
+      },
+      /damaged/
+    ],
+    ['an array longer than the file', () => { const layer = crate(triangleSpecs()); return setU64(layer.bytes, layer.values.get('/Root/Tri.points default') ?? 0, 0x7fffffff) }, /array runs past/],
+    [
+      'one array that many specs read again',
+      () => crate([
+        { path: '/', type: SPEC.pseudoRoot, fields: [['points', { vec3f: new Array(300_000).fill(0) }]] },
+        { path: '/Root', type: SPEC.prim, fields: [] },
+        ...Array.from({ length: many }, (_, index) => ({ path: `/Root.p${index}`, type: SPEC.attribute, fields: [['default', shared]] satisfies [string, CrateValue][] }))
+      ]).bytes,
+      'budget:geometryBytes'
+    ],
+    [
+      'a path tree that leads back over itself',
+      // Every entry claims a child next and a sibling after it: the parser would build 2^64 paths.
+      () => crate([{ path: '/', type: SPEC.pseudoRoot, fields: [] }, ...Array.from({ length: 64 }, (_, index) => ({ path: `/p${index}`, type: SPEC.prim, fields: [] }))], { jumps: (jumps) => jumps.map(() => 1) }).bytes,
+      /leads back/
+    ],
+    [
+      'paths so long that building them would fill memory',
+      () => crate(
+        [{ path: '/', type: SPEC.pseudoRoot, fields: [] }, ...Array.from({ length: 1000 }, (_, index) => ({ path: `/${'x'.repeat(1000)}${index}`, type: SPEC.prim, fields: [] }))],
+        // Each prim becomes the child of the one before: a chain a thousand deep.
+        { jumps: (jumps) => jumps.map((_, index) => (index === jumps.length - 1 ? -2 : -1)) }
+      ).bytes,
+      'budget:geometryBytes'
+    ],
+    [
+      'time samples that hold themselves',
+      () => withValue(raw((out, at) => { out.u64(8); out.u32(at); out.u32(TYPE.TimeSamples << 16) }, TYPE.TimeSamples << 16)),
+      /nest too deeply/
+    ],
+    [
+      'a float lookup table longer than the file',
+      () => withValue(raw((out) => { out.u64(1000); out.put(new Uint8Array([0x74])); out.u32(0x40000000) }, ARRAY | COMPRESSED | (TYPE.Float << 16))),
+      /array runs past/
+    ],
+    ['a list of doubles longer than the file', () => withValue(raw((out) => out.u64(2 ** 40), TYPE.DoubleVector << 16)), /list runs past/],
+    ['a token that would replace an object prototype', () => withValue({ token: '__proto__' }), /__proto__/]
+  ] as const) {
+    it(`refuses ${name} before the parser allocates for it`, () => {
+      const data = bytes()
+      const started = performance.now()
+      const result = check(data)
+      assert.ok(performance.now() - started < 1000, 'the check took longer than a second')
+      if (typeof expected === 'string') assert.equal(kind(result), expected)
+      else assert.match(reason(result), expected)
+    })
+  }
 })
