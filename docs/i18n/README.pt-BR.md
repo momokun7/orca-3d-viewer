@@ -25,7 +25,7 @@ Gire ao redor do modelo, reproduza as animações e confira num piscar de olhos 
 
 ## Início rápido
 
-1. No Orca, abra **Configurações → Plugins → Instalar plugin** e, na aba **URL do Git**, cole `https://github.com/momokun7/orca-3d-viewer#v1.0.2` em **URL do repositório**. Clique em **Continuar**, depois em **Instalar** e, na janela seguinte, em **Ativar plugin**.
+1. No Orca, abra **Configurações → Plugins**, pesquise **3D Viewer**, clique em **Revisar e instalar** e depois instale e ative o plugin. O botão **Open in Orca** na [página do plugin](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) também o abre.
 2. Abra um arquivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Arraste para girar e use a roda do mouse para aproximar ou afastar.
 
@@ -141,15 +141,28 @@ inclui dados do modelo, exceto trechos citados em mensagens de erro.
 
 ## Instalação
 
-1. No Orca, abra **Configurações → Plugins** e clique em **Instalar plugin**.
-2. Na aba **URL do Git**, cole este endereço em **URL do repositório**:
+O 3D Viewer está no catálogo de plugins da comunidade do Orca. Instalado pelo catálogo, ele se atualiza sozinho quando sai uma versão nova.
+
+1. No Orca, abra **Configurações → Plugins** e pesquise **3D Viewer**.
+   O botão **Open in Orca** na [página do plugin](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) abre a mesma página.
+2. Clique em **Revisar e instalar**, confira o que ele pode acessar e depois instale e ative o plugin. O visualizador não pede nenhuma permissão.
+
+Se o 3D Viewer não aparecer, adicione o catálogo da comunidade em **Adicionar plugin → Fontes do catálogo…** com a URL `https://github.com/stablyai/orca-community-plugins.git` e a ref `main`.
+
+<details>
+<summary>Instalar por uma URL do Git</summary>
+
+1. Abra **Configurações → Plugins → Instalar plugin** e, na aba **URL do Git**, cole este endereço em **URL do repositório**:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
-3. Clique em **Continuar** e depois em **Instalar**. Na janela que aparece em seguida, clique em **Ativar plugin**;
-   nada é executado antes disso. Como o visualizador não pede nenhuma permissão, não há mais nada a autorizar.
+2. Clique em **Continuar**, depois em **Instalar** e, na janela seguinte, em **Ativar plugin**.
+
+Instalado dessa forma, o plugin não se atualiza sozinho.
+
+</details>
 
 > [!IMPORTANT]
 > É necessário o aplicativo de desktop do Orca, versão 1.4.248 ou mais recente.

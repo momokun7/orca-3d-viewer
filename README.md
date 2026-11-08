@@ -25,7 +25,7 @@ Orbit around a model, play its animations, and check at a glance that it is the 
 
 ## Quick start
 
-1. In Orca, open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste `https://github.com/momokun7/orca-3d-viewer#v1.0.2` into **Repository URL**, choose **Continue**, then **Install**, and then **Enable plugin**.
+1. In Orca, open **Settings → Plugins**, search for **3D Viewer**, choose **Review & install**, then install and enable it. The **Open in Orca** button on the [plugin page](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) opens it too.
 2. Open a `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` or `.fbx` file.
 3. Drag to orbit, and scroll to zoom.
 
@@ -139,15 +139,28 @@ error message quotes.
 
 ## Install
 
-1. In Orca, open **Settings → Plugins** and choose **Install plugin**.
-2. On the **Git URL** tab, paste this into **Repository URL**:
+3D Viewer is listed in Orca's community plugin catalog. Installed from the catalog, it updates on its own when a new version comes out.
+
+1. In Orca, open **Settings → Plugins** and search for **3D Viewer**.
+   **Open in Orca** on the [plugin page](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) opens the same page.
+2. Choose **Review & install**, check what it can access, then install and enable it. The viewer asks for no permissions.
+
+If 3D Viewer does not show up, add the community catalog under **Add plugin → Catalog sources…** with the URL `https://github.com/stablyai/orca-community-plugins.git` and the ref `main`.
+
+<details>
+<summary>Install from a Git URL</summary>
+
+1. Open **Settings → Plugins → Install plugin**. On the **Git URL** tab, paste this into **Repository URL**:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
-3. Choose **Continue**, then **Install**. In the dialog that follows, choose **Enable plugin**; nothing runs until
-   you do. The viewer asks for no permissions.
+2. Choose **Continue**, then **Install**, and then **Enable plugin** in the dialog that follows.
+
+Installed this way, the plugin does not update on its own.
+
+</details>
 
 > [!IMPORTANT]
 > Requires the Orca desktop app, version 1.4.248 or later.

@@ -25,7 +25,7 @@ Faites tourner le modèle, lisez ses animations et vérifiez d’un coup d’œi
 
 ## Démarrage rapide
 
-1. Dans Orca, ouvrez **Paramètres → Plugins → Installer le plugin**, puis, dans l’onglet **URL Git**, collez `https://github.com/momokun7/orca-3d-viewer#v1.0.2` dans **URL du dépôt**. Cliquez sur **Continuer**, puis sur **Installer**, et enfin sur **Activer le plugin** dans la fenêtre qui s’affiche.
+1. Dans Orca, ouvrez **Paramètres → Plugins**, recherchez **3D Viewer**, cliquez sur **Vérifier et installer**, puis installez et activez le plugin. Le bouton **Open in Orca** de la [page du plugin](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) l’ouvre aussi.
 2. Ouvrez un fichier `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` ou `.fbx`.
 3. Faites glisser la souris pour tourner autour du modèle, et zoomez avec la molette.
 
@@ -139,14 +139,28 @@ Cliquez sur **Copier** et collez-le dans une issue : il décrit ce qui s’est 
 
 ## Installation
 
-1. Dans Orca, ouvrez **Paramètres → Plugins** et cliquez sur **Installer le plugin**.
-2. Dans l’onglet **URL Git**, collez dans **URL du dépôt** :
+3D Viewer figure dans le catalogue communautaire des plugins Orca. Installé depuis le catalogue, il se met à jour tout seul à chaque nouvelle version.
+
+1. Dans Orca, ouvrez **Paramètres → Plugins** et recherchez **3D Viewer**.
+   Le bouton **Open in Orca** de la [page du plugin](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) ouvre la même page.
+2. Cliquez sur **Vérifier et installer**, vérifiez ce à quoi il peut accéder, puis installez et activez le plugin. La visionneuse ne demande aucune autorisation.
+
+Si 3D Viewer n’apparaît pas, ajoutez le catalogue communautaire via **Ajouter un plugin → Sources du catalogue…** avec l’URL `https://github.com/stablyai/orca-community-plugins.git` et la ref `main`.
+
+<details>
+<summary>Installer depuis une URL Git</summary>
+
+1. Ouvrez **Paramètres → Plugins → Installer le plugin** et, dans l’onglet **URL Git**, collez dans **URL du dépôt** :
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
-3. Cliquez sur **Continuer**, puis sur **Installer**. Dans la fenêtre qui s’affiche ensuite, cliquez sur **Activer le plugin** : rien ne s’exécute tant que vous ne l’avez pas activé. La visionneuse ne demande aucune autorisation : vous n’avez rien d’autre à accorder.
+2. Cliquez sur **Continuer**, puis sur **Installer**, et enfin sur **Activer le plugin** dans la fenêtre qui s’affiche.
+
+Installé de cette façon, le plugin ne se met pas à jour tout seul.
+
+</details>
 
 > [!IMPORTANT]
 > Nécessite l’application de bureau Orca 1.4.248 ou ultérieure.
