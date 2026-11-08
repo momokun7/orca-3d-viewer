@@ -42,6 +42,9 @@ closes when its release is tagged.
 - Fill in the template: what changes and why, `Closes #` for the issue it resolves, the risk,
   and the commands you ran with their output.
 - Assign it to yourself, give it a type label, and put it in a milestone.
+- To bring in `main`, run `mise run sync-main`. `editor/` is built output with hashed file names,
+  so it conflicts whenever two branches change the sources; the task merges and rebuilds it, and
+  stops only on conflicts in other files.
 - `mise run check` must pass, and so must CI. Pull requests are squash-merged, so the title
   becomes the commit on `main`: write it as a short sentence in the imperative ("Open STL files").
 
