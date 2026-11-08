@@ -163,7 +163,7 @@
 1. 開啟 **設定 → 外掛 → 安裝外掛**，在 **Git URL** 分頁的 **帶 #ref 的存放庫 URL** 欄位中貼上：
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.2
+   https://github.com/momokun7/orca-3d-viewer#v1.1.0
    ```
 
 2. 按下 **繼續**，再按下 **安裝**，然後在接著出現的對話框中按下 **啟用外掛**。

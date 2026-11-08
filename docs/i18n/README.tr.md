@@ -166,7 +166,7 @@ aktarılanlar dışında özette hiçbir model verisi bulunmaz.
 1. **Ayarlar → Eklentiler → Eklenti yükle**'yi açın ve **Git URL'si** sekmesinde **#ref içeren repository URL'si** alanına şu adresi yapıştırın:
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.2
+   https://github.com/momokun7/orca-3d-viewer#v1.1.0
    ```
 
 2. **Devam**'a, ardından **Yükle**'ye tıklayın ve açılan pencerede **Eklentiyi etkinleştir**'i seçin.

@@ -163,7 +163,7 @@ Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 �
 1. **설정 → 플러그인 → 플러그인 설치**를 열고, **Git URL** 탭의 **저장소 URL**에 다음 주소를 붙여 넣습니다.
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.2
+   https://github.com/momokun7/orca-3d-viewer#v1.1.0
    ```
 
 2. **계속**과 **설치**를 차례로 선택하고, 이어서 나오는 대화 상자에서 **플러그인 활성화**를 선택합니다.

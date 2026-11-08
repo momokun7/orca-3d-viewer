@@ -163,7 +163,7 @@
 1. 打开 **设置 → 插件 → 安装插件**，在 **Git URL** 选项卡的 **仓库 URL** 输入框中粘贴：
 
    ```text
-   https://github.com/momokun7/orca-3d-viewer#v1.0.2
+   https://github.com/momokun7/orca-3d-viewer#v1.1.0
    ```
 
 2. 点击 **继续**，再点击 **安装**，然后在随后弹出的对话框中点击 **启用插件**。
