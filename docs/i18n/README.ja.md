@@ -7,7 +7,7 @@
 
 # 3D Viewer for Orca
 
-[Orca](https://github.com/stablyai/orca) の中で、GLB・glTF・STL・PLY・OBJ・FBX を開ける読み取り専用のビューアーです。
+[Orca](https://github.com/stablyai/orca) の中で、GLB・glTF・STL・PLY・OBJ・FBX・USD を開ける読み取り専用のビューアーです。
 モデルを回して眺め、アニメーションを再生し、思ったとおりの大きさかをひと目で確かめられます。
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
@@ -26,14 +26,14 @@
 ## すぐに使う
 
 1. Orca で **設定 → プラグイン** を開き、「3D Viewer」を検索して **確認してインストール** を押し、インストールして有効にする。[プラグインのページ](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer)の **Open in Orca** からも開ける。
-2. `.glb`・`.gltf`・`.stl`・`.ply`・`.obj`・`.fbx` のどれかを開く。
+2. `.glb`・`.gltf`・`.stl`・`.ply`・`.obj`・`.fbx`・`.usdz`・`.usda`・`.usdc`・`.usd` のどれかを開く。
 3. ドラッグで回し、ホイールで近づく。
 
 権限は何も求めません。詳しくは [インストール](#インストール) と [使い方](#使い方) を見てください。
 
 ## 対応形式
 
-ひとつのビューアーで、6 つの形式を開けます。
+ひとつのビューアーで、7 つの形式を開けます。
 
 <table>
   <tr>
@@ -56,6 +56,16 @@
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
     <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
+  <tr>
+    <td width="33%"><img alt="USDZ の WaterBottle。金色のボトルに赤いふたと模様、黒いホルダーつき" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/usd.png"></td>
+    <td width="33%"></td>
+    <td width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>USD</b>: WaterBottle</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 | 形式 | 拡張子 | 色と模様(テクスチャ) | アニメーション | 大きさの単位 | 注意 |
@@ -65,6 +75,7 @@
 | PLY | `.ply` | 頂点の色(ない場合は標準の色) | なし | メートルとみなして表示 | バイナリとテキストの両方 |
 | OBJ | `.obj` | 頂点の色(`.mtl` は読めない) | なし | メートルとみなして表示 | |
 | FBX | `.fbx` | 埋め込んだ模様だけ | あり | ファイルに書かれた単位 | バイナリの FBX 7.0(2011 年)以降 |
+| USD | `.usdz` `.usda` `.usdc` `.usd` | `.usdz` に入れた模様だけ | あり | ファイルに書かれた単位(書かれていなければセンチメートル) | テキスト(USDA)とバイナリ(USDC)の両方。`.usdz` は無圧縮のもの(USDZ の決まり) |
 
 Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 形式の模様も表示できます。
 
@@ -178,7 +189,7 @@ Draco や Meshopt で圧縮した glTF も開けます。KTX2 / Basis Universal 
 ## できないこと
 
 > [!NOTE]
-> Orca のプラグインが読めるのは、開いたファイルだけです。同じフォルダーにあるほかのファイルは読めないため、別のファイルに分かれたデータは表示できません。たとえば、形状を別の `.bin` に入れた `.gltf` は開けず、別の画像ファイルの模様や OBJ の `.mtl` も表示されません。`.glb`、データを埋め込んだ `.gltf`、模様を埋め込んだ FBX なら、すべて表示されます。
+> Orca のプラグインが読めるのは、開いたファイルだけです。同じフォルダーにあるほかのファイルは読めないため、別のファイルに分かれたデータは表示できません。たとえば、形状を別の `.bin` に入れた `.gltf` は開けず、別の画像ファイルの模様や OBJ の `.mtl`、USD がほかの USD ファイルから読み込む部品も表示されません。`.glb`、データを埋め込んだ `.gltf`、模様を埋め込んだ FBX、すべてを 1 つにまとめた `.usdz` なら、すべて表示されます。
 
 - **デスクトップ版だけ**: ブラウザで動く Orca では、ファイルは **ソース** で開きます。
 - **64 MiB まで**: Orca のカスタムエディター(プラグインが用意する表示画面)で開ける大きさの上限です。展開すると安全に扱える量を大きく超えるモデルや、ビューアーが読めない仕組みを使ったモデルは、理由を表示して開きません。
@@ -198,14 +209,14 @@ Khronos の [glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Ass
 <details>
 <summary>模様や色が出ない</summary>
 
-模様(テクスチャ)が別の画像ファイルに分かれていると、プラグインからは読めません。画面の下の欄に、読めなかったファイルの名前が表示されます。glTF は `.glb` で、FBX は模様を埋め込んで書き出し直すと表示されます。OBJ の `.mtl` は読めないので、頂点に色があればその色、なければ標準の色で表示します。
+模様(テクスチャ)が別の画像ファイルに分かれていると、プラグインからは読めません。画面の下の欄に、読めなかったファイルの名前が表示されます。glTF は `.glb` で、FBX は模様を埋め込んで、USD は `.usdz` にまとめて書き出し直すと表示されます。OBJ の `.mtl` は読めないので、頂点に色があればその色、なければ標準の色で表示します。
 
 </details>
 
 <details>
 <summary>大きさがおかしい</summary>
 
-STL はミリメートル、PLY と OBJ はメートルとみなして表示します(どれも、ファイルに単位を書かない形式です)。FBX と glTF は、ファイルに書かれた単位を使います。思った大きさから 1000 倍や 100 倍ずれているときは、書き出したときの単位を確かめてください。
+STL はミリメートル、PLY と OBJ はメートルとみなして表示します(どれも、ファイルに単位を書かない形式です)。FBX と glTF は、ファイルに書かれた単位を使います。USD はファイルに書かれた単位(`metersPerUnit`)を使い、書かれていなければ USD の決まりどおりセンチメートルとみなして、そのことを下の欄に表示します。思った大きさから 1000 倍や 100 倍ずれているときは、書き出したときの単位を確かめてください。
 
 </details>
 
@@ -230,7 +241,7 @@ STL はミリメートル、PLY と OBJ はメートルとみなして表示し�
 - **隔離された枠で動く**: Orca がプラグイン用に用意した隔離された枠の中で動きます。読み込めるものを厳しく絞る決まり(コンテンツセキュリティポリシー)のもとで、ネットワークにもつながりません。
 - **権限ゼロ**: マニフェストは何の権限も求めません。ワーカーも、コマンドも、ファイルへのアクセスもありません。
 - **読むだけ**: 文書を書き換えたり保存したりしません。モデルの中に書かれた URI(ほかのファイルやサイトの場所)も読みに行きません。
-- **開く前に確かめる**: どの形式も、展開する前に別のスレッドで大きさを確かめます。FBX の圧縮データは、少しずつ展開しながら大きさを数え、ファイルに書かれた大きさを超えた時点で止めます。
+- **開く前に確かめる**: どの形式も、展開する前に別のスレッドで大きさを確かめます。FBX の圧縮データは、少しずつ展開しながら大きさを数え、ファイルに書かれた大きさを超えた時点で止めます。USD のバイナリ形式(USDC)は、読み込みの段階ごとに、ファイルが求めるメモリと手間を先に見積もり、上限を超えるものは読む前に止めます。
 - **テストで守る**: CI で、Orca の枠と同じ決まりのもと、悪意のあるモデルや壊したモデルを読ませています。コミットしたビルド結果がソースから作り直せることも確かめています。
 
 詳しくは [SECURITY.md](../../SECURITY.md) を見てください。
@@ -270,4 +281,5 @@ Issue・ラベル・プロジェクトボード・マイルストーン・PR の
 | BoomBox | FBX、プラグインのページ | Khronos glTF Sample Assets、Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/)、Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data)、Martin Newell(1975)、Kenzie Lamar | CC0 |
+| WaterBottle | USD | Khronos glTF Sample Assets、Microsoft | CC0 1.0 |
 | Fox | アニメーションの GIF、プラグインのページ | Khronos glTF Sample Assets。モデルは PixelMannen(CC0 1.0)、骨組みと動きは tomkranis、glTF への変換は @AsoboStudio と @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

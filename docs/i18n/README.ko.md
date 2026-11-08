@@ -7,7 +7,7 @@
 
 # 3D Viewer for Orca
 
-[Orca](https://github.com/stablyai/orca)에서 GLB, glTF, STL, PLY, OBJ, FBX 파일을 바로 열어 볼 수 있는 읽기 전용 뷰어입니다.
+[Orca](https://github.com/stablyai/orca)에서 GLB, glTF, STL, PLY, OBJ, FBX, USD 파일을 바로 열어 볼 수 있는 읽기 전용 뷰어입니다.
 모델을 이리저리 돌려 보고, 애니메이션을 재생하고, 크기가 예상과 맞는지도 한눈에 확인할 수 있습니다.
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
@@ -26,14 +26,14 @@
 ## 빠른 시작
 
 1. Orca에서 **설정 → 플러그인**을 열고 **3D Viewer**를 검색해 **검토 후 설치**를 선택한 뒤, 설치하고 활성화합니다. [플러그인 페이지](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer)의 **Open in Orca** 버튼으로도 열 수 있습니다.
-2. `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx` 파일을 엽니다.
+2. `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx`, `.usdz`, `.usda`, `.usdc`, `.usd` 파일을 엽니다.
 3. 드래그하면 회전하고, 스크롤하면 확대/축소됩니다.
 
 별도의 권한은 요청하지 않습니다. 자세한 내용은 [설치](#설치)와 [사용법](#사용법)을 참고하세요.
 
 ## 지원 형식
 
-뷰어 하나로 여섯 가지 형식을 모두 열 수 있습니다.
+뷰어 하나로 일곱 가지 형식을 모두 열 수 있습니다.
 
 <table>
   <tr>
@@ -56,6 +56,16 @@
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
     <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
+  <tr>
+    <td width="33%"><img alt="USDZ로 된 WaterBottle. 빨간 뚜껑과 문양이 있는 금색 병이 검은 홀더에 끼워져 있음" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/usd.png"></td>
+    <td width="33%"></td>
+    <td width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>USD</b>: WaterBottle</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 | 형식 | 확장자 | 색상과 텍스처 | 애니메이션 | 크기 단위 | 참고 |
@@ -65,6 +75,7 @@
 | PLY | `.ply` | 정점 색상(없으면 기본 색상) | 미지원 | 미터로 간주 | 바이너리, 텍스트 |
 | OBJ | `.obj` | 정점 색상(`.mtl`은 읽지 못함) | 미지원 | 미터로 간주 | |
 | FBX | `.fbx` | 내장된 텍스처만 | 지원 | 파일에 지정된 단위 | 바이너리 FBX 7.0(2011) 이상 |
+| USD | `.usdz` `.usda` `.usdc` `.usd` | `.usdz`에 넣은 텍스처만 | 지원 | 파일에 지정된 단위(지정되지 않았으면 센티미터) | 텍스트(USDA)와 바이너리(USDC) 모두. `.usdz`는 USDZ 규격대로 압축하지 않은 것만 |
 
 Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 모델도 열립니다.
 
@@ -186,7 +197,7 @@ Draco나 Meshopt로 압축한 glTF, KTX2 / Basis Universal 텍스처를 쓰는 �
 > Orca 플러그인은 열려 있는 파일만 읽을 수 있고 같은 폴더의 다른 파일은 읽지 못합니다. 그래서 별도 파일에 담긴
 > 데이터는 표시되지 않습니다. 지오메트리가 별도의 `.bin` 파일에 들어 있는 `.gltf`는 열리지 않고, 별도 이미지 파일로
 > 된 텍스처와 OBJ의 `.mtl`도 반영되지 않습니다. `.glb`나 데이터를 내장한 `.gltf`, 텍스처를 내장한 FBX라면 모든
-> 내용이 표시됩니다.
+> 내용이 표시됩니다. USD 레이어가 다른 USD 파일에서 불러오는 부분도 표시되지 않으며, 모든 것을 한 파일로 묶은 `.usdz`라면 모두 표시됩니다.
 
 - **데스크톱 앱 전용**: 브라우저에서 실행한 Orca에서는 파일이 소스로만 열립니다.
 - **최대 64 MiB**: Orca가 사용자 지정 편집기에 허용하는 최대 크기입니다. 디코딩했을 때 안전하게 다룰 수 있는 양을
@@ -210,7 +221,7 @@ glTF 모델 152개를 모두 열어 보았습니다. three.js에 구현되지 �
 <summary>텍스처나 색상이 보이지 않습니다</summary>
 
 플러그인은 별도 이미지 파일로 된 텍스처를 읽을 수 없습니다. 읽지 못한 파일의 이름은 상태 표시줄에 나옵니다.
-glTF라면 `.glb`로 저장하고, FBX라면 텍스처를 내장해서 내보내세요. OBJ는 `.mtl`을 읽을 수 없으므로 정점 색상이 있으면
+glTF라면 `.glb`로 저장하고, FBX라면 텍스처를 내장해서, USD라면 텍스처까지 `.usdz`로 묶어서 내보내세요. OBJ는 `.mtl`을 읽을 수 없으므로 정점 색상이 있으면
 그 색으로, 없으면 기본 색상으로 표시됩니다.
 
 </details>
@@ -219,7 +230,7 @@ glTF라면 `.glb`로 저장하고, FBX라면 텍스처를 내장해서 내보내
 <summary>크기가 이상하게 나옵니다</summary>
 
 STL, PLY, OBJ는 파일에 단위를 저장하지 않기 때문에 STL은 밀리미터, PLY와 OBJ는 미터로 간주해 표시합니다. FBX와
-glTF는 파일에 지정된 단위를 따릅니다. 크기가 1000배나 100배 어긋난다면 모델을 내보낼 때 어떤 단위를 썼는지 확인하세요.
+glTF는 파일에 지정된 단위를 따릅니다. USD는 파일에 지정된 단위(`metersPerUnit`)를 따르고, 지정되지 않았으면 USD 규격대로 센티미터로 간주하며 그 사실을 상태 표시줄에 알립니다. 크기가 1000배나 100배 어긋난다면 모델을 내보낼 때 어떤 단위를 썼는지 확인하세요.
 
 </details>
 
@@ -248,7 +259,7 @@ glTF는 파일에 지정된 단위를 따릅니다. 크기가 1000배나 100배 
 - **권한 없음**: 매니페스트에서 아무 기능도 요청하지 않습니다. 워커, 명령, 파일 접근 모두 쓰지 않습니다.
 - **읽기 전용**: 문서를 편집하거나 저장하는 일이 없으며, 모델 안에 적힌 URI는 로더로 넘어가지 않습니다.
 - **먼저 검사**: 어떤 형식이든 디코딩에 앞서 별도 스레드에서 크기가 한도 안인지 검사합니다. FBX의 압축 배열은
-  조금씩 풀다가 선언된 크기를 넘는 즉시 멈춥니다.
+  조금씩 풀다가 선언된 크기를 넘는 즉시 멈춥니다. 바이너리 USD(USDC)는 단계별로 읽으며, 각 단계에 앞서 필요한 메모리와 작업량을 파일에서 미리 계산해 한도를 넘으면 읽기 전에 거부합니다.
 - **테스트**: CI에서는 Orca와 같은 프레임 정책을 적용한 채 악의적으로 만든 모델과 퍼징으로 만든 모델을 뷰어에 넣어
   보고, 커밋된 번들을 소스에서 똑같이 다시 빌드할 수 있는지도 확인합니다.
 
@@ -295,4 +306,5 @@ npm run build
 | BoomBox | FBX, 플러그인 페이지 | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell(1975), Kenzie Lamar | CC0 |
+| WaterBottle | USD | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | Fox | 애니메이션 GIF, 플러그인 페이지 | Khronos glTF Sample Assets. 모델은 PixelMannen(CC0 1.0), 리깅과 애니메이션은 tomkranis, glTF 변환은 @AsoboStudio와 @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

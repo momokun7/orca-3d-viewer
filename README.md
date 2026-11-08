@@ -7,7 +7,7 @@
 
 # 3D Viewer for Orca
 
-A read-only viewer for [Orca](https://github.com/stablyai/orca) that opens GLB, glTF, STL, PLY, OBJ and FBX files.
+A read-only viewer for [Orca](https://github.com/stablyai/orca) that opens GLB, glTF, STL, PLY, OBJ, FBX and USD files.
 Orbit around a model, play its animations, and check at a glance that it is the size you expect.
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
@@ -26,14 +26,14 @@ Orbit around a model, play its animations, and check at a glance that it is the 
 ## Quick start
 
 1. In Orca, open **Settings → Plugins**, search for **3D Viewer**, choose **Review & install**, then install and enable it. The **Open in Orca** button on the [plugin page](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) opens it too.
-2. Open a `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` or `.fbx` file.
+2. Open a `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx`, `.usdz`, `.usda`, `.usdc` or `.usd` file.
 3. Drag to orbit, and scroll to zoom.
 
 No permissions are required. See [Install](#install) and [Usage](#usage) for more.
 
 ## Formats
 
-One viewer for six formats.
+One viewer for seven formats.
 
 <table>
   <tr>
@@ -56,6 +56,16 @@ One viewer for six formats.
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
     <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
+  <tr>
+    <td width="33%"><img alt="WaterBottle as a USDZ: a gold bottle with a red cap and emblem, in a black holder" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/usd.png"></td>
+    <td width="33%"></td>
+    <td width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>USD</b>: WaterBottle</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 | Format | Extensions | Colors and textures | Animation | Size unit | Notes |
@@ -65,6 +75,7 @@ One viewer for six formats.
 | PLY | `.ply` | Vertex colors, or a default color | No | Shown in meters | Binary and text |
 | OBJ | `.obj` | Vertex colors (`.mtl` files are not read) | No | Shown in meters | |
 | FBX | `.fbx` | Embedded textures only | Yes | The unit set in the file | Binary FBX 7.0 (2011) and later |
+| USD | `.usdz` `.usda` `.usdc` `.usd` | Textures packed in the `.usdz` only | Yes | The unit set in the file (centimeters when it sets none) | Text (USDA) and binary (USDC). A `.usdz` must be uncompressed, as USDZ specifies |
 
 glTF files that use Draco or Meshopt compression, or KTX2 / Basis Universal textures, open too.
 
@@ -187,7 +198,7 @@ lets you switch between **Source** (the text) and **3D**.
 > Orca plugins can read only the open file, not other files in the same folder, so data stored in separate
 > files cannot be shown. A `.gltf` whose geometry is in a separate `.bin` file will not open, and textures in
 > separate image files and an OBJ's `.mtl` are ignored. A `.glb`, a `.gltf` with embedded data, or an FBX with
-> embedded textures shows everything.
+> embedded textures shows everything. The parts a USD layer brings in from other USD files are not shown either; a `.usdz` that packs everything in one file shows in full.
 
 - **Desktop app only.** When Orca runs in a browser, the file opens in Source view.
 - **Up to 64 MiB**, Orca's limit for custom editors. A model that would decode to far more data than is safe
@@ -212,7 +223,7 @@ runs in a browser, 3D view is not available.
 <summary>Textures or colors are missing</summary>
 
 Plugins cannot read textures stored in separate image files; the status bar lists the files that could not be
-read. For glTF, use a `.glb`; for FBX, export with the textures embedded. An OBJ's `.mtl` cannot be read either,
+read. For glTF, use a `.glb`; for FBX, export with the textures embedded; for USD, export a `.usdz` with the textures packed in. An OBJ's `.mtl` cannot be read either,
 so the model is shown in its vertex colors if it has them, or in a default color if not.
 
 </details>
@@ -221,7 +232,7 @@ so the model is shown in its vertex colors if it has them, or in a default color
 <summary>The size looks wrong</summary>
 
 STL, PLY and OBJ files do not store a unit, so STL is shown in millimeters and PLY and OBJ in meters. FBX and
-glTF use the unit set in the file. If the size is off by a factor of 100 or 1000, check which unit the model was
+glTF use the unit set in the file. USD uses the unit the file sets (`metersPerUnit`); when it sets none, the model is taken to be in centimeters, as USD specifies, and the status bar says so. If the size is off by a factor of 100 or 1000, check which unit the model was
 exported in.
 
 </details>
@@ -254,7 +265,7 @@ Models are untrusted input, so the viewer is built to offer as little attack sur
 - **Read-only**: it never edits or saves the document, and URIs inside a model are never passed to a loader.
 - **Checked first**: files in every format are checked against size budgets on a separate thread before
   anything is decoded. Compressed FBX arrays are inflated in small steps, and inflation stops as soon as an
-  array exceeds its declared size.
+  array exceeds its declared size. Binary USD (USDC) layers are read stage by stage, and the memory and work of each stage are estimated from the file before it runs; a file over the budget is refused before it is read.
 - **Tested**: CI runs the viewer under Orca's frame policy against hostile and fuzzed models, and verifies that
   the committed bundle can be reproduced from source.
 
@@ -303,4 +314,5 @@ into the files ourselves).
 | BoomBox | FBX, plugin page | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell (1975), Kenzie Lamar | CC0 |
+| WaterBottle | USD | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | Fox | Animation GIF, plugin page | Khronos glTF Sample Assets. Model by PixelMannen (CC0 1.0), rigging and animation by tomkranis, conversion to glTF by @AsoboStudio and @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
