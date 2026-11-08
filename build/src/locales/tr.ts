@@ -60,6 +60,7 @@ export const TR: Messages = {
   usdCompressed: 'Bu USDZ paketi dosyalarını sıkıştırıyor. USDZ dosyaları sıkıştırmadan sakladığı için görüntüleyici paketi açmaz. Dosyayı USDZ yazabilen bir araçla yeniden dışa aktarın.',
   usdAssumedCentimeters: 'Bu USD dosyasında birim belirtilmediği için boyutlar, USD kuralına göre santimetre cinsinden gösteriliyor.',
   usdExternalLayers: 'Ayrı USD dosyalarındaki parçalar ({{files}}) gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz. Görmek için bunları bir .usdz içinde paketleyin.',
+  usdExternalTextures: 'Ayrı dosyalardaki dokular ({{files}}) gösterilmiyor: Orca eklentileri modelin yanındaki dosyaları okuyamaz. Görmek için dokuları bir .usdz içinde paketleyin.',
   laterSaveFailed: 'Son kaydedilen sürüm gösterilemediği için önceki sürüm ekranda kalıyor: {{reason}}',
   moreFiles: '{{list}} ve {{count}} dosya daha',
   otherScenes: {

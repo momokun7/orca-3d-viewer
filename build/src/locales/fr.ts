@@ -67,6 +67,7 @@ export const FR: Messages = {
   usdCompressed: 'Ce paquet USDZ compresse ses fichiers. Le format USDZ les stocke sans compression : la visionneuse ne l’ouvre donc pas. Exportez-le de nouveau avec un outil qui écrit l’USDZ.',
   usdAssumedCentimeters: 'Ce fichier USD n’indique pas d’unité : les tailles sont donc affichées en centimètres, comme le prévoit USD.',
   usdExternalLayers: 'Les parties situées dans des fichiers USD séparés ({{files}}) ne sont pas affichées : les plugins Orca ne peuvent pas lire les fichiers placés à côté du modèle. Regroupez-les dans un .usdz pour les voir.',
+  usdExternalTextures: 'Les textures situées dans des fichiers séparés ({{files}}) ne sont pas affichées : les plugins Orca ne peuvent pas lire les fichiers placés à côté du modèle. Regroupez-les dans un .usdz pour les voir.',
   laterSaveFailed:
     'Impossible d’afficher la dernière version enregistrée ; la version précédente reste à l’écran : {{reason}}',
   moreFiles: {
