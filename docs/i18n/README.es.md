@@ -7,7 +7,7 @@
 
 # 3D Viewer for Orca
 
-Un visor de solo lectura para [Orca](https://github.com/stablyai/orca) compatible con GLB, glTF, STL, PLY, OBJ y FBX.
+Un visor de solo lectura para [Orca](https://github.com/stablyai/orca) compatible con GLB, glTF, STL, PLY, OBJ, FBX y USD.
 Gira la cámara alrededor del modelo, reproduce sus animaciones y comprueba de un vistazo si sus medidas son las que esperas.
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
@@ -26,14 +26,14 @@ Gira la cámara alrededor del modelo, reproduce sus animaciones y comprueba de u
 ## Inicio rápido
 
 1. En Orca, abre **Ajustes → Plugins**, busca **3D Viewer**, elige **Revisar e instalar** y luego instálalo y actívalo. El botón **Open in Orca** de la [página del plugin](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) también lo abre.
-2. Abre un archivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` o `.fbx`.
+2. Abre un archivo `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx`, `.usdz`, `.usda`, `.usdc` o `.usd`.
 3. Arrastra para girar el modelo y usa la rueda del ratón para acercarlo o alejarlo.
 
 No requiere ningún permiso. Encontrarás más información en [Instalación](#instalación) y [Uso](#uso).
 
 ## Formatos
 
-Un solo visor para seis formatos.
+Un solo visor para siete formatos.
 
 <table>
   <tr>
@@ -56,6 +56,16 @@ Un solo visor para seis formatos.
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
     <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
+  <tr>
+    <td width="33%"><img alt="WaterBottle en USDZ: una botella dorada con tapón y emblema rojos, en un soporte negro" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/usd.png"></td>
+    <td width="33%"></td>
+    <td width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>USD</b>: WaterBottle</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 | Formato | Extensiones | Colores y texturas | Animación | Unidad de medida | Notas |
@@ -65,6 +75,7 @@ Un solo visor para seis formatos.
 | PLY | `.ply` | Colores de vértice o, si no hay, uno predeterminado | No | Se interpreta en metros | Binario y texto |
 | OBJ | `.obj` | Colores de vértice (el `.mtl` no se puede leer) | No | Se interpreta en metros | |
 | FBX | `.fbx` | Solo texturas incrustadas | Sí | La que indica el archivo | FBX binario 7.0 (2011) o posterior |
+| USD | `.usdz` `.usda` `.usdc` `.usd` | Solo las texturas incluidas en el `.usdz` | Sí | La que indica el archivo (centímetros si no indica ninguna) | Texto (USDA) y binario (USDC). El `.usdz` debe estar sin comprimir, como exige USDZ |
 
 También admite glTF comprimido con Draco o Meshopt y texturas KTX2 / Basis Universal.
 
@@ -186,7 +197,7 @@ pestaña del editor te deja alternar entre **Código fuente** (el texto) y **3D*
 > Los plugins de Orca solo pueden leer el archivo abierto, no el resto de archivos de la carpeta, así que no es posible
 > mostrar datos que estén en archivos aparte. Un `.gltf` con la geometría en un `.bin` independiente no se abre, y las
 > texturas en archivos de imagen independientes y el `.mtl` de un OBJ se ignoran. En cambio, un `.glb`, un `.gltf` con los
-> datos incrustados o un FBX con las texturas incrustadas se muestran por completo.
+> datos incrustados o un FBX con las texturas incrustadas se muestran por completo. Tampoco se muestran las partes que una capa USD trae de otros archivos USD; un `.usdz` que lo reúne todo en un solo archivo se muestra por completo.
 
 - **Solo en la aplicación de escritorio.** Si usas Orca desde un navegador, el archivo se abre en Código fuente.
 - **Hasta 64 MiB**, el límite de Orca para editores personalizados. Si un modelo ocuparía, una vez decodificado, mucho más de
@@ -211,7 +222,7 @@ usas Orca desde un navegador, la vista 3D no está disponible.
 <summary>Faltan texturas o colores</summary>
 
 Los plugins no pueden leer texturas guardadas en archivos de imagen independientes; la barra de estado indica qué archivos no se pudieron leer.
-En glTF, usa un `.glb`; en FBX, exporta con las texturas incrustadas. Como el `.mtl` de un OBJ no se puede leer, el modelo se muestra
+En glTF, usa un `.glb`; en FBX, exporta con las texturas incrustadas; en USD, exporta un `.usdz` que incluya las texturas. Como el `.mtl` de un OBJ no se puede leer, el modelo se muestra
 con sus colores de vértice si los tiene, o con un color predeterminado si no.
 
 </details>
@@ -220,7 +231,7 @@ con sus colores de vértice si los tiene, o con un color predeterminado si no.
 <summary>El tamaño no parece correcto</summary>
 
 STL se muestra en milímetros, y PLY y OBJ en metros, porque ninguno de estos formatos guarda la unidad. FBX y glTF usan la
-unidad que indica el archivo. Si el tamaño no cuadra por un factor de 1000 o de 100, revisa la unidad con la que se exportó el modelo.
+unidad que indica el archivo. USD usa la unidad que indica el archivo (`metersPerUnit`); si no indica ninguna, el modelo se interpreta en centímetros, como establece USD, y la barra de estado lo avisa. Si el tamaño no cuadra por un factor de 1000 o de 100, revisa la unidad con la que se exportó el modelo.
 
 </details>
 
@@ -249,7 +260,7 @@ Un modelo es una entrada que no es de fiar, así que el visor está pensado para
 - **Sin permisos**: el manifiesto no solicita ninguna capacidad; ni workers, ni comandos, ni acceso a archivos.
 - **Solo lectura**: nunca modifica ni guarda el documento, y las URI que contenga un modelo nunca llegan a ningún cargador.
 - **Comprobación previa**: antes de decodificar nada, cada formato se contrasta con unos límites de tamaño en un hilo
-  aparte. Los arrays comprimidos de FBX se descomprimen poco a poco, y el proceso se detiene en cuanto superan el tamaño declarado.
+  aparte. Los arrays comprimidos de FBX se descomprimen poco a poco, y el proceso se detiene en cuanto superan el tamaño declarado. Las capas USD binarias (USDC) se leen por etapas: antes de cada una se estiman, a partir del archivo, la memoria y el trabajo que requiere, y un archivo que supera los límites se rechaza antes de leerlo.
 - **Probado**: la CI ejecuta el visor con la política de marcos de Orca frente a modelos maliciosos y generados mediante fuzzing, y comprueba
   que el bundle incluido en el repositorio se puede reproducir a partir del código fuente.
 
@@ -296,4 +307,5 @@ los colores (los de 3DBenchy, el Armadillo y la tetera los añadimos nosotros al
 | BoomBox | FBX, página del plugin | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell (1975), Kenzie Lamar | CC0 |
+| WaterBottle | USD | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | Fox | GIF de animación, página del plugin | Khronos glTF Sample Assets. Modelo de PixelMannen (CC0 1.0), rigging y animación de tomkranis, convertido a glTF por @AsoboStudio y @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

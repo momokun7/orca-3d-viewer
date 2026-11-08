@@ -7,7 +7,7 @@
 
 # 3D Viewer for Orca
 
-[Orca](https://github.com/stablyai/orca) için GLB, glTF, STL, PLY, OBJ ve FBX dosyalarını açan salt okunur bir görüntüleyici.
+[Orca](https://github.com/stablyai/orca) için GLB, glTF, STL, PLY, OBJ, FBX ve USD dosyalarını açan salt okunur bir görüntüleyici.
 Modeli her açıdan inceleyin, animasyonlarını oynatın ve beklediğiniz boyutta olup olmadığını bir bakışta görün.
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
@@ -26,14 +26,14 @@ Modeli her açıdan inceleyin, animasyonlarını oynatın ve beklediğiniz boyut
 ## Hızlı başlangıç
 
 1. Orca'da **Ayarlar → Eklentiler**'i açın, **3D Viewer**'ı arayın, **İncele ve yükle**'ye tıklayın, ardından eklentiyi yükleyip etkinleştirin. [Eklenti sayfasındaki](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) **Open in Orca** düğmesi de onu açar.
-2. Bir `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` veya `.fbx` dosyası açın.
+2. Bir `.glb`, `.gltf`, `.stl`, `.ply`, `.obj`, `.fbx`, `.usdz`, `.usda`, `.usdc` veya `.usd` dosyası açın.
 3. Döndürmek için sürükleyin, yakınlaştırmak için fare tekerleğini çevirin.
 
 Görüntüleyici hiçbir izin istemez. Ayrıntılar için [Kurulum](#kurulum) ve [Kullanım](#kullanım) bölümlerine bakın.
 
 ## Biçimler
 
-Altı biçim, tek görüntüleyici.
+Yedi biçim, tek görüntüleyici.
 
 <table>
   <tr>
@@ -56,6 +56,16 @@ Altı biçim, tek görüntüleyici.
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
     <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
+  <tr>
+    <td width="33%"><img alt="USDZ biçiminde WaterBottle: siyah bir tutucuda, kırmızı kapaklı ve amblemli altın renkli bir şişe" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/usd.png"></td>
+    <td width="33%"></td>
+    <td width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>USD</b>: WaterBottle</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 | Biçim | Uzantılar | Renk ve doku | Animasyon | Boyut birimi | Notlar |
@@ -65,6 +75,7 @@ Altı biçim, tek görüntüleyici.
 | PLY | `.ply` | Köşe renkleri, yoksa varsayılan renk | Yok | Metre kabul edilir | İkili ve metin |
 | OBJ | `.obj` | Köşe renkleri (`.mtl` okunamaz) | Yok | Metre kabul edilir | |
 | FBX | `.fbx` | Yalnızca gömülü dokular | Var | Dosyada belirtilen birim | İkili FBX 7.0 (2011) ve sonrası |
+| USD | `.usdz` `.usda` `.usdc` `.usd` | Yalnızca `.usdz` içindeki dokular | Var | Dosyada belirtilen birim (belirtilmemişse santimetre) | Metin (USDA) ve ikili (USDC). `.usdz`, USDZ'nin şart koştuğu gibi sıkıştırılmamış olmalı |
 
 Draco veya Meshopt ile sıkıştırılmış glTF dosyaları ve KTX2 / Basis Universal dokuları da açılabilir.
 
@@ -189,7 +200,7 @@ için bunlarda düzenleyici sekmesinden **Kaynak** (metin) ile **3D** arasında 
 > Orca eklentileri yalnızca açık olan dosyayı okuyabilir, aynı klasördeki diğer dosyalara erişemez. Bu yüzden ayrı
 > dosyalarda tutulan veriler gösterilemez: geometrisi ayrı bir `.bin` dosyasında duran `.gltf` açılmaz, ayrı görsel
 > dosyalarındaki dokular ve OBJ'nin `.mtl` dosyası ise yok sayılır. `.glb` dosyaları, verileri gömülü `.gltf`
-> dosyaları ve dokuları gömülü FBX dosyaları eksiksiz görüntülenir.
+> dosyaları ve dokuları gömülü FBX dosyaları eksiksiz görüntülenir. Bir USD katmanının başka USD dosyalarından aldığı parçalar da gösterilmez; her şeyi tek dosyada toplayan bir `.usdz` ise eksiksiz görüntülenir.
 
 - **Yalnızca masaüstü uygulamasında çalışır.** Orca'yı tarayıcıda kullanıyorsanız dosya Kaynak görünümünde açılır.
 - **En fazla 64 MiB.** Bu, Orca'nın özel düzenleyiciler için koyduğu sınırdır. Kodu çözüldüğünde güvenle
@@ -216,7 +227,7 @@ seçin. Orca tarayıcıda kullanılırken 3D görünüm kullanılamaz.
 <summary>Dokular veya renkler eksik</summary>
 
 Eklentiler ayrı görsel dosyalarındaki dokuları okuyamaz; okunamayan dosyaların adları durum çubuğunda gösterilir.
-glTF için `.glb` kullanın, FBX'i ise dokuları gömülü olacak şekilde dışa aktarın. OBJ'nin `.mtl` dosyası
+glTF için `.glb` kullanın; FBX'i dokuları gömülü olacak şekilde, USD'yi ise dokularıyla birlikte bir `.usdz` olarak dışa aktarın. OBJ'nin `.mtl` dosyası
 okunamadığından model, varsa köşe renkleriyle, yoksa varsayılan bir renkle gösterilir.
 
 </details>
@@ -225,7 +236,7 @@ okunamadığından model, varsa köşe renkleriyle, yoksa varsayılan bir renkle
 <summary>Boyut yanlış görünüyor</summary>
 
 Bu biçimler birim bilgisi tutmadığı için STL dosyaları milimetre, PLY ve OBJ dosyaları ise metre kabul edilir. FBX
-ve glTF'de dosyada belirtilen birim kullanılır. Boyut 1000 ya da 100 kat farklı çıkıyorsa modelin hangi birimle
+ve glTF'de dosyada belirtilen birim kullanılır. USD'de dosyada belirtilen birim (`metersPerUnit`) kullanılır; birim belirtilmemişse model, USD'nin öngördüğü gibi santimetre kabul edilir ve durum çubuğunda bu belirtilir. Boyut 1000 ya da 100 kat farklı çıkıyorsa modelin hangi birimle
 dışa aktarıldığını kontrol edin.
 
 </details>
@@ -260,7 +271,7 @@ sunmayacak kadar sade tasarlanmıştır.
 - **Salt okunur**: belgeyi hiçbir zaman düzenlemez veya kaydetmez; modelin içindeki URI'ler de hiçbir zaman bir
   yükleyiciye ulaşmaz.
 - **Önce denetim**: hiçbir şeyin kodu çözülmeden önce, her biçim ayrı bir iş parçacığında boyut sınırlarına göre
-  denetlenir. FBX'in sıkıştırılmış dizileri küçük adımlarla açılır ve bildirilen boyutu aştığı anda işlem durdurulur.
+  denetlenir. FBX'in sıkıştırılmış dizileri küçük adımlarla açılır ve bildirilen boyutu aştığı anda işlem durdurulur. İkili USD katmanları (USDC) aşama aşama okunur: her aşamadan önce gereken bellek ve iş dosyadan önceden hesaplanır, sınırları aşan dosya okunmadan reddedilir.
 - **Test edilmiş**: CI, görüntüleyiciyi Orca'nın çerçeve politikası altında kötü amaçlı ve fuzzing ile üretilmiş
   modellerle çalıştırır; commit edilmiş paketin kaynak koddan birebir yeniden üretilebildiğini de denetler.
 
@@ -308,4 +319,5 @@ Görsellerdeki ve GIF'lerdeki, eklenti simgesindeki ve Orca'daki eklenti sayfas�
 | BoomBox | FBX, eklenti sayfası | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell (1975), Kenzie Lamar | CC0 |
+| WaterBottle | USD | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | Fox | Animasyon GIF'i, eklenti sayfası | Khronos glTF Sample Assets. Model: PixelMannen (CC0 1.0), rig ve animasyon: tomkranis, glTF'e dönüştürme: @AsoboStudio ve @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

@@ -7,7 +7,7 @@
 
 # 3D Viewer for Orca
 
-這是一款 [Orca](https://github.com/stablyai/orca) 外掛，能以唯讀方式開啟 GLB、glTF、STL、PLY、OBJ 和 FBX 模型。
+這是一款 [Orca](https://github.com/stablyai/orca) 外掛，能以唯讀方式開啟 GLB、glTF、STL、PLY、OBJ、FBX 和 USD 模型。
 你可以繞著模型轉動視角、播放動畫，也能一眼看出模型的尺寸對不對。
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
@@ -26,14 +26,14 @@
 ## 快速開始
 
 1. 在 Orca 中開啟 **設定 → 外掛**，搜尋 **3D Viewer**，按下 **審查並安裝**，然後安裝並啟用。也可以透過[外掛頁面](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer)上的 **Open in Orca** 按鈕開啟。
-2. 開啟任一個 `.glb`、`.gltf`、`.stl`、`.ply`、`.obj` 或 `.fbx` 檔案。
+2. 開啟任一個 `.glb`、`.gltf`、`.stl`、`.ply`、`.obj`、`.fbx`、`.usdz`、`.usda`、`.usdc` 或 `.usd` 檔案。
 3. 拖曳滑鼠即可旋轉視角，捲動滾輪即可縮放。
 
 外掛不需要任何權限。詳細說明請參閱 [安裝](#安裝) 與 [使用方式](#使用方式)。
 
 ## 支援的格式
 
-一個檢視器，支援六種格式。
+一個檢視器，支援七種格式。
 
 <table>
   <tr>
@@ -56,6 +56,16 @@
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
     <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
+  <tr>
+    <td width="33%"><img alt="USDZ 格式的 WaterBottle：金色瓶身，紅色瓶蓋與標誌，套在黑色底座中" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/usd.png"></td>
+    <td width="33%"></td>
+    <td width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>USD</b>: WaterBottle</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 | 格式 | 副檔名 | 顏色與紋理 | 動畫 | 尺寸單位 | 備註 |
@@ -65,6 +75,7 @@
 | PLY | `.ply` | 頂點顏色，沒有則用預設顏色 | 不支援 | 以公尺顯示 | 支援二進位與文字格式 |
 | OBJ | `.obj` | 頂點顏色（不讀取 `.mtl`） | 不支援 | 以公尺顯示 | |
 | FBX | `.fbx` | 僅支援內嵌紋理 | 支援 | 檔案中宣告的單位 | 二進位 FBX 7.0（2011）以上版本 |
+| USD | `.usdz` `.usda` `.usdc` `.usd` | 僅支援打包在 `.usdz` 中的紋理 | 支援 | 檔案中宣告的單位（未宣告時以公分計） | 支援文字（USDA）與二進位（USDC）。`.usdz` 須依 USDZ 規範不壓縮 |
 
 以 Draco 或 Meshopt 壓縮的 glTF，以及 KTX2 / Basis Universal 紋理，同樣可以開啟。
 
@@ -185,7 +196,7 @@
 > [!NOTE]
 > Orca 外掛只能讀取目前開啟的檔案，讀不到同一資料夾中的其他檔案，因此存放在其他檔案中的資料無法顯示。
 > 幾何資料存放在獨立 `.bin` 檔中的 `.gltf` 無法開啟；獨立圖片檔中的紋理與 OBJ 的 `.mtl` 也不會顯示。
-> `.glb`、內嵌資料的 `.gltf`，以及內嵌紋理的 FBX 則能完整顯示。
+> `.glb`、內嵌資料的 `.gltf`，以及內嵌紋理的 FBX 則能完整顯示。USD 圖層從其他 USD 檔案引入的部分同樣不會顯示；將所有內容打包成單一檔案的 `.usdz` 則能完整顯示。
 
 - **僅支援桌面版**：在瀏覽器中使用 Orca 時，檔案會以原始碼形式開啟。
 - **檔案上限 64 MiB**：這是 Orca 對自訂編輯器的限制。如果模型解碼後的資料量遠超過安全上限，或用到檢視器無法讀取的功能，
@@ -209,7 +220,7 @@
 <summary>紋理或顏色沒有顯示</summary>
 
 外掛無法讀取獨立圖片檔中的紋理，狀態列會列出讀取不到的檔案名稱。
-glTF 請改用 `.glb`；FBX 請在匯出時內嵌紋理。OBJ 的 `.mtl` 無法讀取，
+glTF 請改用 `.glb`；FBX 請在匯出時內嵌紋理；USD 請連同紋理匯出為 `.usdz`。OBJ 的 `.mtl` 無法讀取，
 所以模型有頂點顏色時會以頂點顏色顯示，沒有則以預設顏色顯示。
 
 </details>
@@ -217,7 +228,7 @@ glTF 請改用 `.glb`；FBX 請在匯出時內嵌紋理。OBJ 的 `.mtl` 無法�
 <details>
 <summary>尺寸看起來不對</summary>
 
-STL 不儲存單位，因此以公釐顯示；PLY 與 OBJ 同樣不儲存單位，以公尺顯示。FBX 與 glTF 則使用檔案中宣告的單位。
+STL 不儲存單位，因此以公釐顯示；PLY 與 OBJ 同樣不儲存單位，以公尺顯示。FBX 與 glTF 則使用檔案中宣告的單位。USD 使用檔案中宣告的單位（`metersPerUnit`），未宣告時依 USD 規範視為公分，並在狀態列中提示。
 如果尺寸差了 1000 倍或 100 倍，請檢查匯出模型時選擇的單位。
 
 </details>
@@ -247,7 +258,7 @@ STL 不儲存單位，因此以公釐顯示；PLY 與 OBJ 同樣不儲存單位�
 - **不需權限**：外掛資訊清單（manifest）不要求任何能力，不使用 worker、不註冊命令，也不存取檔案。
 - **唯讀**：絕不修改或儲存文件，模型中的 URI 也絕不會交給載入器處理。
 - **先檢查再解碼**：每種格式在解碼前，都會先在獨立的執行緒中依大小上限進行檢查。FBX 的壓縮陣列會分成小段逐步解壓縮，
-  一旦超過宣告的大小就立即停止。
+  一旦超過宣告的大小就立即停止。二進位 USD（USDC）圖層會分階段讀取：每個階段開始前，先依檔案估算所需的記憶體與工作量，超出上限的檔案在讀取前就會被拒絕。
 - **完整測試**：CI 會在 Orca 的框架政策下，以惡意構造的模型與模糊測試產生的模型執行檢視器，並檢查存放庫中提交的打包檔案
   能否從原始碼完整重現。
 
@@ -293,4 +304,5 @@ npm run build
 | BoomBox | FBX、外掛頁面 | Khronos glTF Sample Assets，Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/)，Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data)，Martin Newell（1975），Kenzie Lamar | CC0 |
+| WaterBottle | USD | Khronos glTF Sample Assets，Microsoft | CC0 1.0 |
 | Fox | 動畫 GIF、外掛頁面 | Khronos glTF Sample Assets。模型由 PixelMannen 製作（CC0 1.0），骨架綁定與動畫由 tomkranis 製作，@AsoboStudio 與 @scurest 轉換為 glTF | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |

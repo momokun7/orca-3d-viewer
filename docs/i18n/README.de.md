@@ -7,7 +7,7 @@
 
 # 3D Viewer for Orca
 
-Ein schreibgeschützter Viewer für [Orca](https://github.com/stablyai/orca), der GLB, glTF, STL, PLY, OBJ und FBX öffnet.
+Ein schreibgeschützter Viewer für [Orca](https://github.com/stablyai/orca), der GLB, glTF, STL, PLY, OBJ, FBX und USD öffnet.
 Modelle von allen Seiten betrachten, Animationen abspielen und auf einen Blick sehen, ob die Größe stimmt.
 
 [![CI](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/momokun7/orca-3d-viewer/actions/workflows/ci.yml)
@@ -26,14 +26,14 @@ Modelle von allen Seiten betrachten, Animationen abspielen und auf einen Blick s
 ## Schnellstart
 
 1. In Orca **Einstellungen → Plugins** öffnen, nach **3D Viewer** suchen, auf **Prüfen & installieren** klicken und das Plugin installieren und aktivieren. Die Schaltfläche **Open in Orca** auf der [Plugin-Seite](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) öffnet es ebenfalls.
-2. Eine `.glb`-, `.gltf`-, `.stl`-, `.ply`-, `.obj`- oder `.fbx`-Datei öffnen.
+2. Eine `.glb`-, `.gltf`-, `.stl`-, `.ply`-, `.obj`-, `.fbx`-, `.usdz`-, `.usda`-, `.usdc`- oder `.usd`-Datei öffnen.
 3. Zum Drehen ziehen, zum Zoomen scrollen.
 
 Berechtigungen sind nicht nötig. Mehr dazu unter [Installation](#installation) und [Verwendung](#verwendung).
 
 ## Formate
 
-Ein Viewer für sechs Formate.
+Ein Viewer für sieben Formate.
 
 <table>
   <tr>
@@ -56,6 +56,16 @@ Ein Viewer für sechs Formate.
     <td align="center"><b>OBJ</b>: Utah Teapot</td>
     <td align="center"><b>FBX</b>: BoomBox</td>
   </tr>
+  <tr>
+    <td width="33%"><img alt="WaterBottle als USDZ: eine goldene Flasche mit roter Kappe und rotem Emblem in einer schwarzen Halterung" src="https://raw.githubusercontent.com/momokun7/orca-3d-viewer/readme-media/formats/usd.png"></td>
+    <td width="33%"></td>
+    <td width="33%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>USD</b>: WaterBottle</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 | Format | Endungen | Farben und Texturen | Animation | Größeneinheit | Hinweise |
@@ -65,6 +75,7 @@ Ein Viewer für sechs Formate.
 | PLY | `.ply` | Vertexfarben, sonst Standardfarbe | Nein | Als Meter angezeigt | Binär und Text |
 | OBJ | `.obj` | Vertexfarben (`.mtl` wird nicht gelesen) | Nein | Als Meter angezeigt | |
 | FBX | `.fbx` | Nur eingebettete Texturen | Ja | Die in der Datei angegebene Einheit | Binäres FBX ab 7.0 (2011) |
+| USD | `.usdz` `.usda` `.usdc` `.usd` | Nur in der `.usdz` enthaltene Texturen | Ja | Die in der Datei angegebene Einheit (Zentimeter, wenn keine angegeben ist) | Text (USDA) und binär (USDC). Eine `.usdz` muss unkomprimiert sein, wie USDZ es vorschreibt |
 
 Auch mit Draco oder Meshopt komprimiertes glTF sowie KTX2- und Basis-Universal-Texturen werden unterstützt.
 
@@ -186,7 +197,7 @@ lässt sich im Editor-Tab zwischen **Quelltext** (dem Text) und **3D** umschalte
 > Orca-Plugins lesen nur die geöffnete Datei, nie andere Dateien im selben Ordner. Daten in separaten Dateien
 > können daher nicht angezeigt werden: Eine `.gltf`, deren Geometrie in einer separaten `.bin` liegt, lässt sich nicht öffnen,
 > und Texturen in separaten Bilddateien sowie die `.mtl` einer OBJ fehlen. Eine `.glb`, eine `.gltf` mit eingebetteten Daten
-> oder eine FBX mit eingebetteten Texturen wird dagegen vollständig angezeigt.
+> oder eine FBX mit eingebetteten Texturen wird dagegen vollständig angezeigt. Teile, die ein USD-Layer aus anderen USD-Dateien einbindet, fehlen ebenfalls; eine `.usdz`, die alles in einer Datei bündelt, wird vollständig angezeigt.
 
 - **Nur in der Desktop-App.** In der Browserversion von Orca öffnet sich die Datei als Quelltext.
 - **Bis 64 MiB**, das Limit von Orca für benutzerdefinierte Editoren. Ein Modell, das dekodiert weit mehr Speicher belegen würde, als sicher ist,
@@ -211,7 +222,7 @@ der Browserversion von Orca steht 3D nicht zur Verfügung.
 <summary>Texturen oder Farben fehlen</summary>
 
 Texturen in separaten Bilddateien kann ein Plugin nicht lesen; die Statusleiste nennt die betroffenen Dateien.
-Bei glTF eine `.glb` verwenden, bei FBX mit eingebetteten Texturen exportieren. Die `.mtl` einer OBJ wird nicht gelesen, daher
+Bei glTF eine `.glb` verwenden, bei FBX mit eingebetteten Texturen exportieren, bei USD eine `.usdz` mit den Texturen exportieren. Die `.mtl` einer OBJ wird nicht gelesen, daher
 erscheint das Modell in seinen Vertexfarben, falls vorhanden, sonst in einer Standardfarbe.
 
 </details>
@@ -220,7 +231,7 @@ erscheint das Modell in seinen Vertexfarben, falls vorhanden, sonst in einer Sta
 <summary>Die Größe stimmt nicht</summary>
 
 STL wird in Millimetern angezeigt, PLY und OBJ in Metern, da keines dieser Formate eine Einheit speichert. FBX und glTF verwenden die
-in der Datei angegebene Einheit. Weicht die Größe um den Faktor 1000 oder 100 ab, die Einheit prüfen, in der das Modell exportiert wurde.
+in der Datei angegebene Einheit. USD verwendet die in der Datei angegebene Einheit (`metersPerUnit`); fehlt sie, gilt das Modell wie in USD festgelegt als in Zentimetern angegeben, und die Statusleiste weist darauf hin. Weicht die Größe um den Faktor 1000 oder 100 ab, die Einheit prüfen, in der das Modell exportiert wurde.
 
 </details>
 
@@ -249,7 +260,7 @@ Ein Modell ist eine nicht vertrauenswürdige Eingabe. Deshalb ist der Viewer so 
 - **Keine Berechtigungen**: Das Manifest fordert keinerlei Fähigkeiten an – keinen Worker, keine Befehle, keinen Dateizugriff.
 - **Schreibgeschützt**: Er bearbeitet oder speichert das Dokument nie, und URIs in einem Modell gelangen nie an einen Loader.
 - **Vorab geprüft**: Jedes Format wird in einem separaten Thread mit Größenbudgets abgeglichen, bevor überhaupt etwas
-  dekodiert wird. Komprimierte FBX-Arrays werden schrittweise entpackt; das Entpacken stoppt, sobald sie ihre angegebene Größe überschreiten.
+  dekodiert wird. Komprimierte FBX-Arrays werden schrittweise entpackt; das Entpacken stoppt, sobald sie ihre angegebene Größe überschreiten. Binäre USD-Layer (USDC) werden Stufe für Stufe gelesen; vor jeder Stufe werden Speicher- und Rechenaufwand aus der Datei abgeschätzt, und eine Datei über dem Budget wird abgelehnt, bevor sie gelesen wird.
 - **Getestet**: Die CI testet den Viewer unter der Frame-Richtlinie von Orca mit böswilligen und per Fuzzing erzeugten Modellen und prüft, ob sich das
   committete Bundle reproduzierbar aus dem Quellcode erzeugen lässt.
 
@@ -296,4 +307,5 @@ Die Modelle in den Bildern und GIFs, im Plugin-Symbol und in den Bildern der Plu
 | BoomBox | FBX, Plugin-Seite | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | 3DBenchy | STL | [3DBenchy.com](https://www.3dbenchy.com/), Creative Tools | CC0 1.0 |
 | Utah Teapot | OBJ | [McGuire Computer Graphics Archive](https://casual-effects.com/data), Martin Newell (1975), Kenzie Lamar | CC0 |
+| WaterBottle | USD | Khronos glTF Sample Assets, Microsoft | CC0 1.0 |
 | Fox | Animations-GIF, Plugin-Seite | Khronos glTF Sample Assets. Modell von PixelMannen (CC0 1.0), Rigging und Animation von tomkranis, Konvertierung nach glTF von @AsoboStudio und @scurest | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
