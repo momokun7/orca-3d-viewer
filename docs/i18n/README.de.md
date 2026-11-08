@@ -25,7 +25,7 @@ Modelle von allen Seiten betrachten, Animationen abspielen und auf einen Blick s
 
 ## Schnellstart
 
-1. In Orca **Einstellungen → Plugins → Plugin installieren** öffnen, im Tab **Git-URL** `https://github.com/momokun7/orca-3d-viewer#v1.0.2` einfügen und nacheinander auf **Weiter**, **Installieren** und **Plugin aktivieren** klicken.
+1. In Orca **Einstellungen → Plugins** öffnen, nach **3D Viewer** suchen, auf **Prüfen & installieren** klicken und das Plugin installieren und aktivieren. Die Schaltfläche **Open in Orca** auf der [Plugin-Seite](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) öffnet es ebenfalls.
 2. Eine `.glb`-, `.gltf`-, `.stl`-, `.ply`-, `.obj`- oder `.fbx`-Datei öffnen.
 3. Zum Drehen ziehen, zum Zoomen scrollen.
 
@@ -138,15 +138,28 @@ Mit **Kopieren** lässt sie sich in ein Issue einfügen und beschreibt dort, was
 
 ## Installation
 
-1. In Orca **Einstellungen → Plugins** öffnen und auf **Plugin installieren** klicken.
-2. Im Tab **Git-URL** Folgendes in das Feld **Repository-URL mit #ref** einfügen:
+3D Viewer ist im Community-Katalog der Orca-Plugins gelistet. Aus dem Katalog installiert, aktualisiert es sich von selbst, sobald eine neue Version erscheint.
+
+1. In Orca **Einstellungen → Plugins** öffnen und nach **3D Viewer** suchen.
+   **Open in Orca** auf der [Plugin-Seite](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) öffnet dieselbe Seite.
+2. Auf **Prüfen & installieren** klicken, die Zugriffsrechte prüfen und das Plugin installieren und aktivieren. Der Viewer fordert keine Berechtigungen an.
+
+Falls 3D Viewer nicht erscheint, unter **Plugin hinzufügen → Katalogquellen…** den Community-Katalog mit der URL `https://github.com/stablyai/orca-community-plugins.git` und der Ref `main` hinzufügen.
+
+<details>
+<summary>Über eine Git-URL installieren</summary>
+
+1. **Einstellungen → Plugins → Plugin installieren** öffnen und im Tab **Git-URL** Folgendes in das Feld **Repository-URL mit #ref** einfügen:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
-3. Auf **Weiter** und dann auf **Installieren** klicken. Im anschließenden Dialog **Plugin aktivieren** wählen; vorher wird kein Code
-   des Plugins ausgeführt. Der Viewer fordert keine Berechtigungen an, es muss also nichts weiter freigegeben werden.
+2. Auf **Weiter**, dann auf **Installieren** und im anschließenden Dialog auf **Plugin aktivieren** klicken.
+
+So installiert, aktualisiert sich das Plugin nicht von selbst.
+
+</details>
 
 > [!IMPORTANT]
 > Erfordert die Desktop-App von Orca ab Version 1.4.248.

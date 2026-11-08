@@ -25,7 +25,7 @@
 
 ## 快速開始
 
-1. 在 Orca 中開啟 **設定 → 外掛 → 安裝外掛**，在 **Git URL** 分頁中輸入 `https://github.com/momokun7/orca-3d-viewer#v1.0.2`，依序按下 **繼續** 和 **安裝**，再於接著出現的對話框中按下 **啟用外掛**。
+1. 在 Orca 中開啟 **設定 → 外掛**，搜尋 **3D Viewer**，按下 **審查並安裝**，然後安裝並啟用。也可以透過[外掛頁面](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer)上的 **Open in Orca** 按鈕開啟。
 2. 開啟任一個 `.glb`、`.gltf`、`.stl`、`.ply`、`.obj` 或 `.fbx` 檔案。
 3. 拖曳滑鼠即可旋轉視角，捲動滾輪即可縮放。
 
@@ -138,15 +138,28 @@
 
 ## 安裝
 
-1. 在 Orca 中開啟 **設定 → 外掛**，然後按下 **安裝外掛**。
-2. 在 **Git URL** 分頁的 **帶 #ref 的存放庫 URL** 欄位中貼上：
+3D Viewer 已收錄於 Orca 的社群外掛目錄。從目錄安裝後，有新版本時會自動更新。
+
+1. 在 Orca 中開啟 **設定 → 外掛**，搜尋 **3D Viewer**。
+   按下[外掛頁面](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer)上的 **Open in Orca** 也會開啟同一頁面。
+2. 按下 **審查並安裝**，確認它可以存取的範圍，然後安裝並啟用。檢視器不要求任何權限。
+
+如果找不到 3D Viewer，請在 **新增外掛 → 目錄來源…** 中新增社群目錄，URL 為 `https://github.com/stablyai/orca-community-plugins.git`，ref 為 `main`。
+
+<details>
+<summary>透過 Git URL 安裝</summary>
+
+1. 開啟 **設定 → 外掛 → 安裝外掛**，在 **Git URL** 分頁的 **帶 #ref 的存放庫 URL** 欄位中貼上：
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
-3. 按下 **繼續**，再按下 **安裝**，然後在接著出現的對話框中按下 **啟用外掛**。啟用之前，外掛不會執行。
-   檢視器不要求任何權限，因此不需要另外授權。
+2. 按下 **繼續**，再按下 **安裝**，然後在接著出現的對話框中按下 **啟用外掛**。
+
+透過這種方式安裝的外掛不會自動更新。
+
+</details>
 
 > [!IMPORTANT]
 > 需要 Orca 桌面版 1.4.248 以上版本。

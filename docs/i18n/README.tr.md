@@ -25,7 +25,7 @@ Modeli her açıdan inceleyin, animasyonlarını oynatın ve beklediğiniz boyut
 
 ## Hızlı başlangıç
 
-1. Orca'da **Ayarlar → Eklentiler → Eklenti yükle**'yi açın, **Git URL'si** sekmesine `https://github.com/momokun7/orca-3d-viewer#v1.0.2` adresini yapıştırın, **Devam**'a ve **Yükle**'ye tıklayın, ardından **Eklentiyi etkinleştir**'i seçin.
+1. Orca'da **Ayarlar → Eklentiler**'i açın, **3D Viewer**'ı arayın, **İncele ve yükle**'ye tıklayın, ardından eklentiyi yükleyip etkinleştirin. [Eklenti sayfasındaki](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) **Open in Orca** düğmesi de onu açar.
 2. Bir `.glb`, `.gltf`, `.stl`, `.ply`, `.obj` veya `.fbx` dosyası açın.
 3. Döndürmek için sürükleyin, yakınlaştırmak için fare tekerleğini çevirin.
 
@@ -141,16 +141,28 @@ aktarılanlar dışında özette hiçbir model verisi bulunmaz.
 
 ## Kurulum
 
-1. Orca'da **Ayarlar → Eklentiler** bölümünü açın ve **Eklenti yükle**'ye tıklayın.
-2. **Git URL'si** sekmesinde **#ref içeren repository URL'si** alanına şu adresi yapıştırın:
+3D Viewer, Orca'nın topluluk eklenti kataloğunda listelenir. Katalogdan yüklendiğinde, yeni bir sürüm çıktığında kendiliğinden güncellenir.
+
+1. Orca'da **Ayarlar → Eklentiler** bölümünü açın ve **3D Viewer**'ı arayın.
+   [Eklenti sayfasındaki](https://www.onorca.dev/plugins/momokun7/orca-3d-viewer) **Open in Orca** düğmesi de aynı sayfayı açar.
+2. **İncele ve yükle**'ye tıklayın, nelere erişebildiğini kontrol edin, ardından eklentiyi yükleyip etkinleştirin. Görüntüleyici hiçbir izin istemez.
+
+3D Viewer görünmüyorsa, **Eklenti ekle → Katalog kaynakları…** üzerinden `https://github.com/stablyai/orca-community-plugins.git` URL'si ve `main` ref'i ile topluluk kataloğunu ekleyin.
+
+<details>
+<summary>Git URL'sinden yükleme</summary>
+
+1. **Ayarlar → Eklentiler → Eklenti yükle**'yi açın ve **Git URL'si** sekmesinde **#ref içeren repository URL'si** alanına şu adresi yapıştırın:
 
    ```text
    https://github.com/momokun7/orca-3d-viewer#v1.0.2
    ```
 
-3. **Devam**'a, ardından **Yükle**'ye tıklayın. Açılan onay penceresinde **Eklentiyi etkinleştir**'i seçin; siz
-   etkinleştirene kadar eklentinin hiçbir kodu çalışmaz. Görüntüleyici hiçbir izin istemediği için onaylamanız
-   gereken başka bir şey yoktur.
+2. **Devam**'a, ardından **Yükle**'ye tıklayın ve açılan pencerede **Eklentiyi etkinleştir**'i seçin.
+
+Bu şekilde yüklenen eklenti kendiliğinden güncellenmez.
+
+</details>
 
 > [!IMPORTANT]
 > Orca masaüstü uygulamasının 1.4.248 veya daha yeni bir sürümü gerekir.
