@@ -27,7 +27,6 @@ export type Refusal =
   | { kind: 'corruptFile'; format: string; reason: string }
   | { kind: 'fbxText' }
   | { kind: 'fbxVersion'; version: number }
-  | { kind: 'usdBinary' }
   | { kind: 'usdCompressed' }
 
 /**
@@ -77,7 +76,6 @@ function checkMesh(format: MeshFormat, data: GltfModelData): ModelCheck {
       })
     }
     const problem = usd.problem
-    if ('binary' in problem) return refused({ kind: 'usdBinary' })
     if ('compressed' in problem) return refused({ kind: 'usdCompressed' })
     if ('excess' in problem) return refused({ kind: 'budget', excess: problem.excess })
     return refused({ kind: 'corruptFile', format: FORMAT_NAMES[format], reason: problem.corrupt })

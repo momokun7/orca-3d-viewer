@@ -138,6 +138,17 @@
         "priority": "default",
         "contentKind": "bytes",
         "frame": "isolated"
+      },
+      {
+        "id": "usdc",
+        "title": "3D",
+        "extensions": [
+          ".usdc"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "bytes",
+        "frame": "isolated"
       }
     ]
   },

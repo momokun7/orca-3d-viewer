@@ -202,7 +202,8 @@ describe('manifest', () => {
         { extensions: ['.fbx'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
         { extensions: ['.usdz'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
         { extensions: ['.usda'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'text' },
-        { extensions: ['.usd'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' }
+        { extensions: ['.usd'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
+        { extensions: ['.usdc'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' }
       ]
     )
   })

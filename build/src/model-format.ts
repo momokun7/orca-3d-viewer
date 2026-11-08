@@ -13,6 +13,7 @@ const BY_EXTENSION = new Map<string, ModelFormat>([
   ['fbx', 'fbx'],
   ['usd', 'usd'],
   ['usda', 'usd'],
+  ['usdc', 'usd'],
   ['usdz', 'usd']
 ])
 

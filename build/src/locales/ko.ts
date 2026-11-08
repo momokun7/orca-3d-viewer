@@ -52,7 +52,6 @@ export const KO: Messages = {
   fbxText: '텍스트(ASCII) 형식의 FBX 파일은 읽을 수 없습니다. 바이너리 FBX로 다시 내보내세요.',
   fbxVersion:
     '이 FBX 파일은 버전 {{version}}입니다. 뷰어는 FBX 7.0(2011) 이상만 읽을 수 있습니다. 최신 도구로 다시 내보내세요.',
-  usdBinary: '바이너리(USDC) 형식의 USD 파일은 아직 읽을 수 없습니다. USDA 또는 USDA를 담은 USDZ로 내보내세요.',
   usdCompressed: '이 USDZ 패키지는 파일을 압축해 두었습니다. USDZ는 파일을 압축하지 않고 저장하므로 뷰어에서 열지 않습니다. USDZ를 지원하는 도구로 다시 내보내세요.',
   usdAssumedCentimeters: '이 USD 파일에는 단위가 없어, USD의 규칙대로 센티미터로 간주해 크기를 표시합니다.',
   usdExternalLayers: '별도 USD 파일({{files}})에 있는 부분은 표시되지 않습니다. Orca 플러그인은 모델과 같은 폴더의 다른 파일을 읽을 수 없습니다. .usdz로 묶으면 표시됩니다.',

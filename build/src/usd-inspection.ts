@@ -1,19 +1,22 @@
-// Checks a USD file (a USDZ package, or a USDA layer on its own) before USDLoader builds it.
+// Checks a USD file (a USDZ package, or a USDA or USDC layer on its own) before USDLoader builds it.
 // USDLoader unzips the package with no limit on what an entry inflates to, keys parsed data by the
 // names the file gives, and composes a referenced layer afresh for every reference to it, with no
 // guard against a layer that references itself. This check reads the package the way fflate does,
-// parses each layer with the loader's own parser, and counts what composing it would build, every
-// layer multiplied by how often references reach it.
+// parses each layer with the loader's own parser (a binary one behind the guards in
+// usdc-inspection.ts), and counts what composing it would build, every layer multiplied by how
+// often references reach it.
 import { USDAParser } from 'three/examples/jsm/loaders/usd/USDAParser.js'
+import type { CrateSpecs } from 'three/examples/jsm/loaders/usd/USDCParser.js'
 import { bytesSource } from './byte-sources.ts'
 import { BUDGET, type BudgetExcess } from './gltf-budget.ts'
 import { decodableUnmeasured, imageSize } from './image-dimensions.ts'
 import { RESERVED_NAMES } from './mesh-budget.ts'
 import { startsWith, USDC_MAGIC } from './model-format.ts'
+import { readCrate } from './usdc-inspection.ts'
 
 /** What a passing file tells the parse: the unit its root layer states, and the images and layers it names outside itself. */
 export type UsdFacts = { metersPerUnit: number | null; externalFiles: string[]; externalLayers: string[] }
-export type UsdProblem = { corrupt: string } | { excess: BudgetExcess } | { binary: true } | { compressed: true }
+export type UsdProblem = { corrupt: string } | { excess: BudgetExcess } | { compressed: true }
 export type UsdVerdict = { facts: UsdFacts; problem: null } | { facts: null; problem: UsdProblem }
 
 export const USD_LIMITS = { entries: 4096 } as const
@@ -116,9 +119,13 @@ export function readUsdzEntries(bytes: Uint8Array): Entry[] {
   return entries
 }
 
+// Why: USDCParser reads number arrays into typed arrays, whose elements Object.values would copy out.
+const isTypedArray = (value: unknown): value is ArrayLike<number> => ArrayBuffer.isView(value) && !(value instanceof DataView)
+
 /** Numbers in a parsed field value, counted without recursing past what a USD value nests. */
 function countNumbers(value: unknown, depth = 0): number {
   if (typeof value === 'number') return 1
+  if (isTypedArray(value)) return value.length
   if (depth > 8 || value === null || typeof value !== 'object') return 0
   let total = 0
   for (const item of Array.isArray(value) ? value : Object.values(value)) total += countNumbers(item, depth + 1)
@@ -128,7 +135,7 @@ function countNumbers(value: unknown, depth = 0): number {
 /** Every string in a parsed field value, for the asset paths a layer names. */
 function strings(value: unknown, found: string[], depth = 0): void {
   if (typeof value === 'string') found.push(value)
-  else if (depth <= 8 && value !== null && typeof value === 'object') {
+  else if (depth <= 8 && value !== null && typeof value === 'object' && !isTypedArray(value)) {
     for (const item of Array.isArray(value) ? value : Object.values(value)) strings(item, found, depth + 1)
   }
 }
@@ -157,15 +164,33 @@ function packagedAsset(path: string, base: string, layers: Map<string, Layer>, i
   return null
 }
 
-function readLayer(name: string, text: string): Layer {
+function usdaSpecs(name: string, text: string): CrateSpecs {
   const reserved = RESERVED_WORD.exec(text)
   if (reserved) fail(`it uses the name ${reserved[1]}`)
-  let specsByPath: Record<string, { specType?: number; fields?: Record<string, unknown> }>
   try {
-    specsByPath = new USDAParser().parseData(text).specsByPath
+    return new USDAParser().parseData(text).specsByPath
   } catch {
     return fail(`${name || 'the layer'} cannot be read as USD`)
   }
+}
+
+/** The specs of a layer, read as USDLoader reads it: a crate when it starts like one, else text. */
+function layerSpecs(name: string, data: Uint8Array | string, deadline: number): CrateSpecs {
+  if (typeof data === 'string' || !startsWith(data, USDC_MAGIC)) {
+    return usdaSpecs(name, typeof data === 'string' ? data : new TextDecoder().decode(data))
+  }
+  const crate = readCrate(data, name, deadline)
+  if ('corrupt' in crate) fail(crate.corrupt)
+  if ('excess' in crate) over(crate.excess)
+  if (!('specs' in crate)) return fail(`${name || 'the layer'} cannot be read as USD`)
+  for (const token of crate.tokens) {
+    const reserved = RESERVED_WORD.exec(token)
+    if (reserved) fail(`it uses the name ${reserved[1]}`)
+  }
+  return crate.specs
+}
+
+function readLayer(name: string, specsByPath: CrateSpecs): Layer {
   const slash = name.lastIndexOf('/')
   const unit = specsByPath['/']?.fields?.metersPerUnit
   // Why refused: USDComposer scales by whatever a layer states, so zero or NaN would collapse the model.
@@ -185,8 +210,12 @@ function readLayer(name: string, text: string): Layer {
     const fields = spec.fields ?? {}
     layer.prims++
     layer.numbers += countNumbers(fields)
-    if (path.endsWith('.faceVertexCounts') && Array.isArray(fields.default)) {
-      for (const corners of fields.default) if (typeof corners === 'number' && corners > 2) layer.drawn += (corners - 2) * 3
+    const counts: unknown = fields.default
+    if (path.endsWith('.faceVertexCounts') && (Array.isArray(counts) || isTypedArray(counts))) {
+      for (let face = 0; face < counts.length; face++) {
+        const corners: unknown = counts[face]
+        if (typeof corners === 'number' && corners > 2) layer.drawn += (corners - 2) * 3
+      }
     }
     const arcs: string[] = []
     strings(fields.references, arcs)
@@ -202,11 +231,6 @@ function readLayer(name: string, text: string): Layer {
     }
   }
   return layer
-}
-
-function layerText(entry: Entry): string {
-  if (startsWith(entry.bytes, USDC_MAGIC)) throw new Refused({ binary: true })
-  return new TextDecoder().decode(entry.bytes)
 }
 
 /** Times each layer is composed: the root once, and each reference composes its whole layer again. */
@@ -253,6 +277,7 @@ export function checkUsd(data: ArrayBuffer | string): UsdVerdict {
 
 function inspect(data: ArrayBuffer | string): UsdFacts {
   const started = Date.now()
+  const deadline = started + BUDGET.checkMilliseconds
   const bytes = typeof data === 'string' ? null : new Uint8Array(data)
   const entries = bytes && isUsdz(bytes) ? readUsdzEntries(bytes) : null
   const layers = new Map<string, Layer>()
@@ -264,7 +289,7 @@ function inspect(data: ArrayBuffer | string): UsdFacts {
     let imageCount = 0
     for (const entry of entries) {
       const extension = extensionOf(entry.name)
-      if (LAYER_EXTENSIONS.has(extension)) layers.set(entry.name, readLayer(entry.name, layerText(entry)))
+      if (LAYER_EXTENSIONS.has(extension)) layers.set(entry.name, readLayer(entry.name, layerSpecs(entry.name, entry.bytes, deadline)))
       else if (IMAGE_EXTENSIONS.has(extension)) {
         if (++imageCount > BUDGET.images) over({ kind: 'images', value: imageCount, limit: BUDGET.images })
         const size = imageSize(bytesSource(entry.bytes))
@@ -280,8 +305,7 @@ function inspect(data: ArrayBuffer | string): UsdFacts {
       }
     }
   } else {
-    const text = typeof data === 'string' ? data : layerText({ name: '', bytes: new Uint8Array(data) })
-    layers.set('', readLayer('', text))
+    layers.set('', readLayer('', layerSpecs('', typeof data === 'string' ? data : new Uint8Array(data), deadline)))
   }
   if (Date.now() - started > BUDGET.checkMilliseconds) over({ kind: 'tooComplex' })
 
