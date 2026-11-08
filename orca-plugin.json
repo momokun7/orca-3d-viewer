@@ -5,7 +5,7 @@
   "name": "3D Viewer",
   "version": "1.0.2",
   "execution": "sandboxed-ui",
-  "description": "Preview 3D models in Orca's editor: GLB and glTF, STL, PLY, OBJ and FBX. Orbit, zoom and pan, play animations, and check the model's real-world size on a floor grid. Read-only.",
+  "description": "Preview 3D models in Orca's editor: GLB and glTF, STL, PLY, OBJ, FBX and USD. Orbit, zoom and pan, play animations, and check the model's real-world size on a floor grid. Read-only.",
   "license": "MIT",
   "repository": "https://github.com/momokun7/orca-3d-viewer",
   "icon": "assets/icon.png",
@@ -100,6 +100,39 @@
         "title": "3D",
         "extensions": [
           ".fbx"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "bytes",
+        "frame": "isolated"
+      },
+      {
+        "id": "usdz",
+        "title": "3D",
+        "extensions": [
+          ".usdz"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "bytes",
+        "frame": "isolated"
+      },
+      {
+        "id": "usda",
+        "title": "3D",
+        "extensions": [
+          ".usda"
+        ],
+        "entry": "editor/index.html",
+        "priority": "default",
+        "contentKind": "text",
+        "frame": "isolated"
+      },
+      {
+        "id": "usd",
+        "title": "3D",
+        "extensions": [
+          ".usd"
         ],
         "entry": "editor/index.html",
         "priority": "default",

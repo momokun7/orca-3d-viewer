@@ -12,6 +12,7 @@
   { "name": "area: ply", "color": "c5def5", "description": "PLY files" },
   { "name": "area: obj", "color": "c5def5", "description": "OBJ files" },
   { "name": "area: fbx", "color": "c5def5", "description": "FBX files" },
+  { "name": "area: usd", "color": "c5def5", "description": "USD files: USDZ, USDA and USDC" },
   { "name": "area: ui", "color": "bfdadc", "description": "Toolbar, panels, messages and theme" },
   { "name": "area: rendering", "color": "bfdadc", "description": "The 3D view: camera, lighting, grid and animation" },
   { "name": "needs-triage", "color": "fbca04", "description": "Not looked at yet" },

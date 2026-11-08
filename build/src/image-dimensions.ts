@@ -224,6 +224,18 @@ export function imageFormat(head: Uint8Array): ImageFormat | null {
   return null
 }
 
+// Formats Chromium decodes whatever MIME type a blob claims, but whose size this reader does not measure.
+const DECODABLE_UNMEASURED = [
+  [0x47, 0x49, 0x46], // GIF
+  [0x42, 0x4d], // BMP
+  [0x00, 0x00, 0x01, 0x00], // ICO
+  [0x00, 0x00, 0x02, 0x00] // CUR
+]
+
+/** True for an image the browser would decode at a size `imageSize` cannot tell in advance. */
+export const decodableUnmeasured = (image: Uint8Array): boolean =>
+  DECODABLE_UNMEASURED.some((signature) => startsWith(image, signature))
+
 /** The pixel size an image will decode to, or null when it is not a format and header this reader knows. */
 export function imageSize(source: ByteSource): ImageSize | null {
   const head = source.read(0, 64)

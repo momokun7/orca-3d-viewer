@@ -118,6 +118,10 @@ function refusalMessage(refusal: Refusal): string {
       return t('fbxText')
     case 'fbxVersion':
       return t('fbxVersion', { version: String(refusal.version) })
+    case 'usdBinary':
+      return t('usdBinary')
+    case 'usdCompressed':
+      return t('usdCompressed')
   }
 }
 
@@ -199,12 +203,15 @@ async function load(orcaDocument: OrcaDocument): Promise<void> {
       const mesh = checked.mesh
       // Why loaded here: GLB, the common case, should not wait for four more loaders.
       const { ASSUMED_METERS_PER_UNIT, parseMeshModel } = await import('./mesh-model-parse.ts')
-      const stored = mesh.format === 'fbx' ? null : ASSUMED_METERS_PER_UNIT[mesh.format]
+      const stored = mesh.format === 'fbx' || mesh.format === 'usd' ? null : ASSUMED_METERS_PER_UNIT[mesh.format]
       const parsed = await parseMeshModel(mesh.format, data, mesh.metersPerUnit ?? stored ?? 1)
       model = parsed
-      if (parsed.blockedFiles.length > 0) notices.push(t('externalTextures', { files: nameList(parsed.blockedFiles, more) }))
+      const blocked = [...new Set([...parsed.blockedFiles, ...mesh.externalFiles])]
+      if (blocked.length > 0) notices.push(t('externalTextures', { files: nameList(blocked, more) }))
       if (mesh.materialFiles) notices.push(t('objMaterials'))
       if (mesh.format === 'obj' || mesh.format === 'ply') notices.push(t('assumedMeters'))
+      if (mesh.externalLayers.length > 0) notices.push(t('usdExternalLayers', { files: nameList(mesh.externalLayers, more) }))
+      if (mesh.unitAssumed) notices.push(t('usdAssumedCentimeters'))
     }
   } catch (error) {
     // Why silent: a newer document is already waiting to load.

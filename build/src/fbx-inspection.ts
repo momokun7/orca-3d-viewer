@@ -8,7 +8,7 @@
 import { Unzlib } from 'three/examples/jsm/libs/fflate.module.js'
 import { bytesSource } from './byte-sources.ts'
 import { BUDGET, type BudgetExcess } from './gltf-budget.ts'
-import { imageSize } from './image-dimensions.ts'
+import { decodableUnmeasured, imageSize } from './image-dimensions.ts'
 import { RESERVED_NAMES } from './mesh-budget.ts'
 import { FBX_BINARY_MAGIC, latin1 } from './model-format.ts'
 
@@ -31,13 +31,6 @@ const NUMBERS_PER_CORNER = 20
 const BUILD_BYTES_PER_NUMBER = 12
 const ARRAY_ITEM_BYTES: Record<string, number> = { b: 1, c: 1, i: 4, f: 4, d: 8, l: 8 }
 const SCALAR_BYTES: Record<string, number> = { C: 1, Y: 2, I: 4, F: 4, D: 8, L: 8 }
-// Formats Chromium decodes whatever MIME type a blob claims; the loader picks one from the name.
-const DECODABLE_UNMEASURED = [
-  [0x47, 0x49, 0x46], // GIF
-  [0x42, 0x4d], // BMP
-  [0x00, 0x00, 0x01, 0x00], // ICO
-  [0x00, 0x00, 0x02, 0x00] // CUR
-]
 const MIPMAPPED = 4 / 3
 
 class Refused extends Error {
@@ -153,7 +146,7 @@ export function checkFbx(data: ArrayBuffer, timeLimitMs = BUDGET.checkMillisecon
     const size = imageSize(bytesSource(image))
     if (!size) {
       // TGA, TIFF and other formats the browser cannot decode simply do not show.
-      if (DECODABLE_UNMEASURED.some((magic) => magic.every((byte, at) => image[at] === byte))) {
+      if (decodableUnmeasured(image)) {
         throw new Refused({ excess: { kind: 'unreadableImage', index } })
       }
       return

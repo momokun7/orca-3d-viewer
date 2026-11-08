@@ -185,7 +185,7 @@ describe('manifest', () => {
     assert.deepEqual(Object.keys(manifest.contributes), ['customEditors'])
   })
 
-  it('opens only its 3D formats, each in the isolated frame, as bytes except for text glTF and OBJ', () => {
+  it('opens only its 3D formats, each in the isolated frame, as bytes except for text glTF, OBJ and USDA', () => {
     assert.deepEqual(
       manifest.contributes.customEditors.map((editor: Record<string, unknown>) => ({
         extensions: editor.extensions,
@@ -199,7 +199,10 @@ describe('manifest', () => {
         { extensions: ['.stl'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
         { extensions: ['.ply'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
         { extensions: ['.obj'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'text' },
-        { extensions: ['.fbx'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' }
+        { extensions: ['.fbx'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
+        { extensions: ['.usdz'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' },
+        { extensions: ['.usda'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'text' },
+        { extensions: ['.usd'], frame: 'isolated', entry: 'editor/index.html', contentKind: 'bytes' }
       ]
     )
   })

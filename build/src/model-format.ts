@@ -1,6 +1,6 @@
 // Which reader a document needs. Orca names the file type; the bytes decide when it does not.
 
-export type MeshFormat = 'stl' | 'ply' | 'obj' | 'fbx'
+export type MeshFormat = 'stl' | 'ply' | 'obj' | 'fbx' | 'usd'
 export type ModelFormat = 'gltf' | MeshFormat
 
 const BY_EXTENSION: Record<string, ModelFormat> = {
@@ -9,21 +9,29 @@ const BY_EXTENSION: Record<string, ModelFormat> = {
   '.stl': 'stl',
   '.ply': 'ply',
   '.obj': 'obj',
-  '.fbx': 'fbx'
+  '.fbx': 'fbx',
+  '.usd': 'usd',
+  '.usda': 'usd',
+  '.usdz': 'usd'
 }
 
 export const FBX_BINARY_MAGIC = 'Kaydara FBX Binary  \0'
+export const USDC_MAGIC = 'PXR-USDC'
 
-const startsWith = (bytes: Uint8Array, text: string): boolean =>
+export const startsWith = (bytes: Uint8Array, text: string): boolean =>
   bytes.length >= text.length && [...text].every((char, index) => bytes[index] === char.charCodeAt(0))
 
 export function modelFormat(fileType: string | undefined, data: ArrayBuffer | string): ModelFormat {
   const named = fileType ? BY_EXTENSION[fileType.toLowerCase()] : undefined
   if (named) return named
-  if (typeof data === 'string') return data.trimStart().startsWith('{') ? 'gltf' : 'obj'
+  if (typeof data === 'string') {
+    const start = data.trimStart()
+    return start.startsWith('{') ? 'gltf' : start.startsWith('#usda') ? 'usd' : 'obj'
+  }
   const head = new Uint8Array(data, 0, Math.min(data.byteLength, 32))
   if (startsWith(head, 'glTF')) return 'gltf'
   if (startsWith(head, FBX_BINARY_MAGIC)) return 'fbx'
+  if (startsWith(head, USDC_MAGIC) || startsWith(head, '#usda')) return 'usd'
   if (startsWith(head, 'ply')) return 'ply'
   return 'stl'
 }
